@@ -68,3 +68,23 @@ jobs:
       - name: Run typescript checks
         run: |
           npm run typecheck
+  knip:
+    name: ✂️ Knip
+    runs-on: "ubuntu-latest"
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Download deps
+        uses: bahmutov/npm-install@v1
+
+      - name: Run knip
+        run: |
+          npm run knip
