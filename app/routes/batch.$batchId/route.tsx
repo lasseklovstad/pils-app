@@ -85,7 +85,7 @@ export default function BatchPage() {
   return (
     <Main>
       <h1 className="text-4xl">{batch.name}</h1>
-      <div className="text-sm mb-4">
+      <div className="mb-4 text-sm">
         Opprettet: {batch.createdTimestamp.toLocaleDateString("nb")}{" "}
         {batch.createdTimestamp.toLocaleTimeString("nb")}
       </div>

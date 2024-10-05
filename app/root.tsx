@@ -31,7 +31,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <header className="container mx-auto">
           <a className="flex items-center gap-2" href="/">
             <img className="size-8" src="/favicon-32x32.png" alt="" />
-            <h1 className="text-6xl mb-4">Pils</h1>
+            <h1 className="mb-4 text-6xl">Pils</h1>
           </a>
         </header>
         {children}
@@ -67,7 +67,7 @@ export function ErrorBoundary() {
       <main className="container mx-auto">
         <h1 className="text-2xl font-medium">Error</h1>
         <p>{error.message}</p>
-        <pre className="text-xs bg-slate-50 p-2">{error.stack}</pre>
+        <pre className="bg-slate-50 p-2 text-xs">{error.stack}</pre>
       </main>
     );
   } else {

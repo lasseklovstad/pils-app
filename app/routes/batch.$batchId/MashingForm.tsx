@@ -49,7 +49,7 @@ export const MashingForm = ({ batch, ingredients }: Props) => {
             )}
           </div>
           <fetcher.Form method="PUT" className="space-y-2">
-            <div className="flex items-end gap-2 flex-wrap">
+            <div className="flex flex-wrap items-end gap-2">
               <div>
                 <Label htmlFor="mashing-strike-water-volume-input">
                   Antall liter vann

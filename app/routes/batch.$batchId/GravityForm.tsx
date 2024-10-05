@@ -25,7 +25,7 @@ export const GravityForm = ({ batch }: Props) => {
           Fyll ut begge for å se alkoholprosent
         </div>
       )}
-      <div className="flex items-end gap-2 ">
+      <div className="flex items-end gap-2">
         <div>
           <Label htmlFor="original-gravity-input">Original gravity</Label>
           <Input
