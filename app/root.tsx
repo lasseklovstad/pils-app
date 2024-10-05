@@ -16,7 +16,7 @@ export const links: LinksFunction = () => [
   { rel: "icon", href: "/favicon.ico" },
 ];
 
-export const meta: MetaFunction = () => [{ title: "🍺Pils" }];
+export const meta: MetaFunction = () => [{ title: "Pils" }];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -28,6 +28,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <header className="container mx-auto">
+          <a className="flex items-center gap-2" href="/">
+            <img className="size-8" src="/favicon-32x32.png" alt="" />
+            <h1 className="text-6xl mb-4">Pils</h1>
+          </a>
+        </header>
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -49,23 +55,27 @@ export function ErrorBoundary() {
 
   if (isRouteErrorResponse(error)) {
     return (
-      <div>
-        <h1>
+      <main className="container mx-auto">
+        <h1 className="text-2xl font-medium">
           {error.status} {error.statusText}
         </h1>
         <p>{error.data}</p>
-      </div>
+      </main>
     );
   } else if (error instanceof Error) {
     return (
-      <div>
-        <h1>Error</h1>
+      <main className="container mx-auto">
+        <h1 className="text-2xl font-medium">Error</h1>
         <p>{error.message}</p>
         <p>The stack trace is:</p>
         <pre>{error.stack}</pre>
-      </div>
+      </main>
     );
   } else {
-    return <h1>Unknown Error</h1>;
+    return (
+      <main className="container mx-auto">
+        <h1 className="text-2xl font-medium">Unknown Error</h1>
+      </main>
+    );
   }
 }
