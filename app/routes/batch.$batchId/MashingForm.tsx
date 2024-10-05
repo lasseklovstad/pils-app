@@ -1,9 +1,9 @@
 import { useFetcher } from "@remix-run/react";
 import { Loader2, Save } from "lucide-react";
+
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { action } from "./route";
 import { Batch, Ingredient } from "db/schema";
 import {
   Accordion,
@@ -16,6 +16,8 @@ import {
   calculateWaterTemperature,
   filterIngredients,
 } from "~/lib/utils";
+
+import { action } from "./route";
 
 type Props = {
   ingredients: Ingredient[];
@@ -49,7 +51,7 @@ export const MashingForm = ({ batch, ingredients }: Props) => {
             )}
           </div>
           <fetcher.Form method="PUT" className="space-y-2">
-            <div className="flex items-end gap-2 flex-wrap">
+            <div className="flex flex-wrap items-end gap-2">
               <div>
                 <Label htmlFor="mashing-strike-water-volume-input">
                   Antall liter vann

@@ -1,15 +1,17 @@
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
+
 import { getBatch, putBatch } from "~/.server/data-layer/batches";
 import { Main } from "~/components/Main";
-import { GravityForm } from "./GravityForm";
-import { MaltForm } from "./MaltForm";
 import {
   deleteIngredient,
   getBatchIngredients,
   postIngredient,
   putIngredient,
 } from "~/.server/data-layer/ingredients";
+
+import { GravityForm } from "./GravityForm";
+import { MaltForm } from "./MaltForm";
 import { MashingForm } from "./MashingForm";
 
 export const loader = async ({
@@ -85,7 +87,7 @@ export default function BatchPage() {
   return (
     <Main>
       <h1 className="text-4xl">{batch.name}</h1>
-      <div className="text-sm mb-4">
+      <div className="mb-4 text-sm">
         Opprettet: {batch.createdTimestamp.toLocaleDateString("nb")}{" "}
         {batch.createdTimestamp.toLocaleTimeString("nb")}
       </div>

@@ -1,6 +1,7 @@
+import { desc, eq } from "drizzle-orm";
+
 import { db } from "db/config.server";
 import { batchesTable } from "db/schema";
-import { desc, eq } from "drizzle-orm";
 
 export const getBatches = async () => {
   return await db

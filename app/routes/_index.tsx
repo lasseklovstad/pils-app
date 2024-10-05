@@ -2,6 +2,7 @@ import { ActionFunctionArgs } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { Loader2, Plus } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
+
 import { getBatches, postBatch } from "~/.server/data-layer/batches";
 import { Main } from "~/components/Main";
 import { Button } from "~/components/ui/button";
@@ -34,7 +35,7 @@ export default function Home() {
           <li key={batch.id}>
             <Link
               to={`/batch/${batch.id}`}
-              className="p-2 flex flex-col hover:bg-slate-50"
+              className="flex flex-col p-2 hover:bg-slate-50"
             >
               <span className="text-lg">{batch.name}</span>
               <span className="text-sm text-muted-foreground">
@@ -64,7 +65,7 @@ const BatchForm = () => {
   );
   return (
     <fetcher.Form
-      className="flex gap-2 items-end border rounded p-4"
+      className="flex items-end gap-2 rounded border p-4"
       method="POST"
       ref={$form}
     >
