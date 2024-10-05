@@ -45,6 +45,7 @@
     "vite-tsconfig-paths": "^5.0.1"
   },
   "dependencies": {
+    "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-label": "^2.1.0",
     "@radix-ui/react-slot": "^1.1.0",
     "@remix-run/express": "^2.12.1",

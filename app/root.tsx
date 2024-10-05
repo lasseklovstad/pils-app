@@ -67,8 +67,7 @@ export function ErrorBoundary() {
       <main className="container mx-auto">
         <h1 className="text-2xl font-medium">Error</h1>
         <p>{error.message}</p>
-        <p>The stack trace is:</p>
-        <pre>{error.stack}</pre>
+        <pre className="text-xs bg-slate-50 p-2">{error.stack}</pre>
       </main>
     );
   } else {
