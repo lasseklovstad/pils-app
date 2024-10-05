@@ -44,7 +44,35 @@ export default [
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
   importPlugin.flatConfigs.recommended,
-  { rules: { "react/react-in-jsx-scope": "off", "react/prop-types": "off" } },
+  {
+    rules: {
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
+      "import/order": [
+        "error",
+        {
+          "newlines-between": "always",
+          groups: [
+            "builtin",
+            "external",
+            "type",
+            "internal",
+            "parent",
+            "sibling",
+            "index",
+            "object",
+          ],
+          pathGroups: [
+            {
+              pattern: "@/**",
+              group: "internal",
+            },
+          ],
+          distinctGroup: false,
+        },
+      ],
+    },
+  },
   eslintConfigPrettierRecommended,
   // Turn off rules that conflict with prettier
   eslintConfigPrettier,

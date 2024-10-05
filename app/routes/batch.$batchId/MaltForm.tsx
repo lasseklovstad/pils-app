@@ -1,5 +1,4 @@
 import { Ingredient } from "db/schema";
-import { IngredientForm } from "./IngredientForm";
 import {
   Accordion,
   AccordionContent,
@@ -7,6 +6,8 @@ import {
   AccordionTrigger,
 } from "~/components/ui/accordion";
 import { calculateTotalAmount, filterIngredients } from "~/lib/utils";
+
+import { IngredientForm } from "./IngredientForm";
 
 type Props = {
   ingredients: Ingredient[];

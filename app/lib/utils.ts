@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
-import { Ingredient } from "db/schema";
 import { twMerge } from "tailwind-merge";
+
+import { Ingredient } from "db/schema";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

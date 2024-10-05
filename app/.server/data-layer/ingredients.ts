@@ -1,6 +1,7 @@
+import { eq } from "drizzle-orm";
+
 import { db } from "db/config.server";
 import { Ingredient, ingredientsTable } from "db/schema";
-import { eq } from "drizzle-orm";
 
 export const getBatchIngredients = async (batchId: number) => {
   return await db
