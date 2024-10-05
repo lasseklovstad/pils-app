@@ -12,6 +12,7 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+
   plugins: [
     remix({
       future: {
@@ -22,6 +23,7 @@ export default defineConfig({
         unstable_singleFetch: true,
       },
     }),
+
     tsconfigPaths(),
   ],
 });
