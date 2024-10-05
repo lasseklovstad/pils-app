@@ -124,12 +124,8 @@
           "name": "ingredients_batch_id_batches_id_fk",
           "tableFrom": "ingredients",
           "tableTo": "batches",
-          "columnsFrom": [
-            "batch_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["batch_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }

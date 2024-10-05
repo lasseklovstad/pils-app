@@ -1,6 +1,6 @@
 import { useFetcher } from "@remix-run/react";
 import { Ingredient } from "db/schema";
-import { Loader2, Plus, Save, X } from "lucide-react";
+import { Loader2, Plus, X } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
