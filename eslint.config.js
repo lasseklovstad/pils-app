@@ -4,6 +4,8 @@ import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
 import eslintConfigPrettier from "eslint-config-prettier";
 import eslintConfigPrettierRecommended from "eslint-plugin-prettier/recommended";
+import importPlugin from "eslint-plugin-import";
+import "eslint-import-resolver-typescript";
 
 /** @type {import('eslint').Linter.Config} */
 export default [
@@ -15,6 +17,10 @@ export default [
   },
   {
     settings: {
+      "import/resolver": {
+        typescript: true,
+        node: true,
+      },
       react: {
         createClass: "createReactClass", // Regex for Component Factory to use,
         // default to "createReactClass"
@@ -37,6 +43,7 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
+  importPlugin.flatConfigs.recommended,
   { rules: { "react/react-in-jsx-scope": "off", "react/prop-types": "off" } },
   eslintConfigPrettierRecommended,
   // Turn off rules that conflict with prettier
