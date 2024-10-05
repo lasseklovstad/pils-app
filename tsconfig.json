@@ -8,7 +8,7 @@
     "**/.client/**/*.tsx",
     ".eslintrc.cjs",
     "postcss.config.cjs",
-    "server.mjs",
+    "server.mjs"
   ],
   "exclude": ["node_modules"],
   "compilerOptions": {

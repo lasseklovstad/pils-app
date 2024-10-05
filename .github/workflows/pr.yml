@@ -1,0 +1,71 @@
+name: 'pr'
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!main'
+  workflow_dispatch:
+
+
+jobs:
+  lint:
+    name: ⬣ ESlint
+    runs-on: "ubuntu-latest"
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Download deps
+        uses: bahmutov/npm-install@v1
+
+      - name: Run linting checks
+        run: |
+          npm run lint:check
+  format:
+    name: 🎀 Prettier
+    runs-on: "ubuntu-latest"
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+  
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+  
+      - name: Download deps
+        uses: bahmutov/npm-install@v1
+  
+      - name: Run prettier checks
+        run: |
+          npm run format:check
+  typecheck:
+    name: ʦ TypeScript
+    runs-on: "ubuntu-latest"
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+  
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+  
+      - name: Download deps
+        uses: bahmutov/npm-install@v1
+  
+      - name: Run typescript checks
+        run: |
+          npm run typecheck
