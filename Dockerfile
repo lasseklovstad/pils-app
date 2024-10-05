@@ -35,6 +35,7 @@ COPY --from=build /app/build /app/build
 COPY --from=build /app/node_modules /app/node_modules
 COPY --from=build /app/package.json /app/package.json
 COPY --from=build /app/server.mjs /app/server.mjs
+COPY --from=build /app/migrations /app/migrations
 
 RUN mkdir /data
 # Start the server by default, this can be overwritten at runtime
