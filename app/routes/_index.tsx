@@ -1,5 +1,5 @@
 import { ActionFunctionArgs } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { Loader2, Plus } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 import { getBatches, postBatch } from "~/.server/data-layer/batches";
@@ -25,18 +25,22 @@ export default function Home() {
   const { batches } = useLoaderData<typeof loader>();
 
   return (
-    <main className="p-2">
-      <h1 className="text-6xl mb-4">🍺Pils</h1>
+    <main className="container mx-auto">
       <BatchForm />
       <h2 className="text-4xl">Brygg</h2>
       <ul className="divide-y">
         {batches.map((batch) => (
-          <li key={batch.id} className="p-2 flex flex-col">
-            <span>{batch.name}</span>
-            <span>
-              {batch.createdTimestamp.toLocaleDateString()}{" "}
-              {batch.createdTimestamp.toLocaleTimeString()}
-            </span>
+          <li key={batch.id}>
+            <Link
+              to={`/batch/${batch.id}`}
+              className="p-2 flex flex-col hover:bg-slate-50"
+            >
+              <span className="text-lg">{batch.name}</span>
+              <span className="text-sm text-muted-foreground">
+                {batch.createdTimestamp.toLocaleDateString()}{" "}
+                {batch.createdTimestamp.toLocaleTimeString()}
+              </span>
+            </Link>
           </li>
         ))}
       </ul>
