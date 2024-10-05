@@ -1,3 +1,3 @@
 export default function Home() {
-  return <>Hei pils ny!</>;
+  return <div className="bg-slate-400 text-lg">Hei pils ny!</div>;
 }
