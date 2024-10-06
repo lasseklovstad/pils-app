@@ -30,3 +30,14 @@ export const getControllerTemperatures = async (
     .limit(1000)
     .orderBy(desc(controllerTemperaturesTable.timestamp));
 };
+
+export const getLatestControllerTemperature = async (controllerId: number) => {
+  return (
+    await db
+      .select()
+      .from(controllerTemperaturesTable)
+      .where(eq(controllerTemperaturesTable.controllerId, controllerId))
+      .limit(1)
+      .orderBy(desc(controllerTemperaturesTable.timestamp))
+  )[0];
+};
