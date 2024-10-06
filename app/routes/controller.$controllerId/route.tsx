@@ -5,7 +5,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import { sub } from "date-fns";
-import { Check, Dot, RefreshCw, X } from "lucide-react";
+import { Check, RefreshCw, X } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import { getController } from "~/.server/data-layer/controllers";
