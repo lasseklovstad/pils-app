@@ -22,7 +22,9 @@ export const loader = async ({
     getBatch(batchId),
     getBatchIngredients(batchId),
   ]);
-  if (!batch) throw new Error("Fant ikke brygg med id " + batchId);
+  if (!batch) {
+    throw new Response("Fant ikke brygg med id " + batchId, { status: 404 });
+  }
   return { batch, batchIngredients };
 };
 

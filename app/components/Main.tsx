@@ -1,3 +1,9 @@
-export const Main = ({ children }: { children: React.ReactNode }) => (
-  <main className="container mx-auto">{children}</main>
-);
+import { cn } from "~/lib/utils";
+
+export const Main = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => <main className={cn("container mx-auto", className)}>{children}</main>;

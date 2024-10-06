@@ -1,6 +1,8 @@
 import { sql } from "drizzle-orm";
 import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core";
 
+const sqlTimestampNow = sql`(unixepoch())`;
+
 export const batchesTable = sqliteTable("batches", {
   id: integer("id").primaryKey(),
   name: text("name").notNull(),
@@ -13,7 +15,7 @@ export const batchesTable = sqliteTable("batches", {
     mode: "timestamp",
   })
     .notNull()
-    .default(sql`(unixepoch())`),
+    .default(sqlTimestampNow),
 });
 
 export type Batch = typeof batchesTable.$inferSelect;
@@ -30,3 +32,25 @@ export const ingredientsTable = sqliteTable("ingredients", {
 });
 
 export type Ingredient = typeof ingredientsTable.$inferSelect;
+
+export const controllersTable = sqliteTable("controllers", {
+  id: integer("id").primaryKey(),
+  hashedSecret: text("hashed_secret").notNull(),
+  name: text("name").notNull(),
+});
+
+export const controllerTemperaturesTable = sqliteTable(
+  "controller_temperatures",
+  {
+    id: integer("id").primaryKey(),
+    controllerId: integer("controller_id")
+      .notNull()
+      .references(() => controllersTable.id),
+    temperature: real("temperature").notNull(),
+    timestamp: integer("timestamp", {
+      mode: "timestamp",
+    })
+      .notNull()
+      .default(sqlTimestampNow),
+  },
+);

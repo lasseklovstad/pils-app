@@ -1,6 +1,7 @@
 import { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
   isRouteErrorResponse,
+  Link,
   Links,
   Meta,
   Outlet,
@@ -10,6 +11,8 @@ import {
 } from "@remix-run/react";
 
 import stylesheet from "~/tailwind.css?url";
+
+import { Button } from "./components/ui/button";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -29,12 +32,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <header className="container mx-auto">
+        <div className="container mx-auto mb-2 flex flex-col items-center justify-center pt-2 shadow">
           <a className="flex items-center gap-2" href="/">
             <img className="size-8" src="/favicon-32x32.png" alt="" />
             <h1 className="mb-4 text-6xl">Pils</h1>
           </a>
-        </header>
+          <nav className="flex gap-2 p-2">
+            <Button asChild variant="secondary">
+              <Link to="/">Brygging</Link>
+            </Button>
+            <Button asChild variant="secondary">
+              <Link to="/controller">Kontrollere</Link>
+            </Button>
+          </nav>
+        </div>
         {children}
         <ScrollRestoration />
         <Scripts />
