@@ -32,12 +32,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <div className="container mx-auto mb-2 flex flex-col items-center justify-center pt-2 shadow">
+        <div className="container mx-auto mb-2 flex flex-col items-center justify-center pt-4 shadow">
           <a className="flex items-center gap-2" href="/">
             <img className="size-8" src="/favicon-32x32.png" alt="" />
             <h1 className="mb-4 text-6xl">Pils</h1>
           </a>
-          <nav className="flex gap-2 p-2">
+          <nav className="flex gap-2 p-4">
             <Button asChild variant="secondary">
               <Link to="/">Brygging</Link>
             </Button>
