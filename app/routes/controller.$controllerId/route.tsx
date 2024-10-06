@@ -1,6 +1,12 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, useRevalidator } from "@remix-run/react";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import {
+  useLoaderData,
+  useRevalidator,
+  useSearchParams,
+} from "@remix-run/react";
+import { sub } from "date-fns";
+import { RefreshCw } from "lucide-react";
+import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import { getController } from "~/.server/data-layer/controllers";
 import { getControllerTemperatures } from "~/.server/data-layer/controllerTemperatures";
@@ -12,11 +18,25 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "~/components/ui/chart";
+import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
+import { cn } from "~/lib/utils";
 
-export const loader = async ({ params }: LoaderFunctionArgs) => {
+export const loader = async ({ params, request }: LoaderFunctionArgs) => {
+  const interval = new URL(request.url).searchParams.get("interval") ?? "1h";
+  const now = new Date();
+  const fromDate =
+    interval === "max"
+      ? new Date(0)
+      : sub(now, {
+          hours: interval === "1h" ? 1 : interval === "6h" ? 6 : 0,
+          days: interval === "1d" ? 1 : interval === "7d" ? 7 : 0,
+        });
   const controllerId = parseInt(params.controllerId!);
   const controller = await getController(controllerId);
-  const controllerTemperatures = await getControllerTemperatures(controllerId);
+  const controllerTemperatures = await getControllerTemperatures(
+    controllerId,
+    fromDate,
+  );
   if (!controller) {
     throw new Response(`Fant ingen kontroller med id ${params.controllerId}`, {
       status: 404,
@@ -34,18 +54,25 @@ const chartConfig = {
 export default function ControllerPage() {
   const { controller, controllerTemperatures } = useLoaderData<typeof loader>();
   const revalidator = useRevalidator();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const interval = searchParams.get("interval") ?? "1h";
   return (
     <Main className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
         <h2 className="text-4xl">{controller.name}</h2>
-        <Button onClick={revalidator.revalidate}>Refresh</Button>
+        <Button onClick={revalidator.revalidate}>
+          <RefreshCw
+            className={cn(revalidator.state !== "idle" && "animate-spin")}
+          />
+          Refresh
+        </Button>
       </div>
       <div>Identifikator: {controller.id}</div>
       <h3 className="text-2xl">
         Målinger ({controllerTemperatures[0]?.totalCount ?? 0})
       </h3>
       <ChartContainer config={chartConfig}>
-        <LineChart
+        <AreaChart
           accessibilityLayer
           data={controllerTemperatures
             .map((data) => ({
@@ -67,8 +94,7 @@ export default function ControllerPage() {
               })} ${date.toLocaleTimeString("nb", { hour: "2-digit", minute: "2-digit" })}`;
             }}
           />
-          <YAxis axisLine={false} tickLine={false} />
-          <Line
+          <Area
             dataKey="temperature"
             type="natural"
             stroke="black"
@@ -88,8 +114,29 @@ export default function ControllerPage() {
               />
             }
           />
-        </LineChart>
+        </AreaChart>
       </ChartContainer>
+      <ToggleGroup
+        type="single"
+        value={interval}
+        onValueChange={(value) => setSearchParams({ interval: value })}
+      >
+        <ToggleGroupItem value="1h" aria-label="Toggle 1h">
+          1h
+        </ToggleGroupItem>
+        <ToggleGroupItem value="6h" aria-label="Toggle 6h">
+          6h
+        </ToggleGroupItem>
+        <ToggleGroupItem value="1d" aria-label="Toggle 1 døgn">
+          1d
+        </ToggleGroupItem>
+        <ToggleGroupItem value="7d" aria-label="Toggle 7 døgn">
+          7d
+        </ToggleGroupItem>
+        <ToggleGroupItem value="max" aria-label="Toggle maks">
+          Maks
+        </ToggleGroupItem>
+      </ToggleGroup>
       <table>
         <thead>
           <tr>
