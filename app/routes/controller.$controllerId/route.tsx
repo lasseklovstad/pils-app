@@ -1,10 +1,17 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData, useRevalidator } from "@remix-run/react";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import { getController } from "~/.server/data-layer/controllers";
 import { getControllerTemperatures } from "~/.server/data-layer/controllerTemperatures";
 import { Main } from "~/components/Main";
 import { Button } from "~/components/ui/button";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "~/components/ui/chart";
 
 export const loader = async ({ params }: LoaderFunctionArgs) => {
   const controllerId = parseInt(params.controllerId!);
@@ -18,6 +25,12 @@ export const loader = async ({ params }: LoaderFunctionArgs) => {
   return { controller, controllerTemperatures };
 };
 
+const chartConfig = {
+  temperature: {
+    label: "Temperatur",
+  },
+} satisfies ChartConfig;
+
 export default function ControllerPage() {
   const { controller, controllerTemperatures } = useLoaderData<typeof loader>();
   const revalidator = useRevalidator();
@@ -28,7 +41,55 @@ export default function ControllerPage() {
         <Button onClick={revalidator.revalidate}>Refresh</Button>
       </div>
       <div>Identifikator: {controller.id}</div>
-      <h3 className="text-2xl">Målinger ({controllerTemperatures.length})</h3>
+      <h3 className="text-2xl">
+        Målinger ({controllerTemperatures[0]?.totalCount ?? 0})
+      </h3>
+      <ChartContainer config={chartConfig}>
+        <LineChart
+          accessibilityLayer
+          data={controllerTemperatures
+            .map((data) => ({
+              timestamp: data.timestamp,
+              temperature: data.temperature,
+            }))
+            .reverse()}
+        >
+          <CartesianGrid />
+          <XAxis
+            dataKey="timestamp"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+            tickFormatter={(date) => {
+              return `${date.toLocaleDateString("nb", {
+                month: "short",
+                day: "numeric",
+              })} ${date.toLocaleTimeString("nb", { hour: "2-digit", minute: "2-digit" })}`;
+            }}
+          />
+          <YAxis axisLine={false} tickLine={false} />
+          <Line
+            dataKey="temperature"
+            type="natural"
+            stroke="black"
+            strokeWidth={2}
+            dot={false}
+          />
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                labelFormatter={(label, [item]) => {
+                  const date = item.payload.timestamp;
+                  return `${label} ${date.toLocaleDateString("nb", {
+                    month: "short",
+                    day: "numeric",
+                  })} ${date.toLocaleTimeString("nb")}`;
+                }}
+              />
+            }
+          />
+        </LineChart>
+      </ChartContainer>
       <table>
         <thead>
           <tr>

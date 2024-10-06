@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { desc, eq, getTableColumns, sql } from "drizzle-orm";
 
 import { db } from "db/config.server";
 import { controllerTemperaturesTable } from "db/schema";
@@ -11,7 +11,12 @@ export const postControllerTemperature = async (
 
 export const getControllerTemperatures = async (controllerId: number) => {
   return await db
-    .select()
+    .select({
+      ...getTableColumns(controllerTemperaturesTable),
+      totalCount: sql<number>`COUNT(*) OVER()`,
+    })
     .from(controllerTemperaturesTable)
-    .where(eq(controllerTemperaturesTable.controllerId, controllerId));
+    .where(eq(controllerTemperaturesTable.controllerId, controllerId))
+    .limit(1000)
+    .orderBy(desc(controllerTemperaturesTable.timestamp));
 };
