@@ -5,11 +5,14 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import { sub } from "date-fns";
-import { RefreshCw } from "lucide-react";
+import { Check, RefreshCw, X } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import { getController } from "~/.server/data-layer/controllers";
-import { getControllerTemperatures } from "~/.server/data-layer/controllerTemperatures";
+import {
+  getControllerTemperatures,
+  getLatestControllerTemperature,
+} from "~/.server/data-layer/controllerTemperatures";
 import { Main } from "~/components/Main";
 import { Button } from "~/components/ui/button";
 import {
@@ -32,17 +35,18 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
           days: interval === "1d" ? 1 : interval === "7d" ? 7 : 0,
         });
   const controllerId = parseInt(params.controllerId!);
-  const controller = await getController(controllerId);
-  const controllerTemperatures = await getControllerTemperatures(
-    controllerId,
-    fromDate,
-  );
+  const [controller, controllerTemperatures, latestTemperature] =
+    await Promise.all([
+      getController(controllerId),
+      getControllerTemperatures(controllerId, fromDate),
+      getLatestControllerTemperature(controllerId),
+    ]);
   if (!controller) {
     throw new Response(`Fant ingen kontroller med id ${params.controllerId}`, {
       status: 404,
     });
   }
-  return { controller, controllerTemperatures };
+  return { controller, controllerTemperatures, latestTemperature };
 };
 
 const chartConfig = {
@@ -52,14 +56,26 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function ControllerPage() {
-  const { controller, controllerTemperatures } = useLoaderData<typeof loader>();
+  const { controller, controllerTemperatures, latestTemperature } =
+    useLoaderData<typeof loader>();
   const revalidator = useRevalidator();
   const [searchParams, setSearchParams] = useSearchParams();
   const interval = searchParams.get("interval") ?? "1h";
+  const isActive = latestTemperature
+    ? latestTemperature.timestamp.valueOf() >=
+      sub(new Date(), { minutes: 15 }).valueOf()
+    : false;
   return (
     <Main className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <h2 className="text-4xl">{controller.name}</h2>
+        <h2 className="flex items-center gap-2 text-4xl">
+          {controller.name}{" "}
+          {isActive ? (
+            <Check className="size-8 text-green-500" />
+          ) : (
+            <X className="size-8 text-red-500" />
+          )}
+        </h2>
         <Button onClick={revalidator.revalidate}>
           <RefreshCw
             className={cn(revalidator.state !== "idle" && "animate-spin")}
@@ -68,6 +84,15 @@ export default function ControllerPage() {
         </Button>
       </div>
       <div>Identifikator: {controller.id}</div>
+      <div>
+        Siste målingstidspunkt:{" "}
+        {latestTemperature.timestamp.toLocaleDateString("nb")}{" "}
+        {latestTemperature.timestamp.toLocaleTimeString("nb", {
+          hour: "2-digit",
+          minute: "2-digit",
+        })}{" "}
+      </div>
+      <div>Siste måling temperatur: {latestTemperature.temperature}°C</div>
       <h3 className="text-2xl">
         Målinger ({controllerTemperatures[0]?.totalCount ?? 0})
       </h3>
