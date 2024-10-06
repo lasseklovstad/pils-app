@@ -39,7 +39,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </a>
           <nav className="flex gap-2 p-2">
             <Button asChild variant="secondary">
-              <Link to="/">Batch</Link>
+              <Link to="/">Brygging</Link>
             </Button>
             <Button asChild variant="secondary">
               <Link to="/controller">Kontrollere</Link>

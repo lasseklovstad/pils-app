@@ -1,7 +1,6 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData, useRevalidator } from "@remix-run/react";
 
-import { controllerTemperaturesTable } from "db/schema";
 import { getController } from "~/.server/data-layer/controllers";
 import { getControllerTemperatures } from "~/.server/data-layer/controllerTemperatures";
 import { Main } from "~/components/Main";
