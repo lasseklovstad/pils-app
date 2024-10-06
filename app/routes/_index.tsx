@@ -27,7 +27,7 @@ export default function Home() {
   const { batches } = useLoaderData<typeof loader>();
 
   return (
-    <Main>
+    <Main className="flex flex-col gap-2">
       <BatchForm />
       <h2 className="text-4xl">Brygg</h2>
       <ul className="divide-y">
