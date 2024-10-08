@@ -11,6 +11,8 @@ import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { getController } from "~/.server/data-layer/controllers";
 import {
   getControllerTemperatures,
+  getControllerTemperaturesErrorTotalCount,
+  getControllerTemperaturesTotalCount,
   getLatestControllerTemperature,
 } from "~/.server/data-layer/controllerTemperatures";
 import { Main } from "~/components/Main";
@@ -35,18 +37,39 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
           days: interval === "1d" ? 1 : interval === "7d" ? 7 : 0,
         });
   const controllerId = parseInt(params.controllerId!);
-  const [controller, controllerTemperatures, latestTemperature] =
-    await Promise.all([
-      getController(controllerId),
-      getControllerTemperatures(controllerId, fromDate),
-      getLatestControllerTemperature(controllerId),
-    ]);
+  const [
+    controller,
+    controllerTemperatures,
+    latestTemperature,
+    { totalCount },
+    { totalCount: totalErrorCount },
+  ] = await Promise.all([
+    getController(controllerId),
+    getControllerTemperatures(
+      controllerId,
+      fromDate,
+      interval === "max" || interval === "7d"
+        ? "hours"
+        : interval === "6h" || interval === "1d"
+          ? "minutes"
+          : "timestamp",
+    ),
+    getLatestControllerTemperature(controllerId),
+    getControllerTemperaturesTotalCount(controllerId),
+    getControllerTemperaturesErrorTotalCount(controllerId, fromDate),
+  ]);
   if (!controller) {
     throw new Response(`Fant ingen kontroller med id ${params.controllerId}`, {
       status: 404,
     });
   }
-  return { controller, controllerTemperatures, latestTemperature };
+  return {
+    controller,
+    controllerTemperatures,
+    latestTemperature,
+    totalCount,
+    totalErrorCount,
+  };
 };
 
 const chartConfig = {
@@ -56,8 +79,13 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export default function ControllerPage() {
-  const { controller, controllerTemperatures, latestTemperature } =
-    useLoaderData<typeof loader>();
+  const {
+    controller,
+    controllerTemperatures,
+    latestTemperature,
+    totalErrorCount,
+    totalCount,
+  } = useLoaderData<typeof loader>();
   const revalidator = useRevalidator();
   const [searchParams, setSearchParams] = useSearchParams();
   const interval = searchParams.get("interval") ?? "1h";
@@ -93,16 +121,15 @@ export default function ControllerPage() {
         })}{" "}
       </div>
       <div>Siste måling temperatur: {latestTemperature.temperature}°C</div>
-      <h3 className="text-2xl">
-        Målinger ({controllerTemperatures[0]?.totalCount ?? 0})
-      </h3>
+      <div>Antall feilmålinger: {totalErrorCount}</div>
+      <h3 className="text-2xl">Målinger ({totalCount})</h3>
       <ChartContainer config={chartConfig}>
         <AreaChart
           accessibilityLayer
           data={controllerTemperatures
             .map((data) => ({
               timestamp: data.timestamp,
-              temperature: data.temperature,
+              temperature: data.avgTemp,
             }))
             .reverse()}
         >
@@ -144,7 +171,10 @@ export default function ControllerPage() {
       <ToggleGroup
         type="single"
         value={interval}
-        onValueChange={(value) => setSearchParams({ interval: value })}
+        onValueChange={(value) =>
+          value &&
+          setSearchParams({ interval: value }, { preventScrollReset: true })
+        }
       >
         <ToggleGroupItem value="1h" aria-label="Toggle 1h">
           1h
@@ -166,18 +196,28 @@ export default function ControllerPage() {
         <thead>
           <tr>
             <th className="border p-2 text-left font-semibold">Tidspunkt</th>
-            <th className="border p-2 text-left font-semibold">Temperatur</th>
+            <th className="border p-2 text-left font-semibold">
+              Avg. temperatur
+            </th>
+            <th className="border p-2 text-left font-semibold">
+              Min. temperatur
+            </th>
+            <th className="border p-2 text-left font-semibold">
+              Max. temperatur
+            </th>
           </tr>
         </thead>
         <tbody>
           {controllerTemperatures.map((temperature) => {
             return (
-              <tr key={temperature.id}>
+              <tr key={temperature.timestamp.valueOf()}>
                 <td className="border p-2">
                   {temperature.timestamp.toLocaleDateString("nb")}{" "}
                   {temperature.timestamp.toLocaleTimeString("nb")}
                 </td>
-                <td className="border p-2">{temperature.temperature}</td>
+                <td className="border p-2">{temperature.avgTemp}</td>
+                <td className="border p-2">{temperature.minTemp}</td>
+                <td className="border p-2">{temperature.maxTemp}</td>
               </tr>
             );
           })}
