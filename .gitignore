@@ -2,3 +2,5 @@ node_modules
 build
 .env
 sqlite.db
+sqlite.db-shm
+sqlite.db-wal
