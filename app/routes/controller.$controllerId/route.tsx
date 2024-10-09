@@ -1,14 +1,15 @@
-import { LoaderFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import {
   useLoaderData,
   useRevalidator,
   useSearchParams,
+  useSubmit,
 } from "@remix-run/react";
 import { sub } from "date-fns";
 import { Check, RefreshCw, X } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
-import { getController } from "~/.server/data-layer/controllers";
+import { getController, putController } from "~/.server/data-layer/controllers";
 import {
   getControllerTemperatures,
   getControllerTemperaturesErrorTotalCount,
@@ -23,6 +24,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "~/components/ui/chart";
+import { Switch } from "~/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { cn } from "~/lib/utils";
 
@@ -72,6 +74,16 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   };
 };
 
+export const action = async ({ request, params }: ActionFunctionArgs) => {
+  const controllerId = parseInt(params.controllerId!);
+  if (request.method === "PUT") {
+    const formData = await request.formData();
+    const isRelayOn = formData.get("checked") === "true";
+    await putController(controllerId, { isRelayOn });
+  }
+  return { ok: true };
+};
+
 const chartConfig = {
   temperature: {
     label: "Temperatur",
@@ -87,6 +99,7 @@ export default function ControllerPage() {
     totalCount,
   } = useLoaderData<typeof loader>();
   const revalidator = useRevalidator();
+  const submit = useSubmit();
   const [searchParams, setSearchParams] = useSearchParams();
   const interval = searchParams.get("interval") ?? "1h";
   const isActive = latestTemperature
@@ -122,6 +135,13 @@ export default function ControllerPage() {
       </div>
       <div>Siste måling temperatur: {latestTemperature.temperature}°C</div>
       <div>Antall feilmålinger: {totalErrorCount}</div>
+      <label className="flex items-center gap-1">
+        <Switch
+          checked={controller.isRelayOn}
+          onCheckedChange={(checked) => submit({ checked }, { method: "PUT" })}
+        />
+        Relay on
+      </label>
       <h3 className="text-2xl">Målinger ({totalCount})</h3>
       <ChartContainer config={chartConfig}>
         <AreaChart

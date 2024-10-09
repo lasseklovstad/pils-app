@@ -12,7 +12,11 @@ export const getControllers = async () => {
 export const getController = async (controllerId: number) => {
   return (
     await db
-      .select({ id: controllersTable.id, name: controllersTable.name })
+      .select({
+        id: controllersTable.id,
+        name: controllersTable.name,
+        isRelayOn: controllersTable.isRelayOn,
+      })
       .from(controllersTable)
       .where(eq(controllersTable.id, controllerId))
       .limit(1)
@@ -39,4 +43,14 @@ export const postController = async (
     .insert(controllersTable)
     .values(controller)
     .returning({ id: controllersTable.id });
+};
+
+export const putController = async (
+  controllerId: number,
+  controller: Pick<typeof controllersTable.$inferInsert, "isRelayOn">,
+) => {
+  return await db
+    .update(controllersTable)
+    .set(controller)
+    .where(eq(controllersTable.id, controllerId));
 };
