@@ -1,0 +1,1 @@
+ALTER TABLE `controllers` ADD `is_relay_on` integer DEFAULT false NOT NULL;

@@ -37,6 +37,9 @@ export const controllersTable = sqliteTable("controllers", {
   id: integer("id").primaryKey(),
   hashedSecret: text("hashed_secret").notNull(),
   name: text("name").notNull(),
+  isRelayOn: integer("is_relay_on", { mode: "boolean" })
+    .notNull()
+    .default(false),
 });
 
 export const controllerTemperaturesTable = sqliteTable(
