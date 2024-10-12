@@ -29,6 +29,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const controllerId = parseInt(params.controllerId!);
   await authorizeRequest(controllerId, request);
   const controller = await getController(controllerId);
+  if (!controller) throw new Response(null, { status: 404 });
   return new Response(controller.isRelayOn.toString(), { status: 200 });
 };
 

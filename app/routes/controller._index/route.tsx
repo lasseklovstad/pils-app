@@ -1,8 +1,6 @@
-import * as crypto from "node:crypto";
-
 import { ActionFunctionArgs } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
-import { Check, Copy, Loader2, Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 
 import {
@@ -13,6 +11,8 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Main } from "~/components/Main";
+import { createControllerSecret } from "~/lib/utils";
+import { ControllerSecretSuccessMessage } from "~/components/ControllerSecretSuccessMessage";
 
 export const loader = async () => {
   const controllers = await getControllers();
@@ -23,13 +23,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (request.method === "POST") {
     const formdata = await request.formData();
     const name = String(formdata.get("name"));
-    const secret = crypto.randomBytes(32).toString("hex");
-    const hashedSecret = crypto
-      .createHash("sha256")
-      .update(secret)
-      .digest("hex");
+    const { secret, hashedSecret } = createControllerSecret();
 
-    const [{ id }] = await postController({ name, hashedSecret });
+    const id = await postController({ name, hashedSecret });
     return { ok: true, controller: { secret, name, id } };
   }
   return { ok: true };
@@ -93,31 +89,7 @@ const ControllerForm = () => {
         </Button>
       </fetcher.Form>
       {fetcher.data?.ok && fetcher.data.controller ? (
-        <div className="flex flex-col gap-2 rounded border border-green-800 bg-green-100 p-2">
-          <div className="flex gap-2 font-semibold">
-            <Check /> Suksess
-          </div>
-          <div className="text-sm">
-            Ny kontroller med navn {fetcher.data.controller.name} opprettet.
-            Lagre koden under, den vises kun en gang.
-          </div>
-          <div className="break-all">
-            Kode: {fetcher.data.controller.secret}
-            <Button
-              type="button"
-              variant="secondary"
-              size="icon"
-              onClick={() => {
-                if (fetcher.data?.controller?.secret) {
-                  navigator.clipboard.writeText(fetcher.data.controller.secret);
-                }
-              }}
-            >
-              <Copy />
-            </Button>
-          </div>
-          <div>Id: {fetcher.data.controller.id}</div>
-        </div>
+        <ControllerSecretSuccessMessage controller={fetcher.data.controller} />
       ) : null}
     </div>
   );

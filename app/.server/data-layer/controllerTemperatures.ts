@@ -1,4 +1,4 @@
-import { and, desc, eq, gt, ne, sql } from "drizzle-orm";
+import { and, desc, eq, ne, sql } from "drizzle-orm";
 
 import { db } from "db/config.server";
 import { controllerTemperaturesTable } from "db/schema";
@@ -11,8 +11,7 @@ export const postControllerTemperature = async (
 
 export const getControllerTemperatures = async (
   controllerId: number,
-  from: Date,
-  groupBy: "minutes" | "hours" | "timestamp",
+  groupBy: string,
 ) => {
   const groupColumn =
     groupBy === "timestamp"
@@ -35,9 +34,9 @@ export const getControllerTemperatures = async (
         eq(controllerTemperaturesTable.controllerId, controllerId),
         ne(controllerTemperaturesTable.temperature, 85),
         ne(controllerTemperaturesTable.temperature, -127),
-        gt(controllerTemperaturesTable.timestamp, from),
       ),
     )
+    .limit(1000)
     .groupBy(groupColumn)
     .orderBy(desc(controllerTemperaturesTable.timestamp));
 };
@@ -46,36 +45,38 @@ export const getControllerTemperaturesTotalCount = async (
   controllerId: number,
 ) => {
   return (
-    await db
-      .select({
-        totalCount: sql<number>`COUNT(*) OVER()`,
-      })
-      .from(controllerTemperaturesTable)
-      .where(eq(controllerTemperaturesTable.controllerId, controllerId))
-      .limit(1)
-  )[0];
+    (
+      await db
+        .select({
+          totalCount: sql<number>`COUNT(*) OVER()`,
+        })
+        .from(controllerTemperaturesTable)
+        .where(eq(controllerTemperaturesTable.controllerId, controllerId))
+        .limit(1)
+    )[0]?.totalCount ?? 0
+  );
 };
 
 export const getControllerTemperaturesErrorTotalCount = async (
   controllerId: number,
-  from: Date,
 ) => {
   return (
-    await db
-      .select({
-        totalCount: sql<number>`COUNT(*)`,
-      })
-      .from(controllerTemperaturesTable)
-      .where(
-        and(
-          eq(controllerTemperaturesTable.controllerId, controllerId),
-          eq(controllerTemperaturesTable.temperature, 85),
-          eq(controllerTemperaturesTable.temperature, -127),
-          gt(controllerTemperaturesTable.timestamp, from),
-        ),
-      )
-      .limit(1)
-  )[0];
+    (
+      await db
+        .select({
+          totalCount: sql<number>`COUNT(*)`,
+        })
+        .from(controllerTemperaturesTable)
+        .where(
+          and(
+            eq(controllerTemperaturesTable.controllerId, controllerId),
+            eq(controllerTemperaturesTable.temperature, 85),
+            eq(controllerTemperaturesTable.temperature, -127),
+          ),
+        )
+        .limit(1)
+    )[0]?.totalCount ?? 0
+  );
 };
 
 export const getLatestControllerTemperature = async (controllerId: number) => {

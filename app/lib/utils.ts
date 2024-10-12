@@ -1,3 +1,5 @@
+import * as crypto from "node:crypto";
+
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -44,4 +46,11 @@ export function calculateWaterTemperature({
     waterMassGrams;
 
   return waterTemp;
+}
+
+export function createControllerSecret() {
+  const secret = crypto.randomBytes(32).toString("hex");
+  const hashedSecret = crypto.createHash("sha256").update(secret).digest("hex");
+
+  return { secret, hashedSecret };
 }
