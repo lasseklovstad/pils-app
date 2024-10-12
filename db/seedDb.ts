@@ -5,10 +5,13 @@ import { controllersTable, controllerTemperaturesTable } from "./schema";
 const secondsBetweenReadings = 6;
 const daysAgo = 8;
 export async function seedDb() {
-  const [{ id: controllerId }] = await db
+  const [controller] = await db
     .insert(controllersTable)
     .values({ hashedSecret: "123", name: "Test Controller1234" })
     .returning({ id: controllersTable.id });
+
+  if (!controller) throw new Error("Feil ved lagring av controller til DB");
+  const controllerId = controller.id;
   // Start date, 2 weeks ago
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - daysAgo);

@@ -1,8 +1,6 @@
-import * as crypto from "node:crypto";
-
 import { ActionFunctionArgs } from "@remix-run/node";
 import { Link, useFetcher, useLoaderData } from "@remix-run/react";
-import { Check, Copy, Loader2, Plus } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 
 import {
