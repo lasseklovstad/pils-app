@@ -1,10 +1,17 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, useSearchParams, useSubmit } from "@remix-run/react";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  redirect,
+} from "@remix-run/node";
+import { useLoaderData, useSubmit } from "@remix-run/react";
 import { sub } from "date-fns";
 import { Check, RefreshCw, X } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
-import { getController, putController } from "~/.server/data-layer/controllers";
+import {
+  deleteController,
+  getController,
+  putController,
+} from "~/.server/data-layer/controllers";
 import {
   getControllerTemperatures,
   getControllerTemperaturesErrorTotalCount,
@@ -13,18 +20,12 @@ import {
 } from "~/.server/data-layer/controllerTemperatures";
 import { Main } from "~/components/Main";
 import { Button } from "~/components/ui/button";
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "~/components/ui/chart";
 import { Switch } from "~/components/ui/switch";
-import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { useRevalidateOnFocus } from "~/lib/useRevalidateOnFocus";
-import { cn } from "~/lib/utils";
+import { cn, createControllerSecret } from "~/lib/utils";
 
 import { ControllerMenu } from "./ControllerMenu";
+import { TemperatureChart } from "./TemperatureChart";
 
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   const interval =
@@ -34,8 +35,8 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     controller,
     controllerTemperatures,
     latestTemperature,
-    { totalCount },
-    { totalCount: totalErrorCount },
+    totalCount,
+    totalErrorCount,
   ] = await Promise.all([
     getController(controllerId),
     getControllerTemperatures(controllerId, interval),
@@ -65,18 +66,21 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     const name = String(formData.get("name"));
     await putController(controllerId, { name });
   }
+  if (request.method === "PUT" && intent === "edit-secret") {
+    const { secret, hashedSecret } = createControllerSecret();
+    await putController(controllerId, { hashedSecret });
+    return { ok: true, secret };
+  }
+  if (request.method === "DELETE") {
+    await deleteController(controllerId);
+    return redirect("/controller");
+  }
   if (request.method === "PUT") {
     const isRelayOn = formData.get("checked") === "true";
     await putController(controllerId, { isRelayOn });
   }
   return { ok: true };
 };
-
-const chartConfig = {
-  temperature: {
-    label: "Temperatur",
-  },
-} satisfies ChartConfig;
 
 export default function ControllerPage() {
   const {
@@ -88,8 +92,7 @@ export default function ControllerPage() {
   } = useLoaderData<typeof loader>();
   const revalidator = useRevalidateOnFocus();
   const submit = useSubmit();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const interval = searchParams.get("interval") ?? "timestamp";
+
   const isActive = latestTemperature
     ? latestTemperature.timestamp.valueOf() >=
       sub(new Date(), { minutes: 15 }).valueOf()
@@ -114,15 +117,20 @@ export default function ControllerPage() {
         Refresh
       </Button>
       <div>Identifikator: {controller.id}</div>
-      <div>
-        Siste målingstidspunkt:{" "}
-        {latestTemperature.timestamp.toLocaleDateString("nb")}{" "}
-        {latestTemperature.timestamp.toLocaleTimeString("nb", {
-          hour: "2-digit",
-          minute: "2-digit",
-        })}{" "}
-      </div>
-      <div>Siste måling temperatur: {latestTemperature.temperature}°C</div>
+      {latestTemperature ? (
+        <>
+          <div>
+            Siste målingstidspunkt:{" "}
+            {latestTemperature.timestamp.toLocaleDateString("nb")}{" "}
+            {latestTemperature.timestamp.toLocaleTimeString("nb", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}{" "}
+          </div>
+          <div>Siste måling temperatur: {latestTemperature.temperature}°C</div>
+        </>
+      ) : null}
+
       <div>Antall feilmålinger: {totalErrorCount}</div>
       <label className="flex items-center gap-1">
         <Switch
@@ -131,101 +139,10 @@ export default function ControllerPage() {
         />
         Relay on
       </label>
-      <h3 className="text-2xl">Målinger ({totalCount})</h3>
-      <ChartContainer config={chartConfig}>
-        <AreaChart
-          accessibilityLayer
-          data={controllerTemperatures
-            .map((data) => ({
-              timestamp: data.timestamp,
-              temperature: data.avgTemp,
-            }))
-            .reverse()}
-        >
-          <CartesianGrid />
-          <XAxis
-            dataKey="timestamp"
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-            tickFormatter={(date) => {
-              return `${date.toLocaleDateString("nb", {
-                month: "short",
-                day: "numeric",
-              })} ${date.toLocaleTimeString("nb", { hour: "2-digit", minute: "2-digit" })}`;
-            }}
-          />
-          <Area
-            dataKey="temperature"
-            type="natural"
-            stroke="black"
-            strokeWidth={2}
-            dot={false}
-          />
-          <ChartTooltip
-            content={
-              <ChartTooltipContent
-                labelFormatter={(label, [item]) => {
-                  const date = item.payload.timestamp;
-                  return `${label} ${date.toLocaleDateString("nb", {
-                    month: "short",
-                    day: "numeric",
-                  })} ${date.toLocaleTimeString("nb")}`;
-                }}
-              />
-            }
-          />
-        </AreaChart>
-      </ChartContainer>
-      <ToggleGroup
-        type="single"
-        value={interval}
-        onValueChange={(value) =>
-          value &&
-          setSearchParams({ interval: value }, { preventScrollReset: true })
-        }
-      >
-        <ToggleGroupItem value="timestamp" aria-label="Toggle timestamp">
-          Timestamp
-        </ToggleGroupItem>
-        <ToggleGroupItem value="minutes" aria-label="Toggle minutes">
-          Minutes
-        </ToggleGroupItem>
-        <ToggleGroupItem value="hours" aria-label="Toggle hours">
-          Hours
-        </ToggleGroupItem>
-      </ToggleGroup>
-      <table>
-        <thead>
-          <tr>
-            <th className="border p-2 text-left font-semibold">Tidspunkt</th>
-            <th className="border p-2 text-left font-semibold">
-              Avg. temperatur
-            </th>
-            <th className="border p-2 text-left font-semibold">
-              Min. temperatur
-            </th>
-            <th className="border p-2 text-left font-semibold">
-              Max. temperatur
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {controllerTemperatures.map((temperature) => {
-            return (
-              <tr key={temperature.timestamp.valueOf()}>
-                <td className="border p-2">
-                  {temperature.timestamp.toLocaleDateString("nb")}{" "}
-                  {temperature.timestamp.toLocaleTimeString("nb")}
-                </td>
-                <td className="border p-2">{temperature.avgTemp}</td>
-                <td className="border p-2">{temperature.minTemp}</td>
-                <td className="border p-2">{temperature.maxTemp}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      <TemperatureChart
+        controllerTemperatures={controllerTemperatures}
+        totalCount={totalCount}
+      />
     </Main>
   );
 }

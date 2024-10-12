@@ -1,6 +1,7 @@
-import { useFetcher } from "@remix-run/react";
-import { Edit, Menu, Plus, Trash } from "lucide-react";
-import { useId } from "react";
+import { Form, useFetcher } from "@remix-run/react";
+import { Edit, Loader2, Menu, Plus, Save, Trash } from "lucide-react";
+import { useEffect, useId, useState } from "react";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -20,21 +21,34 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { ControllerSecretSuccessMessage } from "~/components/ControllerSecretSuccessMessage";
+
+import { action } from "./route";
 
 type Props = {
-  controller: { name: string };
+  controller: { name: string; id: number };
 };
 
 export const ControllerMenu = ({ controller }: Props) => {
   const nameInputId = useId();
-  const editNameFetcher = useFetcher();
+  const editNameFetcher = useFetcher<typeof action>();
+  const editSecretFetcher = useFetcher<typeof action>();
+  const [editNameDialogOpen, setEditNameDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (editNameFetcher.state === "idle" && editNameFetcher.data?.ok) {
+      setEditNameDialogOpen(false);
+    }
+  }, [editNameFetcher.state, editNameFetcher.data]);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
         <Menu className="size-6" />
+        <span className="sr-only">Åpne meny</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <Dialog>
+        <Dialog open={editNameDialogOpen} onOpenChange={setEditNameDialogOpen}>
           <DialogTrigger asChild>
             <DropdownMenuItem
               onSelect={(e) => e.preventDefault()}
@@ -60,6 +74,11 @@ export const ControllerMenu = ({ controller }: Props) => {
               />
               <DialogFooter>
                 <Button type="submit" name="intent" value="edit-name">
+                  {editNameFetcher.state !== "idle" ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    <Save />
+                  )}
                   Lagre
                 </Button>
               </DialogFooter>
@@ -80,6 +99,29 @@ export const ControllerMenu = ({ controller }: Props) => {
             <DialogHeader>
               <DialogTitle>Generer ny nøkkel</DialogTitle>
             </DialogHeader>
+            <Button
+              onClick={() =>
+                editSecretFetcher.submit(
+                  { intent: "edit-secret" },
+                  { method: "PUT" },
+                )
+              }
+            >
+              {editSecretFetcher.state !== "idle" ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <Plus />
+              )}
+              Generer ny nøkkel
+            </Button>
+            {editSecretFetcher.data?.ok && editSecretFetcher.data.secret ? (
+              <ControllerSecretSuccessMessage
+                controller={{
+                  ...controller,
+                  secret: editSecretFetcher.data.secret,
+                }}
+              />
+            ) : null}
           </DialogContent>
         </Dialog>
         <Dialog>
@@ -97,8 +139,14 @@ export const ControllerMenu = ({ controller }: Props) => {
               <DialogTitle>Slett</DialogTitle>
               <DialogDescription>Er du sikker?</DialogDescription>
               <DialogFooter>
-                <Button variant="ghost">Ja, slett</Button>
-                <Button>Avbryt</Button>
+                <Form method="DELETE">
+                  <Button variant="ghost" type="submit">
+                    Ja, slett
+                  </Button>
+                </Form>
+                <DialogClose asChild>
+                  <Button>Avbryt</Button>
+                </DialogClose>
               </DialogFooter>
             </DialogHeader>
           </DialogContent>

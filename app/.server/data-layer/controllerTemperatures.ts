@@ -45,34 +45,38 @@ export const getControllerTemperaturesTotalCount = async (
   controllerId: number,
 ) => {
   return (
-    await db
-      .select({
-        totalCount: sql<number>`COUNT(*) OVER()`,
-      })
-      .from(controllerTemperaturesTable)
-      .where(eq(controllerTemperaturesTable.controllerId, controllerId))
-      .limit(1)
-  )[0];
+    (
+      await db
+        .select({
+          totalCount: sql<number>`COUNT(*) OVER()`,
+        })
+        .from(controllerTemperaturesTable)
+        .where(eq(controllerTemperaturesTable.controllerId, controllerId))
+        .limit(1)
+    )[0]?.totalCount ?? 0
+  );
 };
 
 export const getControllerTemperaturesErrorTotalCount = async (
   controllerId: number,
 ) => {
   return (
-    await db
-      .select({
-        totalCount: sql<number>`COUNT(*)`,
-      })
-      .from(controllerTemperaturesTable)
-      .where(
-        and(
-          eq(controllerTemperaturesTable.controllerId, controllerId),
-          eq(controllerTemperaturesTable.temperature, 85),
-          eq(controllerTemperaturesTable.temperature, -127),
-        ),
-      )
-      .limit(1)
-  )[0];
+    (
+      await db
+        .select({
+          totalCount: sql<number>`COUNT(*)`,
+        })
+        .from(controllerTemperaturesTable)
+        .where(
+          and(
+            eq(controllerTemperaturesTable.controllerId, controllerId),
+            eq(controllerTemperaturesTable.temperature, 85),
+            eq(controllerTemperaturesTable.temperature, -127),
+          ),
+        )
+        .limit(1)
+    )[0]?.totalCount ?? 0
+  );
 };
 
 export const getLatestControllerTemperature = async (controllerId: number) => {

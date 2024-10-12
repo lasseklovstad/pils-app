@@ -39,20 +39,33 @@ export const getControllerWithHash = async (controllerId: number) => {
 export const postController = async (
   controller: typeof controllersTable.$inferInsert,
 ) => {
-  return await db
+  const [result] = await db
     .insert(controllersTable)
     .values(controller)
     .returning({ id: controllersTable.id });
+  if (!result) {
+    throw new Error("Could not create controller i DB");
+  }
+  return result.id;
 };
 
 export const putController = async (
   controllerId: number,
   controller: Partial<
-    Pick<typeof controllersTable.$inferInsert, "isRelayOn" | "name">
+    Pick<
+      typeof controllersTable.$inferInsert,
+      "isRelayOn" | "name" | "hashedSecret"
+    >
   >,
 ) => {
   return await db
     .update(controllersTable)
     .set(controller)
+    .where(eq(controllersTable.id, controllerId));
+};
+
+export const deleteController = async (controllerId: number) => {
+  return await db
+    .delete(controllersTable)
     .where(eq(controllersTable.id, controllerId));
 };
