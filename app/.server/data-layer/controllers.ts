@@ -47,7 +47,9 @@ export const postController = async (
 
 export const putController = async (
   controllerId: number,
-  controller: Pick<typeof controllersTable.$inferInsert, "isRelayOn">,
+  controller: Partial<
+    Pick<typeof controllersTable.$inferInsert, "isRelayOn" | "name">
+  >,
 ) => {
   return await db
     .update(controllersTable)

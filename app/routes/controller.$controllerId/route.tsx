@@ -1,10 +1,5 @@
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import {
-  useLoaderData,
-  useRevalidator,
-  useSearchParams,
-  useSubmit,
-} from "@remix-run/react";
+import { useLoaderData, useSearchParams, useSubmit } from "@remix-run/react";
 import { sub } from "date-fns";
 import { Check, RefreshCw, X } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
@@ -26,18 +21,14 @@ import {
 } from "~/components/ui/chart";
 import { Switch } from "~/components/ui/switch";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
+import { useRevalidateOnFocus } from "~/lib/useRevalidateOnFocus";
 import { cn } from "~/lib/utils";
 
+import { ControllerMenu } from "./ControllerMenu";
+
 export const loader = async ({ params, request }: LoaderFunctionArgs) => {
-  const interval = new URL(request.url).searchParams.get("interval") ?? "1h";
-  const now = new Date();
-  const fromDate =
-    interval === "max"
-      ? new Date(0)
-      : sub(now, {
-          hours: interval === "1h" ? 1 : interval === "6h" ? 6 : 0,
-          days: interval === "1d" ? 1 : interval === "7d" ? 7 : 0,
-        });
+  const interval =
+    new URL(request.url).searchParams.get("interval") ?? "timestamp";
   const controllerId = parseInt(params.controllerId!);
   const [
     controller,
@@ -47,18 +38,10 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
     { totalCount: totalErrorCount },
   ] = await Promise.all([
     getController(controllerId),
-    getControllerTemperatures(
-      controllerId,
-      fromDate,
-      interval === "max" || interval === "7d"
-        ? "hours"
-        : interval === "6h" || interval === "1d"
-          ? "minutes"
-          : "timestamp",
-    ),
+    getControllerTemperatures(controllerId, interval),
     getLatestControllerTemperature(controllerId),
     getControllerTemperaturesTotalCount(controllerId),
-    getControllerTemperaturesErrorTotalCount(controllerId, fromDate),
+    getControllerTemperaturesErrorTotalCount(controllerId),
   ]);
   if (!controller) {
     throw new Response(`Fant ingen kontroller med id ${params.controllerId}`, {
@@ -76,8 +59,13 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   const controllerId = parseInt(params.controllerId!);
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+  if (request.method === "PUT" && intent === "edit-name") {
+    const name = String(formData.get("name"));
+    await putController(controllerId, { name });
+  }
   if (request.method === "PUT") {
-    const formData = await request.formData();
     const isRelayOn = formData.get("checked") === "true";
     await putController(controllerId, { isRelayOn });
   }
@@ -98,17 +86,17 @@ export default function ControllerPage() {
     totalErrorCount,
     totalCount,
   } = useLoaderData<typeof loader>();
-  const revalidator = useRevalidator();
+  const revalidator = useRevalidateOnFocus();
   const submit = useSubmit();
   const [searchParams, setSearchParams] = useSearchParams();
-  const interval = searchParams.get("interval") ?? "1h";
+  const interval = searchParams.get("interval") ?? "timestamp";
   const isActive = latestTemperature
     ? latestTemperature.timestamp.valueOf() >=
       sub(new Date(), { minutes: 15 }).valueOf()
     : false;
   return (
-    <Main className="flex flex-col gap-2">
-      <div className="flex items-center justify-between">
+    <Main className="flex flex-col items-start gap-2">
+      <div className="flex w-full items-center justify-between">
         <h2 className="flex items-center gap-2 text-4xl">
           {controller.name}{" "}
           {isActive ? (
@@ -117,13 +105,14 @@ export default function ControllerPage() {
             <X className="size-8 text-red-500" />
           )}
         </h2>
-        <Button onClick={revalidator.revalidate}>
-          <RefreshCw
-            className={cn(revalidator.state !== "idle" && "animate-spin")}
-          />
-          Refresh
-        </Button>
+        <ControllerMenu controller={controller} />
       </div>
+      <Button onClick={revalidator.revalidate}>
+        <RefreshCw
+          className={cn(revalidator.state !== "idle" && "animate-spin")}
+        />
+        Refresh
+      </Button>
       <div>Identifikator: {controller.id}</div>
       <div>
         Siste målingstidspunkt:{" "}
@@ -196,20 +185,14 @@ export default function ControllerPage() {
           setSearchParams({ interval: value }, { preventScrollReset: true })
         }
       >
-        <ToggleGroupItem value="1h" aria-label="Toggle 1h">
-          1h
+        <ToggleGroupItem value="timestamp" aria-label="Toggle timestamp">
+          Timestamp
         </ToggleGroupItem>
-        <ToggleGroupItem value="6h" aria-label="Toggle 6h">
-          6h
+        <ToggleGroupItem value="minutes" aria-label="Toggle minutes">
+          Minutes
         </ToggleGroupItem>
-        <ToggleGroupItem value="1d" aria-label="Toggle 1 døgn">
-          1d
-        </ToggleGroupItem>
-        <ToggleGroupItem value="7d" aria-label="Toggle 7 døgn">
-          7d
-        </ToggleGroupItem>
-        <ToggleGroupItem value="max" aria-label="Toggle maks">
-          Maks
+        <ToggleGroupItem value="hours" aria-label="Toggle hours">
+          Hours
         </ToggleGroupItem>
       </ToggleGroup>
       <table>

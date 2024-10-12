@@ -11,8 +11,7 @@ export const postControllerTemperature = async (
 
 export const getControllerTemperatures = async (
   controllerId: number,
-  from: Date,
-  groupBy: "minutes" | "hours" | "timestamp",
+  groupBy: string,
 ) => {
   const groupColumn =
     groupBy === "timestamp"
@@ -35,9 +34,9 @@ export const getControllerTemperatures = async (
         eq(controllerTemperaturesTable.controllerId, controllerId),
         ne(controllerTemperaturesTable.temperature, 85),
         ne(controllerTemperaturesTable.temperature, -127),
-        gt(controllerTemperaturesTable.timestamp, from),
       ),
     )
+    .limit(1000)
     .groupBy(groupColumn)
     .orderBy(desc(controllerTemperaturesTable.timestamp));
 };
@@ -58,7 +57,6 @@ export const getControllerTemperaturesTotalCount = async (
 
 export const getControllerTemperaturesErrorTotalCount = async (
   controllerId: number,
-  from: Date,
 ) => {
   return (
     await db
@@ -71,7 +69,6 @@ export const getControllerTemperaturesErrorTotalCount = async (
           eq(controllerTemperaturesTable.controllerId, controllerId),
           eq(controllerTemperaturesTable.temperature, 85),
           eq(controllerTemperaturesTable.temperature, -127),
-          gt(controllerTemperaturesTable.timestamp, from),
         ),
       )
       .limit(1)
