@@ -2,6 +2,7 @@ import { createRequestHandler } from "@remix-run/express";
 import compression from "compression";
 import express from "express";
 import morgan from "morgan";
+import { rateLimit } from "express-rate-limit";
 
 const viteDevServer =
   process.env.NODE_ENV === "production"
@@ -42,6 +43,16 @@ if (viteDevServer) {
 app.use(express.static("build/client", { maxAge: "1h" }));
 
 app.use(morgan("tiny"));
+
+// Rate limit
+const limiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minutes
+  limit: 60 * 8, // 8 requests per/second or 480 requests per minute
+  standardHeaders: false, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+app.use("/api", limiter);
 
 // handle SSR requests
 app.all("*", remixHandler);

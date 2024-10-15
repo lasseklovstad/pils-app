@@ -50,7 +50,36 @@ export function calculateWaterTemperature({
 
 export function createControllerSecret() {
   const secret = crypto.randomBytes(32).toString("hex");
-  const hashedSecret = crypto.createHash("sha256").update(secret).digest("hex");
+  return secret;
+}
 
-  return { secret, hashedSecret };
+export function encryptSecret(secret: string, encryptionKeyHex: string) {
+  const encryptionKey = Buffer.from(encryptionKeyHex, "hex");
+  // Initialization vector (IV) - can be random but must be saved with the encrypted secret
+  const iv = crypto.randomBytes(16); // AES uses a 16-byte IV
+
+  // Encrypt the secret using AES-256-CBC
+  const cipher = crypto.createCipheriv("aes-256-cbc", encryptionKey, iv);
+  let encrypted = cipher.update(secret, "utf8", "hex");
+  encrypted += cipher.final("hex");
+
+  // Store the IV and the encrypted secret in the database (you need both)
+  return iv.toString("hex") + ":" + encrypted;
+}
+
+export function decryptSecret(storedSecret: string, encryptionKeyHex: string) {
+  const encryptionKey = Buffer.from(encryptionKeyHex, "hex");
+  // Split the storedSecret to get the IV and the encrypted data
+  const parts = storedSecret.split(":");
+  if (!parts[0] || !parts[1]) {
+    throw new Error("Encrypted key has wrong format");
+  }
+  const iv = Buffer.from(parts[0], "hex");
+  const encryptedSecret = parts[1];
+
+  // Decrypt the secret using AES-256-CBC
+  const decipher = crypto.createDecipheriv("aes-256-cbc", encryptionKey, iv);
+  let decrypted = decipher.update(encryptedSecret, "hex", "utf8");
+  decrypted += decipher.final("utf8");
+  return decrypted;
 }

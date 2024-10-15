@@ -19,7 +19,8 @@
     "db:up": "drizzle-kit up",
     "db:drop": "drizzle-kit drop",
     "db:studio": "drizzle-kit studio",
-    "seed": "tsx ./db/seedDb.ts"
+    "seed": "tsx ./db/seedDb.ts",
+    "generate-encryption-key": "tsx generate-encryption-key.ts"
   },
   "author": "",
   "license": "ISC",
@@ -70,6 +71,7 @@
     "date-fns": "^4.1.0",
     "drizzle-orm": "^0.33.0",
     "express": "^4.21.0",
+    "express-rate-limit": "^7.4.1",
     "isbot": "^5.1.6",
     "lucide-react": "^0.447.0",
     "morgan": "^1.10.0",

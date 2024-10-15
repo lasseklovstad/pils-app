@@ -1,12 +1,12 @@
 import { and, desc, eq, ne, sql } from "drizzle-orm";
 
 import { db } from "db/config.server";
-import { controllerTemperaturesTable } from "db/schema";
+import { controllerTemperatures } from "db/schema";
 
 export const postControllerTemperature = async (
-  controllerTemperature: typeof controllerTemperaturesTable.$inferInsert,
+  controllerTemperature: typeof controllerTemperatures.$inferInsert,
 ) => {
-  await db.insert(controllerTemperaturesTable).values(controllerTemperature);
+  await db.insert(controllerTemperatures).values(controllerTemperature);
 };
 
 export const getControllerTemperatures = async (
@@ -15,30 +15,30 @@ export const getControllerTemperatures = async (
 ) => {
   const groupColumn =
     groupBy === "timestamp"
-      ? controllerTemperaturesTable.timestamp
-      : sql<number>`${controllerTemperaturesTable.timestamp}/(${(groupBy === "hours" ? 60 * 60 : 60).toString()})`;
+      ? controllerTemperatures.timestamp
+      : sql<number>`${controllerTemperatures.timestamp}/(${(groupBy === "hours" ? 60 * 60 : 60).toString()})`;
   return await db
     .select({
-      avgTemp: sql<number>`avg(${controllerTemperaturesTable.temperature})`,
-      minTemp: sql<number>`min(${controllerTemperaturesTable.temperature})`,
-      maxTemp: sql<number>`max(${controllerTemperaturesTable.temperature})`,
+      avgTemp: sql<number>`avg(${controllerTemperatures.temperature})`,
+      minTemp: sql<number>`min(${controllerTemperatures.temperature})`,
+      maxTemp: sql<number>`max(${controllerTemperatures.temperature})`,
       count: sql<number>`COUNT(*)`,
-      timestamp: sql`min(${controllerTemperaturesTable.timestamp})`.mapWith(
-        controllerTemperaturesTable.timestamp,
+      timestamp: sql`min(${controllerTemperatures.timestamp})`.mapWith(
+        controllerTemperatures.timestamp,
       ),
       groupColumn,
     })
-    .from(controllerTemperaturesTable)
+    .from(controllerTemperatures)
     .where(
       and(
-        eq(controllerTemperaturesTable.controllerId, controllerId),
-        ne(controllerTemperaturesTable.temperature, 85),
-        ne(controllerTemperaturesTable.temperature, -127),
+        eq(controllerTemperatures.controllerId, controllerId),
+        ne(controllerTemperatures.temperature, 85),
+        ne(controllerTemperatures.temperature, -127),
       ),
     )
     .limit(1000)
     .groupBy(groupColumn)
-    .orderBy(desc(controllerTemperaturesTable.timestamp));
+    .orderBy(desc(controllerTemperatures.timestamp));
 };
 
 export const getControllerTemperaturesTotalCount = async (
@@ -50,8 +50,8 @@ export const getControllerTemperaturesTotalCount = async (
         .select({
           totalCount: sql<number>`COUNT(*) OVER()`,
         })
-        .from(controllerTemperaturesTable)
-        .where(eq(controllerTemperaturesTable.controllerId, controllerId))
+        .from(controllerTemperatures)
+        .where(eq(controllerTemperatures.controllerId, controllerId))
         .limit(1)
     )[0]?.totalCount ?? 0
   );
@@ -66,12 +66,12 @@ export const getControllerTemperaturesErrorTotalCount = async (
         .select({
           totalCount: sql<number>`COUNT(*)`,
         })
-        .from(controllerTemperaturesTable)
+        .from(controllerTemperatures)
         .where(
           and(
-            eq(controllerTemperaturesTable.controllerId, controllerId),
-            eq(controllerTemperaturesTable.temperature, 85),
-            eq(controllerTemperaturesTable.temperature, -127),
+            eq(controllerTemperatures.controllerId, controllerId),
+            eq(controllerTemperatures.temperature, 85),
+            eq(controllerTemperatures.temperature, -127),
           ),
         )
         .limit(1)
@@ -83,9 +83,9 @@ export const getLatestControllerTemperature = async (controllerId: number) => {
   return (
     await db
       .select()
-      .from(controllerTemperaturesTable)
-      .where(eq(controllerTemperaturesTable.controllerId, controllerId))
+      .from(controllerTemperatures)
+      .where(eq(controllerTemperatures.controllerId, controllerId))
       .limit(1)
-      .orderBy(desc(controllerTemperaturesTable.timestamp))
+      .orderBy(desc(controllerTemperatures.timestamp))
   )[0];
 };

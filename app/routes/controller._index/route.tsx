@@ -11,8 +11,9 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Main } from "~/components/Main";
-import { createControllerSecret } from "~/lib/utils";
+import { createControllerSecret, encryptSecret } from "~/lib/utils";
 import { ControllerSecretSuccessMessage } from "~/components/ControllerSecretSuccessMessage";
+import { insertVerification } from "~/.server/data-layer/verifications";
 
 export const loader = async () => {
   const controllers = await getControllers();
@@ -23,9 +24,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (request.method === "POST") {
     const formdata = await request.formData();
     const name = String(formdata.get("name"));
-    const { secret, hashedSecret } = createControllerSecret();
+    const secret = createControllerSecret();
 
-    const id = await postController({ name, hashedSecret });
+    const id = await postController({ name });
+    await insertVerification({
+      secret: encryptSecret(secret, process.env.ENCRYPTION_KEY!),
+      target: id.toString(),
+      type: "controller",
+    });
     return { ok: true, controller: { secret, name, id } };
   }
   return { ok: true };
