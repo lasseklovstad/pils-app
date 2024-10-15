@@ -11,7 +11,7 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Main } from "~/components/Main";
-import { createControllerSecret } from "~/lib/utils";
+import { createControllerSecret, encryptSecret } from "~/lib/utils";
 import { ControllerSecretSuccessMessage } from "~/components/ControllerSecretSuccessMessage";
 import { insertVerification } from "~/.server/data-layer/verifications";
 
@@ -28,7 +28,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
     const id = await postController({ name });
     await insertVerification({
-      secret,
+      secret: encryptSecret(secret, process.env.ENCRYPTION_KEY!),
       target: id.toString(),
       type: "controller",
     });

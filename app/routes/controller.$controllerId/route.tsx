@@ -22,7 +22,7 @@ import { Main } from "~/components/Main";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { useRevalidateOnFocus } from "~/lib/useRevalidateOnFocus";
-import { cn, createControllerSecret } from "~/lib/utils";
+import { cn, createControllerSecret, encryptSecret } from "~/lib/utils";
 import { insertVerification } from "~/.server/data-layer/verifications";
 
 import { ControllerMenu } from "./ControllerMenu";
@@ -70,7 +70,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   if (request.method === "PUT" && intent === "edit-secret") {
     const secret = createControllerSecret();
     await insertVerification({
-      secret,
+      secret: encryptSecret(secret, process.env.ENCRYPTION_KEY!),
       target: controllerId.toString(),
       type: "controller",
     });

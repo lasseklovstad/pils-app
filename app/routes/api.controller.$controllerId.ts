@@ -5,6 +5,7 @@ import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 import { getController } from "~/.server/data-layer/controllers";
 import { postControllerTemperature } from "~/.server/data-layer/controllerTemperatures";
 import { getControllerVerification } from "~/.server/data-layer/verifications";
+import { decryptSecret } from "~/lib/utils";
 
 const authorizeRequest = async (controllerId: string, request: Request) => {
   const hmac = request.headers.get("HMAC");
@@ -20,8 +21,12 @@ const authorizeRequest = async (controllerId: string, request: Request) => {
       status: 404,
     });
   }
+  const secret = decryptSecret(
+    verification.secret,
+    process.env.ENCRYPTION_KEY!,
+  );
   const serverHmac = crypto
-    .createHmac("sha256", verification.secret)
+    .createHmac("sha256", secret)
     .update(timestamp + nonce)
     .digest("hex");
   if (serverHmac !== hmac) {
