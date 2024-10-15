@@ -7,7 +7,7 @@ const daysAgo = 8;
 export async function seedDb() {
   const [controller] = await db
     .insert(controllers)
-    .values({ hashedSecret: "123", name: "Test Controller1234" })
+    .values({ name: "Test Controller1234" })
     .returning({ id: controllers.id });
 
   if (!controller) throw new Error("Feil ved lagring av controller til DB");

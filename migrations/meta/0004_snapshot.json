@@ -111,12 +111,8 @@
           "name": "controller_temperatures_controller_id_controllers_id_fk",
           "tableFrom": "controller_temperatures",
           "tableTo": "controllers",
-          "columnsFrom": [
-            "controller_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["controller_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -207,12 +203,8 @@
           "name": "ingredients_batch_id_batches_id_fk",
           "tableFrom": "ingredients",
           "tableTo": "batches",
-          "columnsFrom": [
-            "batch_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["batch_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -263,10 +255,7 @@
       "indexes": {
         "verifications_type_target_unique": {
           "name": "verifications_type_target_unique",
-          "columns": [
-            "type",
-            "target"
-          ],
+          "columns": ["type", "target"],
           "isUnique": true
         }
       },
