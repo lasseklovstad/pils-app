@@ -2,32 +2,43 @@ import * as crypto from "node:crypto";
 
 import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
 
-import {
-  getController,
-  getControllerWithHash,
-} from "~/.server/data-layer/controllers";
+import { getController } from "~/.server/data-layer/controllers";
 import { postControllerTemperature } from "~/.server/data-layer/controllerTemperatures";
+import { getControllerVerification } from "~/.server/data-layer/verifications";
 
-const authorizeRequest = async (controllerId: number, request: Request) => {
-  const secret = request.headers.get("API-X");
-  if (!secret) {
-    throw new Response("No API-X header provided.", { status: 401 });
+const authorizeRequest = async (controllerId: string, request: Request) => {
+  const hmac = request.headers.get("HMAC");
+  const timestamp = request.headers.get("Timestamp");
+  const nonce = request.headers.get("Nonce");
+
+  if (!hmac || !timestamp || !nonce) {
+    throw new Response("Incorrect headers provided.", { status: 401 });
   }
-  const controller = await getControllerWithHash(controllerId);
-  if (!controller) {
+  const verification = await getControllerVerification(controllerId);
+  if (!verification) {
     throw new Response("Could not find controller with id " + controllerId, {
       status: 404,
     });
   }
-  const hashedSecret = crypto.createHash("sha256").update(secret).digest("hex");
-  if (hashedSecret !== controller.hashedSecret) {
+  const serverHmac = crypto
+    .createHmac("sha256", verification.secret)
+    .update(timestamp + nonce)
+    .digest("hex");
+  if (serverHmac !== hmac) {
     throw new Response("Unauthorized", { status: 401 });
+  }
+  // Verify timestamp
+  const currentTimestamp = Math.floor(Date.now() / 1000);
+  const timeDifference = currentTimestamp - parseInt(timestamp);
+
+  if (timeDifference > 60 || timeDifference < -60) {
+    throw new Response("Unauthorized, invalid timestamp", { status: 401 });
   }
 };
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   const controllerId = parseInt(params.controllerId!);
-  await authorizeRequest(controllerId, request);
+  await authorizeRequest(params.controllerId! ?? "-1", request);
   const controller = await getController(controllerId);
   if (!controller) throw new Response(null, { status: 404 });
   return new Response(controller.isRelayOn.toString(), { status: 200 });
@@ -35,7 +46,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   const controllerId = parseInt(params.controllerId!);
-  await authorizeRequest(controllerId, request);
+  await authorizeRequest(params.controllerId! ?? "-1", request);
   if (request.method === "POST") {
     const text = await request.text();
     const temperature = parseFloat(text);

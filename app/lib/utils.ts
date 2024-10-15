@@ -50,7 +50,5 @@ export function calculateWaterTemperature({
 
 export function createControllerSecret() {
   const secret = crypto.randomBytes(32).toString("hex");
-  const hashedSecret = crypto.createHash("sha256").update(secret).digest("hex");
-
-  return { secret, hashedSecret };
+  return secret;
 }

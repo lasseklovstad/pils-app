@@ -1,14 +1,14 @@
 import "dotenv/config";
 import { db } from "./config.server";
-import { controllersTable, controllerTemperaturesTable } from "./schema";
+import { controllers, controllerTemperatures } from "./schema";
 
 const secondsBetweenReadings = 6;
 const daysAgo = 8;
 export async function seedDb() {
   const [controller] = await db
-    .insert(controllersTable)
+    .insert(controllers)
     .values({ hashedSecret: "123", name: "Test Controller1234" })
-    .returning({ id: controllersTable.id });
+    .returning({ id: controllers.id });
 
   if (!controller) throw new Error("Feil ved lagring av controller til DB");
   const controllerId = controller.id;
@@ -23,7 +23,7 @@ export async function seedDb() {
   for (let i = 0; i < totalReadings; i++) {
     const temperature = generateRealisticOutdoorTemperature(currentDate);
 
-    await db.insert(controllerTemperaturesTable).values({
+    await db.insert(controllerTemperatures).values({
       controllerId,
       temperature,
       timestamp: new Date(currentDate),

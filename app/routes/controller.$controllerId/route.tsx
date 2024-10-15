@@ -23,6 +23,7 @@ import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { useRevalidateOnFocus } from "~/lib/useRevalidateOnFocus";
 import { cn, createControllerSecret } from "~/lib/utils";
+import { insertVerification } from "~/.server/data-layer/verifications";
 
 import { ControllerMenu } from "./ControllerMenu";
 import { TemperatureChart } from "./TemperatureChart";
@@ -67,8 +68,12 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     await putController(controllerId, { name });
   }
   if (request.method === "PUT" && intent === "edit-secret") {
-    const { secret, hashedSecret } = createControllerSecret();
-    await putController(controllerId, { hashedSecret });
+    const secret = createControllerSecret();
+    await insertVerification({
+      secret,
+      target: controllerId.toString(),
+      type: "controller",
+    });
     return { ok: true, secret };
   }
   if (request.method === "DELETE") {

@@ -1,48 +1,35 @@
 import { eq } from "drizzle-orm";
 
 import { db } from "db/config.server";
-import { controllersTable } from "db/schema";
+import { controllers } from "db/schema";
 
 export const getControllers = async () => {
   return await db
-    .select({ id: controllersTable.id, name: controllersTable.name })
-    .from(controllersTable);
+    .select({ id: controllers.id, name: controllers.name })
+    .from(controllers);
 };
 
 export const getController = async (controllerId: number) => {
   return (
     await db
       .select({
-        id: controllersTable.id,
-        name: controllersTable.name,
-        isRelayOn: controllersTable.isRelayOn,
+        id: controllers.id,
+        name: controllers.name,
+        isRelayOn: controllers.isRelayOn,
       })
-      .from(controllersTable)
-      .where(eq(controllersTable.id, controllerId))
-      .limit(1)
-  )[0];
-};
-
-export const getControllerWithHash = async (controllerId: number) => {
-  return (
-    await db
-      .select({
-        id: controllersTable.id,
-        hashedSecret: controllersTable.hashedSecret,
-      })
-      .from(controllersTable)
-      .where(eq(controllersTable.id, controllerId))
+      .from(controllers)
+      .where(eq(controllers.id, controllerId))
       .limit(1)
   )[0];
 };
 
 export const postController = async (
-  controller: typeof controllersTable.$inferInsert,
+  controller: typeof controllers.$inferInsert,
 ) => {
   const [result] = await db
-    .insert(controllersTable)
+    .insert(controllers)
     .values(controller)
-    .returning({ id: controllersTable.id });
+    .returning({ id: controllers.id });
   if (!result) {
     throw new Error("Could not create controller i DB");
   }
@@ -52,20 +39,15 @@ export const postController = async (
 export const putController = async (
   controllerId: number,
   controller: Partial<
-    Pick<
-      typeof controllersTable.$inferInsert,
-      "isRelayOn" | "name" | "hashedSecret"
-    >
+    Pick<typeof controllers.$inferInsert, "isRelayOn" | "name">
   >,
 ) => {
   return await db
-    .update(controllersTable)
+    .update(controllers)
     .set(controller)
-    .where(eq(controllersTable.id, controllerId));
+    .where(eq(controllers.id, controllerId));
 };
 
 export const deleteController = async (controllerId: number) => {
-  return await db
-    .delete(controllersTable)
-    .where(eq(controllersTable.id, controllerId));
+  return await db.delete(controllers).where(eq(controllers.id, controllerId));
 };

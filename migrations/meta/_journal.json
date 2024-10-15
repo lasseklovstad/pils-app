@@ -29,6 +29,13 @@
       "when": 1728501053716,
       "tag": "0003_dusty_namor",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1729012172323,
+      "tag": "0004_narrow_mysterio",
+      "breakpoints": true
     }
   ]
 }
