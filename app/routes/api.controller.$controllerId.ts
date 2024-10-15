@@ -27,7 +27,7 @@ const authorizeRequest = async (controllerId: string, request: Request) => {
   );
   const serverHmac = crypto
     .createHmac("sha256", secret)
-    .update(timestamp + nonce)
+    .update(timestamp + ":" + nonce)
     .digest("hex");
   if (serverHmac !== hmac) {
     throw new Response("Unauthorized", { status: 401 });
