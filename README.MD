@@ -25,3 +25,20 @@ fly certs add pils.gataersamla.no
 # I domeneshop AAAA record: pils.gataersamla.no -> ipv6
 ```
 ````
+
+## Get db from prod
+### Fly columes and database
+```bash
+# Get database file from production
+fly sftp get /data/sqlite.db db-backups/sqlite_16_10_2024_prod.db
+# Connect to sftp shell and upload dump file
+fly sftp shell
+cd tmp
+put dump.sql
+# Connect via ssh to run sql
+apt update
+apt upgrade
+apt install sqlite3
+sqlite3 /data/sqlite.db < dump.sql
+CTRL+D to quit ssh
+```

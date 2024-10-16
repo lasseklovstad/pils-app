@@ -1,5 +1,5 @@
 import { useSearchParams } from "@remix-run/react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
   ChartConfig,
@@ -32,9 +32,11 @@ export const TemperatureChart = ({
   const [searchParams, setSearchParams] = useSearchParams();
   const interval = searchParams.get("interval") ?? "timestamp";
   return (
-    <>
+    <div className="w-full">
       <h3 className="text-2xl">Målinger ({totalCount})</h3>
-      {controllerTemperatures.length > 0 ? (
+      {controllerTemperatures.length === 0 ? (
+        <div>Ingen målinger enda!</div>
+      ) : (
         <>
           <ChartContainer config={chartConfig}>
             <AreaChart
@@ -58,6 +60,15 @@ export const TemperatureChart = ({
                     day: "numeric",
                   })} ${date.toLocaleTimeString("nb", { hour: "2-digit", minute: "2-digit" })}`;
                 }}
+              />
+              <YAxis
+                dataKey="temperature"
+                domain={[
+                  0,
+                  Math.max(...controllerTemperatures.map((t) => t.avgTemp)) +
+                    10,
+                ]}
+                width={0}
               />
               <Area
                 dataKey="temperature"
@@ -88,6 +99,7 @@ export const TemperatureChart = ({
               value &&
               setSearchParams({ interval: value }, { preventScrollReset: true })
             }
+            className="my-4"
           >
             <ToggleGroupItem value="timestamp" aria-label="Toggle timestamp">
               Timestamp
@@ -99,43 +111,43 @@ export const TemperatureChart = ({
               Hours
             </ToggleGroupItem>
           </ToggleGroup>
-          <table>
-            <thead>
-              <tr>
-                <th className="border p-2 text-left font-semibold">
-                  Tidspunkt
-                </th>
-                <th className="border p-2 text-left font-semibold">
-                  Avg. temperatur
-                </th>
-                <th className="border p-2 text-left font-semibold">
-                  Min. temperatur
-                </th>
-                <th className="border p-2 text-left font-semibold">
-                  Max. temperatur
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {controllerTemperatures.map((temperature) => {
-                return (
-                  <tr key={temperature.timestamp.valueOf()}>
-                    <td className="border p-2">
-                      {temperature.timestamp.toLocaleDateString("nb")}{" "}
-                      {temperature.timestamp.toLocaleTimeString("nb")}
-                    </td>
-                    <td className="border p-2">{temperature.avgTemp}</td>
-                    <td className="border p-2">{temperature.minTemp}</td>
-                    <td className="border p-2">{temperature.maxTemp}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="w-full max-w-full overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr>
+                  <th className="border p-2 text-left font-semibold">
+                    Tidspunkt
+                  </th>
+                  <th className="border p-2 text-left font-semibold">
+                    Avg. temperatur
+                  </th>
+                  <th className="border p-2 text-left font-semibold">
+                    Min. temperatur
+                  </th>
+                  <th className="border p-2 text-left font-semibold">
+                    Max. temperatur
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {controllerTemperatures.map((temperature) => {
+                  return (
+                    <tr key={temperature.timestamp.valueOf()}>
+                      <td className="border p-2">
+                        {temperature.timestamp.toLocaleDateString("nb")}{" "}
+                        {temperature.timestamp.toLocaleTimeString("nb")}
+                      </td>
+                      <td className="border p-2">{temperature.avgTemp}</td>
+                      <td className="border p-2">{temperature.minTemp}</td>
+                      <td className="border p-2">{temperature.maxTemp}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </>
-      ) : (
-        <div>Ingen målinger registrert enda!</div>
       )}
-    </>
+    </div>
   );
 };
