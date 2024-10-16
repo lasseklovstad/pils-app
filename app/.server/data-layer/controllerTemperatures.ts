@@ -36,7 +36,7 @@ export const getControllerTemperatures = async (
         ne(controllerTemperatures.temperature, -127),
       ),
     )
-    .limit(1000)
+    .limit(250)
     .groupBy(groupColumn)
     .orderBy(desc(controllerTemperatures.timestamp));
 };

@@ -103,7 +103,7 @@ export default function ControllerPage() {
       sub(new Date(), { minutes: 15 }).valueOf()
     : false;
   return (
-    <Main className="flex flex-col items-start gap-2">
+    <Main className="flex w-full flex-col items-start gap-2">
       <div className="flex w-full items-center justify-between">
         <h2 className="flex items-center gap-2 text-4xl">
           {controller.name}{" "}
