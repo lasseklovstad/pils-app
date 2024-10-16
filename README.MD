@@ -27,7 +27,9 @@ fly certs add pils.gataersamla.no
 ````
 
 ## Get db from prod
+
 ### Fly columes and database
+
 ```bash
 # Get database file from production
 fly sftp get /data/sqlite.db db-backups/sqlite_16_10_2024_prod.db
