@@ -45,6 +45,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Button asChild variant="secondary">
               <Link to="/controller">Kontrollere</Link>
             </Button>
+            <Button asChild variant="secondary">
+              <Link to="/login">Logg inn</Link>
+            </Button>
           </nav>
         </div>
         {children}

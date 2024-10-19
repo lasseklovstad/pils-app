@@ -83,3 +83,12 @@ export function decryptSecret(storedSecret: string, encryptionKeyHex: string) {
   decrypted += decipher.final("utf8");
   return decrypted;
 }
+
+export function getDomainUrl(request: Request) {
+  const host =
+    request.headers.get("X-Forwarded-Host") ??
+    request.headers.get("host") ??
+    new URL(request.url).host;
+  const protocol = request.headers.get("X-Forwarded-Proto") ?? "http";
+  return `${protocol}://${host}`;
+}
