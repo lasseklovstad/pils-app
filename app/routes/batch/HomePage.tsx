@@ -1,7 +1,8 @@
-import { ActionFunctionArgs } from "@remix-run/node";
-import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { Loader2, Plus } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
+import { Link, useFetcher } from "react-router";
+
+import type { ActionArgs, ActionData, ComponentProps } from "./+types.HomePage";
 
 import { getBatches, postBatch } from "~/.server/data-layer/batches";
 import { Main } from "~/components/Main";
@@ -14,7 +15,7 @@ export const loader = async () => {
   return { batches };
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request }: ActionArgs) => {
   if (request.method === "POST") {
     const formdata = await request.formData();
     const name = String(formdata.get("name"));
@@ -23,9 +24,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return { ok: true };
 };
 
-export default function Home() {
-  const { batches } = useLoaderData<typeof loader>();
-
+export default function Home({ loaderData: { batches } }: ComponentProps) {
   return (
     <Main className="flex flex-col gap-2">
       <BatchForm />
@@ -52,7 +51,7 @@ export default function Home() {
 
 const BatchForm = () => {
   const id = useId();
-  const fetcher = useFetcher<typeof action>();
+  const fetcher = useFetcher<ActionData>();
   const $form = useRef<HTMLFormElement>(null);
 
   useEffect(

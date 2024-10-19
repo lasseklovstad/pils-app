@@ -1,5 +1,8 @@
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import type {
+  ActionArgs,
+  ComponentProps,
+  LoaderArgs,
+} from "./+types.BatchDetailsPage";
 
 import { getBatch, putBatch } from "~/.server/data-layer/batches";
 import { Main } from "~/components/Main";
@@ -10,14 +13,14 @@ import {
   putIngredient,
 } from "~/.server/data-layer/ingredients";
 
-import { GravityForm } from "./GravityForm";
-import { MaltForm } from "./MaltForm";
-import { MashingForm } from "./MashingForm";
+import { MaltForm } from "./shared/MaltForm";
+import { MashingForm } from "./shared/MashingForm";
+import { GravityForm } from "./shared/GravityForm";
 
 export const loader = async ({
   params: { batchId: batchIdParam },
-}: LoaderFunctionArgs) => {
-  const batchId = parseInt(batchIdParam!);
+}: LoaderArgs) => {
+  const batchId = parseInt(batchIdParam);
   const [batch, batchIngredients] = await Promise.all([
     getBatch(batchId),
     getBatchIngredients(batchId),
@@ -31,8 +34,8 @@ export const loader = async ({
 export const action = async ({
   params: { batchId: batchIdParam },
   request,
-}: ActionFunctionArgs) => {
-  const batchId = parseInt(batchIdParam!);
+}: ActionArgs) => {
+  const batchId = parseInt(batchIdParam);
   const formData = await request.formData();
   const intent = String(formData.get("intent"));
   if (intent === "put-gravity") {
@@ -83,9 +86,9 @@ export const action = async ({
   throw new Error("Invalid intent");
 };
 
-export default function BatchPage() {
-  const { batch, batchIngredients } = useLoaderData<typeof loader>();
-
+export default function BatchPage({
+  loaderData: { batch, batchIngredients },
+}: ComponentProps) {
   return (
     <Main>
       <h1 className="text-4xl">{batch.name}</h1>
@@ -96,7 +99,6 @@ export default function BatchPage() {
       <div className="flex flex-col gap-2">
         <MaltForm ingredients={batchIngredients} />
         <MashingForm batch={batch} ingredients={batchIngredients} />
-
         <GravityForm batch={batch} />
       </div>
     </Main>

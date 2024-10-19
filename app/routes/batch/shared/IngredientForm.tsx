@@ -1,14 +1,14 @@
-import { useFetcher } from "@remix-run/react";
+import { useFetcher } from "react-router";
 import { Loader2, Plus, X } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
+
+import type { ActionData } from "../+types.BatchDetailsPage";
 
 import { Ingredient } from "db/schema";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
-
-import { action } from "./route";
 
 type Props = {
   ingredient?: Ingredient;
@@ -25,7 +25,7 @@ export const IngredientForm = ({
 }: Props) => {
   const nameId = useId();
   const amountId = useId();
-  const fetcher = useFetcher<typeof action>({
+  const fetcher = useFetcher<ActionData>({
     key: ingredient ? `put-ingredient-${ingredient.id}` : "create-ingredient",
   });
   const deleteFetcher = useFetcher({
@@ -81,16 +81,21 @@ export const IngredientForm = ({
         <input hidden readOnly value={"ingredient"} name="intent" />
         <input hidden readOnly value={type} name="type" />
 
-        {ingredient ? null : (
-          <Button type="submit" variant="ghost" size="icon">
-            {fetcher.state !== "idle" ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              <Plus />
-            )}
-            <span className="sr-only">Legg til ingredient</span>
-          </Button>
-        )}
+        <Button
+          type="submit"
+          variant="ghost"
+          size="icon"
+          className={cn(ingredient && "hidden")}
+        >
+          {fetcher.state !== "idle" ? (
+            <Loader2 className="animate-spin" />
+          ) : (
+            <Plus />
+          )}
+          <span className="sr-only">
+            {ingredient ? "Oppdater ingredient" : "Legg til ingredient"}
+          </span>
+        </Button>
       </fetcher.Form>
       {ingredient ? (
         <deleteFetcher.Form method="DELETE" className="contents">

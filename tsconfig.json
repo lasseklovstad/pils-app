@@ -8,12 +8,13 @@
     "**/.client/**/*.tsx",
     ".eslintrc.cjs",
     "postcss.config.cjs",
-    "server.mjs"
+    "server.mjs",
+    ".react-router/types/**/*"
   ],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
-    "types": ["@remix-run/node", "vite/client"],
+    "types": ["@react-router/node", "vite/client"],
     "isolatedModules": true,
     "esModuleInterop": true,
     "jsx": "react-jsx",
@@ -30,6 +31,8 @@
       "~/*": ["./app/*"]
     },
     "noEmit": true,
-    "noUncheckedIndexedAccess": true
+    "noUncheckedIndexedAccess": true,
+    "rootDirs": [".", "./.react-router/types"],
+    "plugins": [{ "name": "@react-router/dev" }]
   }
 }

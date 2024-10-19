@@ -1,5 +1,7 @@
-import { useFetcher } from "@remix-run/react";
+import { useFetcher } from "react-router";
 import { Loader2, Save } from "lucide-react";
+
+import type { ActionData } from "../+types.BatchDetailsPage";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -17,15 +19,13 @@ import {
   filterIngredients,
 } from "~/lib/utils";
 
-import { action } from "./route";
-
 type Props = {
   ingredients: Ingredient[];
   batch: Batch;
 };
 
 export const MashingForm = ({ batch, ingredients }: Props) => {
-  const fetcher = useFetcher<typeof action>();
+  const fetcher = useFetcher<ActionData>();
   const maltIngredients = filterIngredients(ingredients, "malt");
   const totalAmount = calculateTotalAmount(maltIngredients);
   return (

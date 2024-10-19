@@ -1,14 +1,15 @@
-import { LinksFunction, MetaFunction } from "@remix-run/node";
 import {
   isRouteErrorResponse,
   Link,
   Links,
+  LinksFunction,
   Meta,
+  MetaFunction,
   Outlet,
   Scripts,
   ScrollRestoration,
   useRouteError,
-} from "@remix-run/react";
+} from "react-router";
 
 import stylesheet from "~/tailwind.css?url";
 
