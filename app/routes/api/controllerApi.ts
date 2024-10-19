@@ -1,6 +1,6 @@
 import * as crypto from "node:crypto";
 
-import { ActionFunctionArgs, LoaderFunctionArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs } from "./+types.controllerApi";
 
 import { getController } from "~/.server/data-layer/controllers";
 import { postControllerTemperature } from "~/.server/data-layer/controllerTemperatures";
@@ -41,17 +41,17 @@ const authorizeRequest = async (controllerId: string, request: Request) => {
   }
 };
 
-export const loader = async ({ request, params }: LoaderFunctionArgs) => {
-  const controllerId = parseInt(params.controllerId!);
-  await authorizeRequest(params.controllerId! ?? "-1", request);
+export const loader = async ({ request, params }: LoaderArgs) => {
+  const controllerId = parseInt(params.controllerId);
+  await authorizeRequest(params.controllerId, request);
   const controller = await getController(controllerId);
   if (!controller) throw new Response(null, { status: 404 });
   return new Response(controller.isRelayOn.toString(), { status: 200 });
 };
 
-export const action = async ({ request, params }: ActionFunctionArgs) => {
-  const controllerId = parseInt(params.controllerId!);
-  await authorizeRequest(params.controllerId! ?? "-1", request);
+export const action = async ({ request, params }: ActionArgs) => {
+  const controllerId = parseInt(params.controllerId);
+  await authorizeRequest(params.controllerId, request);
   if (request.method === "POST") {
     const text = await request.text();
     const temperature = parseFloat(text);

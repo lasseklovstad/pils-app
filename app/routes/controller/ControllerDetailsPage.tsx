@@ -1,11 +1,12 @@
-import {
-  ActionFunctionArgs,
-  LoaderFunctionArgs,
-  redirect,
-} from "@remix-run/node";
-import { useLoaderData, useSubmit } from "@remix-run/react";
 import { sub } from "date-fns";
 import { Check, RefreshCw, X } from "lucide-react";
+import { redirect, useSubmit } from "react-router";
+
+import type {
+  ActionArgs,
+  ComponentProps,
+  LoaderArgs,
+} from "./+types.ControllerDetailsPage";
 
 import {
   deleteController,
@@ -25,13 +26,13 @@ import { useRevalidateOnFocus } from "~/lib/useRevalidateOnFocus";
 import { cn, createControllerSecret, encryptSecret } from "~/lib/utils";
 import { insertVerification } from "~/.server/data-layer/verifications";
 
-import { ControllerMenu } from "./ControllerMenu";
-import { TemperatureChart } from "./TemperatureChart";
+import { ControllerMenu } from "./shared/ControllerMenu";
+import { TemperatureChart } from "./shared/TemperatureChart";
 
-export const loader = async ({ params, request }: LoaderFunctionArgs) => {
+export const loader = async ({ params, request }: LoaderArgs) => {
   const interval =
     new URL(request.url).searchParams.get("interval") ?? "timestamp";
-  const controllerId = parseInt(params.controllerId!);
+  const controllerId = parseInt(params.controllerId);
   const [
     controller,
     controllerTemperatures,
@@ -59,8 +60,8 @@ export const loader = async ({ params, request }: LoaderFunctionArgs) => {
   };
 };
 
-export const action = async ({ request, params }: ActionFunctionArgs) => {
-  const controllerId = parseInt(params.controllerId!);
+export const action = async ({ request, params }: ActionArgs) => {
+  const controllerId = parseInt(params.controllerId);
   const formData = await request.formData();
   const intent = formData.get("intent");
   if (request.method === "PUT" && intent === "edit-name") {
@@ -87,14 +88,15 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   return { ok: true };
 };
 
-export default function ControllerPage() {
-  const {
+export default function ControllerPage({
+  loaderData: {
     controller,
     controllerTemperatures,
     latestTemperature,
     totalErrorCount,
     totalCount,
-  } = useLoaderData<typeof loader>();
+  },
+}: ComponentProps) {
   const revalidator = useRevalidateOnFocus();
   const submit = useSubmit();
 

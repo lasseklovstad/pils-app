@@ -1,0 +1,9 @@
+{
+  "entry": [
+    "app/root.tsx",
+    "app/entry.{client,server}.{js,jsx,ts,tsx}",
+    "app/routes/**/*{Page,Api}.{js,ts,tsx}",
+    "app/routes.ts"
+  ],
+  "ignoreDependencies": ["isbot"]
+}

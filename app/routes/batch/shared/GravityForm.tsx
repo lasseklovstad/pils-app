@@ -1,19 +1,19 @@
-import { useFetcher } from "@remix-run/react";
+import { useFetcher } from "react-router";
 import { Loader2, Save } from "lucide-react";
+
+import type { ActionData } from "../+types.BatchDetailsPage";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Batch } from "db/schema";
 
-import { action } from "./route";
-
 type Props = {
   batch: Batch;
 };
 
 export const GravityForm = ({ batch }: Props) => {
-  const fetcher = useFetcher<typeof action>();
+  const fetcher = useFetcher<ActionData>();
   return (
     <fetcher.Form method="PUT" className="space-y-2 rounded border p-2">
       <h2 className="text-xl">Alkoholprosent</h2>

@@ -1,7 +1,12 @@
-import { ActionFunctionArgs } from "@remix-run/node";
-import { Link, useFetcher, useLoaderData } from "@remix-run/react";
 import { Loader2, Plus } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
+import { Link, useFetcher } from "react-router";
+
+import type {
+  ComponentProps,
+  ActionArgs,
+  ActionData,
+} from "./+types.IndexPage";
 
 import {
   getControllers,
@@ -20,7 +25,7 @@ export const loader = async () => {
   return { controllers };
 };
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async ({ request }: ActionArgs) => {
   if (request.method === "POST") {
     const formdata = await request.formData();
     const name = String(formdata.get("name"));
@@ -37,8 +42,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   return { ok: true };
 };
 
-export default function ControllersPage() {
-  const { controllers } = useLoaderData<typeof loader>();
+export default function ControllersPage({
+  loaderData: { controllers },
+}: ComponentProps) {
   return (
     <Main className="flex flex-col gap-2">
       <ControllerForm />
@@ -61,7 +67,7 @@ export default function ControllersPage() {
 
 const ControllerForm = () => {
   const id = useId();
-  const fetcher = useFetcher<typeof action>();
+  const fetcher = useFetcher<ActionData>();
   const $form = useRef<HTMLFormElement>(null);
 
   useEffect(

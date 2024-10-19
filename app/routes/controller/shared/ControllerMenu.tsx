@@ -1,7 +1,9 @@
-import { Form, useFetcher } from "@remix-run/react";
+import { Form, useFetcher } from "react-router";
 import { Edit, Loader2, Menu, Plus, Save, Trash } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { DialogClose } from "@radix-ui/react-dialog";
+
+import type { ActionData } from "../+types.ControllerDetailsPage";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -23,16 +25,14 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { ControllerSecretSuccessMessage } from "~/components/ControllerSecretSuccessMessage";
 
-import { action } from "./route";
-
 type Props = {
   controller: { name: string; id: number };
 };
 
 export const ControllerMenu = ({ controller }: Props) => {
   const nameInputId = useId();
-  const editNameFetcher = useFetcher<typeof action>();
-  const editSecretFetcher = useFetcher<typeof action>();
+  const editNameFetcher = useFetcher<ActionData>();
+  const editSecretFetcher = useFetcher<ActionData>();
   const [editNameDialogOpen, setEditNameDialogOpen] = useState(false);
 
   useEffect(() => {

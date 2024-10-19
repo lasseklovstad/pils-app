@@ -1,4 +1,4 @@
-import { useRevalidator } from "@remix-run/react";
+import { useRevalidator } from "react-router";
 import { useEffect } from "react";
 
 export function useRevalidateOnFocus() {
