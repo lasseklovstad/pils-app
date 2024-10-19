@@ -87,4 +87,5 @@ jobs:
 
       - name: Run knip
         run: |
+          npm run typecheck
           npm run knip

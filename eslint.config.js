@@ -10,7 +10,7 @@ import "eslint-import-resolver-typescript";
 /** @type {import('eslint').Linter.Config} */
 export default [
   {
-    ignores: ["**/node_modules/", "build/"],
+    ignores: ["**/node_modules/", "build/", ".react-router"],
   },
   {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
