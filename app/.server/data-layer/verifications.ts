@@ -32,7 +32,11 @@ export const insertVerification = async (
     .values(value)
     .onConflictDoUpdate({
       target: [verifications.type, verifications.target],
-      set: { createdAt: new Date(), secret: value.secret },
+      set: {
+        createdAt: new Date(),
+        secret: value.secret,
+        expiresAt: value.expiresAt,
+      },
     });
 };
 

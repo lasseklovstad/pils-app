@@ -129,7 +129,7 @@ export default function OnboardingRoute({
       <p className="text-body-md text-muted-foreground">Fyll ut skjema</p>
       <Form method="POST" {...getFormProps(form)}>
         <Field
-          labelProps={{ htmlFor: fields.name.id, children: "Name" }}
+          labelProps={{ htmlFor: fields.name.id, children: "Navn" }}
           inputProps={{
             ...getInputProps(fields.name, { type: "text" }),
             autoComplete: "name",

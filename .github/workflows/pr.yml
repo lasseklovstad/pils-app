@@ -89,10 +89,16 @@ jobs:
         run: |
           npm run typecheck
           npm run knip
-  build:
-    name: 📦 Build
+  e2e:
+    name: 🎭 E2E
     runs-on: "ubuntu-latest"
     timeout-minutes: 5
+    env: 
+      SESSION_SECRET: "s3cret"
+      APP_DATABASE_URL: "sqlite.db" 
+      SENDGRID_API_KEY: "NA"
+      ENCRYPTION_KEY: "ad1915128c35d60577830804d7aab68a6e706d39d46a6218fb9edf113a410da7"
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -109,3 +115,18 @@ jobs:
       - name: Run build
         run: |
           npm run build
+
+      - name: Install playwright browsers
+        run: |
+          npx playwright install --with-deps chromium
+
+      - name: 🎭 Playwright tests
+        run: npx playwright test
+
+      - name: 📊 Upload report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
