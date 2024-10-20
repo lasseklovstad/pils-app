@@ -7,6 +7,10 @@ on:
       - "!main"
   workflow_dispatch:
 
+permissions:
+  actions: write
+  contents: read
+
 jobs:
   lint:
     name: ⬣ ESlint
@@ -93,9 +97,9 @@ jobs:
     name: 🎭 E2E
     runs-on: "ubuntu-latest"
     timeout-minutes: 5
-    env: 
+    env:
       SESSION_SECRET: "s3cret"
-      APP_DATABASE_URL: "sqlite.db" 
+      APP_DATABASE_URL: "sqlite.db"
       SENDGRID_API_KEY: "NA"
       ENCRYPTION_KEY: "ad1915128c35d60577830804d7aab68a6e706d39d46a6218fb9edf113a410da7"
 

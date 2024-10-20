@@ -16,7 +16,8 @@ const viteDevServer =
 const remixHandler = createRequestHandler({
   build: viteDevServer
     ? () => viteDevServer.ssrLoadModule("virtual:react-router/server-build")
-    : await import("./build/server/index.js"),
+    : // eslint-disable-next-line import/no-unresolved
+      await import("./build/server/index.js"),
 });
 
 const app = express();
