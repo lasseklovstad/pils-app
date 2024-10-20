@@ -11,7 +11,7 @@ export const getControllers = async (currentUser: User) => {
     .where(eq(users.id, currentUser.id));
 };
 
-export const getController = async (
+export const getControllerByUser = async (
   controllerId: number,
   currentUser: User,
 ) => {
@@ -28,6 +28,21 @@ export const getController = async (
       .where(
         and(eq(controllers.id, controllerId), eq(users.id, currentUser.id)),
       )
+      .limit(1)
+  )[0];
+};
+
+export const getController = async (controllerId: number) => {
+  return (
+    await db
+      .select({
+        id: controllers.id,
+        name: controllers.name,
+        isRelayOn: controllers.isRelayOn,
+        userId: controllers.userId,
+      })
+      .from(controllers)
+      .where(eq(controllers.id, controllerId))
       .limit(1)
   )[0];
 };

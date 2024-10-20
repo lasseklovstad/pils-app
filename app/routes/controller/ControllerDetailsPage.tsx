@@ -10,7 +10,7 @@ import type {
 
 import {
   deleteController,
-  getController,
+  getControllerByUser,
   putController,
 } from "~/.server/data-layer/controllers";
 import {
@@ -42,7 +42,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
     totalCount,
     totalErrorCount,
   ] = await Promise.all([
-    getController(controllerId, currentUser),
+    getControllerByUser(controllerId, currentUser),
     getControllerTemperatures(controllerId, interval),
     getLatestControllerTemperature(controllerId),
     getControllerTemperaturesTotalCount(controllerId),
@@ -67,7 +67,7 @@ const requireUserOwnerOfController = async (
   controllerId: number,
 ) => {
   const currentUser = await requireUser(request);
-  const controller = await getController(controllerId, currentUser);
+  const controller = await getControllerByUser(controllerId, currentUser);
   if (controller?.userId !== currentUser.id) {
     throw new Response("Unauthorized", { status: 403 });
   }
