@@ -11,10 +11,11 @@ import { IngredientForm } from "./IngredientForm";
 
 type Props = {
   ingredients: Ingredient[];
+  readOnly: boolean;
 };
 const type = "malt";
 const amountUnit = "kg";
-export const MaltForm = ({ ingredients }: Props) => {
+export const MaltForm = ({ ingredients, readOnly }: Props) => {
   const maltIngredients = filterIngredients(ingredients, "malt");
   const totalAmount = calculateTotalAmount(maltIngredients);
   return (
@@ -31,6 +32,7 @@ export const MaltForm = ({ ingredients }: Props) => {
                 type={type}
                 amountUnit={amountUnit}
                 showLabel={true}
+                readOnly={readOnly}
               />
             </li>
             {maltIngredients.map((ingredient) => {
@@ -41,6 +43,7 @@ export const MaltForm = ({ ingredients }: Props) => {
                     type={type}
                     amountUnit={amountUnit}
                     showLabel={false}
+                    readOnly={readOnly}
                   />
                 </li>
               );

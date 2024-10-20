@@ -10,9 +10,10 @@ import { Batch } from "db/schema";
 
 type Props = {
   batch: Batch;
+  readOnly: boolean;
 };
 
-export const GravityForm = ({ batch }: Props) => {
+export const GravityForm = ({ batch, readOnly }: Props) => {
   const fetcher = useFetcher<ActionData>();
   return (
     <fetcher.Form method="PUT" className="space-y-2 rounded border p-2">
@@ -37,6 +38,7 @@ export const GravityForm = ({ batch }: Props) => {
             pattern="\d+"
             autoComplete="off"
             defaultValue={batch.originalGravity ?? ""}
+            readOnly={readOnly}
           />
         </div>
         <div>
@@ -48,10 +50,11 @@ export const GravityForm = ({ batch }: Props) => {
             pattern="\d+"
             autoComplete="off"
             defaultValue={batch.finalGravity ?? ""}
+            readOnly={readOnly}
           />
         </div>
       </div>
-      <Button name="intent" value="put-gravity" size="sm">
+      <Button name="intent" value="put-gravity" size="sm" disabled={readOnly}>
         {fetcher.state !== "idle" ? (
           <Loader2 className="animate-spin" />
         ) : (

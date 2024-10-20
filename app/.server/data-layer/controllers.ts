@@ -1,12 +1,35 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { db } from "db/config.server";
-import { controllers } from "db/schema";
+import { controllers, users, type User } from "db/schema";
 
-export const getControllers = async () => {
+export const getControllers = async (currentUser: User) => {
   return await db
     .select({ id: controllers.id, name: controllers.name })
-    .from(controllers);
+    .from(controllers)
+    .innerJoin(users, eq(users.id, currentUser.id))
+    .where(eq(users.id, currentUser.id));
+};
+
+export const getControllerByUser = async (
+  controllerId: number,
+  currentUser: User,
+) => {
+  return (
+    await db
+      .select({
+        id: controllers.id,
+        name: controllers.name,
+        isRelayOn: controllers.isRelayOn,
+        userId: controllers.userId,
+      })
+      .from(controllers)
+      .innerJoin(users, eq(users.id, currentUser.id))
+      .where(
+        and(eq(controllers.id, controllerId), eq(users.id, currentUser.id)),
+      )
+      .limit(1)
+  )[0];
 };
 
 export const getController = async (controllerId: number) => {
@@ -16,6 +39,7 @@ export const getController = async (controllerId: number) => {
         id: controllers.id,
         name: controllers.name,
         isRelayOn: controllers.isRelayOn,
+        userId: controllers.userId,
       })
       .from(controllers)
       .where(eq(controllers.id, controllerId))

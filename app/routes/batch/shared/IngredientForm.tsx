@@ -15,6 +15,7 @@ type Props = {
   amountUnit: string;
   type: Ingredient["type"];
   showLabel: boolean;
+  readOnly: boolean;
 };
 
 export const IngredientForm = ({
@@ -22,6 +23,7 @@ export const IngredientForm = ({
   amountUnit,
   type,
   showLabel,
+  readOnly,
 }: Props) => {
   const nameId = useId();
   const amountId = useId();
@@ -61,6 +63,7 @@ export const IngredientForm = ({
             autoComplete="off"
             required
             defaultValue={ingredient?.name ?? ""}
+            readOnly={readOnly}
           />
         </div>
         <div>
@@ -75,6 +78,7 @@ export const IngredientForm = ({
             autoComplete="off"
             required
             defaultValue={ingredient?.amount ?? ""}
+            readOnly={readOnly}
           />
         </div>
         <input hidden readOnly value={ingredient?.id ?? ""} name="id" />
@@ -86,6 +90,7 @@ export const IngredientForm = ({
           variant="ghost"
           size="icon"
           className={cn(ingredient && "hidden")}
+          disabled={readOnly}
         >
           {fetcher.state !== "idle" ? (
             <Loader2 className="animate-spin" />
@@ -101,7 +106,7 @@ export const IngredientForm = ({
         <deleteFetcher.Form method="DELETE" className="contents">
           <input hidden readOnly value={ingredient.id} name="id" />
           <input hidden readOnly value={"ingredient"} name="intent" />
-          <Button type="submit" variant="ghost" size="icon">
+          <Button type="submit" variant="ghost" size="icon" disabled={readOnly}>
             {deleteFetcher.state !== "idle" ? (
               <Loader2 className="animate-spin" />
             ) : (

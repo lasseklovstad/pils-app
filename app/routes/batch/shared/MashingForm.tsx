@@ -22,9 +22,10 @@ import {
 type Props = {
   ingredients: Ingredient[];
   batch: Batch;
+  readOnly: boolean;
 };
 
-export const MashingForm = ({ batch, ingredients }: Props) => {
+export const MashingForm = ({ batch, ingredients, readOnly }: Props) => {
   const fetcher = useFetcher<ActionData>();
   const maltIngredients = filterIngredients(ingredients, "malt");
   const totalAmount = calculateTotalAmount(maltIngredients);
@@ -64,6 +65,7 @@ export const MashingForm = ({ batch, ingredients }: Props) => {
                     pattern="\d+"
                     autoComplete="off"
                     defaultValue={batch.mashingStrikeWaterVolume ?? ""}
+                    readOnly={readOnly}
                   />
                 </div>
                 <div>
@@ -77,6 +79,7 @@ export const MashingForm = ({ batch, ingredients }: Props) => {
                     pattern="\d+"
                     autoComplete="off"
                     defaultValue={batch.mashingTemperature ?? ""}
+                    readOnly={readOnly}
                   />
                 </div>
                 <div>
@@ -90,10 +93,16 @@ export const MashingForm = ({ batch, ingredients }: Props) => {
                     pattern="\d+"
                     autoComplete="off"
                     defaultValue={batch.mashingMaltTemperature ?? ""}
+                    readOnly={readOnly}
                   />
                 </div>
               </div>
-              <Button name="intent" value="put-mashing" size="sm">
+              <Button
+                name="intent"
+                value="put-mashing"
+                size="sm"
+                disabled={readOnly}
+              >
                 {fetcher.state !== "idle" ? (
                   <Loader2 className="animate-spin" />
                 ) : (
