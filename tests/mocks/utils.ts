@@ -43,7 +43,7 @@ export async function writeEmail(rawEmail: unknown) {
 
 export async function readEmail(recipient: string) {
   try {
-    const email = await readFixture("email", recipient);
+    const email = await readFixture("email", recipient.toLowerCase());
     return EmailSchema.parse(email);
   } catch (error) {
     console.error(`Error reading email`, error);
