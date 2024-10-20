@@ -14,7 +14,9 @@ async function readFixture(subdir: string, name: string) {
 async function createFixture(subdir: string, name: string, data: unknown) {
   const dir = path.join(fixturesDirPath, subdir);
   await fsExtra.ensureDir(dir);
-  return fsExtra.writeJSON(path.join(dir, `./${name}.json`), data);
+  const fileDir = path.join(dir, `./${name}.json`);
+  console.log("Writing file to: " + fileDir);
+  return fsExtra.writeJSON(fileDir, data);
 }
 
 const EmailSchema = z.object({
