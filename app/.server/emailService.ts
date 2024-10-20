@@ -10,7 +10,7 @@ type Options = {
 
 const from = {
   email: "pils.admin@gataersamla.no",
-  name: "Pils admin",
+  name: "Admin",
 };
 
 export async function sendMail({
@@ -33,12 +33,12 @@ export async function sendMail({
     from,
     content: [
       {
-        type: "text/html",
-        value: emailHtml.html,
-      },
-      {
         type: "text/plain",
         value: emailHtml.text,
+      },
+      {
+        type: "text/html",
+        value: emailHtml.html,
       },
     ],
   };
@@ -59,7 +59,7 @@ export async function sendMail({
     } else {
       const errorData = await response.json();
       console.error("Error sending email:", errorData);
-      return { status: "error", message: errorData };
+      return { status: "error", message: "Ukjent feil ved sending av e-post" };
     }
   } catch (error) {
     console.error("Error", error);
