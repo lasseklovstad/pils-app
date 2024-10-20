@@ -4,7 +4,7 @@ import type { ActionArgs, LoaderArgs } from "./+types.controllerApi";
 
 import { getController } from "~/.server/data-layer/controllers";
 import { postControllerTemperature } from "~/.server/data-layer/controllerTemperatures";
-import { getControllerVerification } from "~/.server/data-layer/verifications";
+import { getVerification } from "~/.server/data-layer/verifications";
 import { decryptSecret } from "~/lib/utils";
 
 const authorizeRequest = async (controllerId: string, request: Request) => {
@@ -15,7 +15,7 @@ const authorizeRequest = async (controllerId: string, request: Request) => {
   if (!hmac || !timestamp || !nonce) {
     throw new Response("Incorrect headers provided.", { status: 401 });
   }
-  const verification = await getControllerVerification(controllerId);
+  const verification = await getVerification(controllerId, "controller");
   if (!verification) {
     throw new Response("Could not find controller with id " + controllerId, {
       status: 404,

@@ -1,4 +1,5 @@
 import {
+  Form,
   isRouteErrorResponse,
   Link,
   Links,
@@ -11,9 +12,13 @@ import {
   useRouteError,
 } from "react-router";
 
+import type { ReactNode } from "react";
+import type { ComponentProps, LoaderArgs } from "./+types.root";
+
 import stylesheet from "~/tailwind.css?url";
 
 import { Button } from "./components/ui/button";
+import { getUser } from "./lib/auth.server";
 
 export const links: LinksFunction = () => [
   { rel: "stylesheet", href: stylesheet },
@@ -33,20 +38,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <div className="container mx-auto mb-2 flex flex-col items-center justify-center pt-4 shadow">
-          <a className="flex items-center gap-2" href="/">
-            <img className="size-8" src="/favicon-32x32.png" alt="" />
-            <h1 className="mb-4 text-6xl">Pils</h1>
-          </a>
-          <nav className="flex gap-2 p-4">
-            <Button asChild variant="secondary">
-              <Link to="/">Brygging</Link>
-            </Button>
-            <Button asChild variant="secondary">
-              <Link to="/controller">Kontrollere</Link>
-            </Button>
-          </nav>
-        </div>
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -55,8 +46,51 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
-  return <Outlet />;
+const Header = ({ children }: { children?: ReactNode }) => {
+  return (
+    <div className="container mx-auto mb-2 flex flex-col items-center justify-center pt-4 shadow">
+      <a className="flex items-center gap-2" href="/">
+        <img className="size-8" src="/favicon-32x32.png" alt="" />
+        <h1 className="mb-4 text-6xl">Pils</h1>
+      </a>
+      {children}
+    </div>
+  );
+};
+
+export const loader = async ({ request }: LoaderArgs) => {
+  const user = await getUser(request);
+  return { user };
+};
+
+export default function App({ loaderData: { user } }: ComponentProps) {
+  return (
+    <>
+      <Header>
+        <nav className="flex gap-2 p-4">
+          <Button asChild variant="secondary">
+            <Link to="/">Brygging</Link>
+          </Button>
+          <Button asChild variant="secondary">
+            <Link to="/controller">Kontrollere</Link>
+          </Button>
+
+          {user ? (
+            <Form method="POST" action="/logout">
+              <Button variant="secondary" type="submit">
+                Logg ut
+              </Button>
+            </Form>
+          ) : (
+            <Button asChild variant="secondary">
+              <Link to="/login">Logg inn</Link>
+            </Button>
+          )}
+        </nav>
+      </Header>
+      <Outlet />
+    </>
+  );
 }
 
 export function HydrateFallback() {
@@ -68,26 +102,35 @@ export function ErrorBoundary() {
 
   if (isRouteErrorResponse(error)) {
     return (
-      <main className="container mx-auto">
-        <h1 className="text-2xl font-medium">
-          {error.status} {error.statusText}
-        </h1>
-        <p>{error.data}</p>
-      </main>
+      <>
+        <Header />
+        <main className="container mx-auto">
+          <h1 className="text-2xl font-medium">
+            {error.status} {error.statusText}
+          </h1>
+          <p>{error.data}</p>
+        </main>
+      </>
     );
   } else if (error instanceof Error) {
     return (
-      <main className="container mx-auto">
-        <h1 className="text-2xl font-medium">Error</h1>
-        <p>{error.message}</p>
-        <pre className="bg-slate-50 p-2 text-xs">{error.stack}</pre>
-      </main>
+      <>
+        <Header />
+        <main className="container mx-auto">
+          <h1 className="text-2xl font-medium">Error</h1>
+          <p>{error.message}</p>
+          <pre className="bg-slate-50 p-2 text-xs">{error.stack}</pre>
+        </main>
+      </>
     );
   } else {
     return (
-      <main className="container mx-auto">
-        <h1 className="text-2xl font-medium">Unknown Error</h1>
-      </main>
+      <>
+        <Header />
+        <main className="container mx-auto">
+          <h1 className="text-2xl font-medium">Unknown Error</h1>
+        </main>
+      </>
     );
   }
 }

@@ -1,3 +1,5 @@
 APP_DATABASE_URL=sqlite.db
 # generate with npm run generate-encryption-key
 ENCRYPTION_KEY="ad1915128c35d60577830804d7aab68a6e706d39d46a6218fb9edf113a410da7"
+SENDGRID_API_KEY=xxx
+SESSION_SECRET="super-duper-s3cret"

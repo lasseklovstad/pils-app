@@ -6,3 +6,8 @@ sqlite.db-shm
 sqlite.db-wal
 db-backups
 .react-router
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/tests/fixtures/email/

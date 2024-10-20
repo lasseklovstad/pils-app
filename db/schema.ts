@@ -10,14 +10,14 @@ import {
 const sqlTimestampNow = sql`(unixepoch())`;
 
 export const batches = sqliteTable("batches", {
-  id: integer("id").primaryKey(),
-  name: text("name").notNull(),
-  mashingTemperature: integer("mashing_temperature"),
-  mashingStrikeWaterVolume: integer("mashing_strike_water_volume").default(20),
-  mashingMaltTemperature: integer("mashing_malt_temperature").default(18),
-  originalGravity: integer("original_gravity"),
-  finalGravity: integer("final_gravity"),
-  createdTimestamp: integer("created_timestamp", {
+  id: integer().primaryKey(),
+  name: text().notNull(),
+  mashingTemperature: integer(),
+  mashingStrikeWaterVolume: integer().default(20),
+  mashingMaltTemperature: integer().default(18),
+  originalGravity: integer(),
+  finalGravity: integer(),
+  createdTimestamp: integer({
     mode: "timestamp",
   })
     .notNull()
@@ -27,12 +27,12 @@ export const batches = sqliteTable("batches", {
 export type Batch = typeof batches.$inferSelect;
 
 export const ingredients = sqliteTable("ingredients", {
-  id: integer("id").primaryKey(),
-  name: text("name").notNull(),
-  amount: real("amount").notNull(),
-  type: text("type", { enum: ["hops", "malt", "yeast", "other"] }).notNull(),
-  time: integer("time"), // Relevent for hops (cooking time)
-  batchId: integer("batch_id")
+  id: integer().primaryKey(),
+  name: text().notNull(),
+  amount: real().notNull(),
+  type: text({ enum: ["hops", "malt", "yeast", "other"] }).notNull(),
+  time: integer(), // Relevent for hops (cooking time)
+  batchId: integer()
     .notNull()
     .references(() => batches.id),
 });
@@ -40,20 +40,18 @@ export const ingredients = sqliteTable("ingredients", {
 export type Ingredient = typeof ingredients.$inferSelect;
 
 export const controllers = sqliteTable("controllers", {
-  id: integer("id").primaryKey(),
-  name: text("name").notNull(),
-  isRelayOn: integer("is_relay_on", { mode: "boolean" })
-    .notNull()
-    .default(false),
+  id: integer().primaryKey(),
+  name: text().notNull(),
+  isRelayOn: integer({ mode: "boolean" }).notNull().default(false),
 });
 
 export const controllerTemperatures = sqliteTable("controller_temperatures", {
-  id: integer("id").primaryKey(),
-  controllerId: integer("controller_id")
+  id: integer().primaryKey(),
+  controllerId: integer()
     .notNull()
     .references(() => controllers.id),
-  temperature: real("temperature").notNull(),
-  timestamp: integer("timestamp", {
+  temperature: real().notNull(),
+  timestamp: integer({
     mode: "timestamp",
   })
     .notNull()
@@ -63,13 +61,62 @@ export const controllerTemperatures = sqliteTable("controller_temperatures", {
 export const verifications = sqliteTable(
   "verifications",
   {
-    id: integer("id").primaryKey(),
-    createdAt: integer("created_at", { mode: "timestamp" })
+    id: integer().primaryKey(),
+    createdAt: integer({ mode: "timestamp" })
       .notNull()
       .default(sqlTimestampNow),
-    secret: text("secret").notNull(),
-    type: text("type", { enum: ["controller"] }).notNull(),
-    target: text("target").notNull(),
+    expiresAt: integer({ mode: "timestamp" }),
+    secret: text().notNull(),
+    type: text({ enum: ["controller", "onboarding"] }).notNull(),
+    target: text().notNull(),
   },
   (table) => ({ uniqueTargetAndType: unique().on(table.type, table.target) }),
 );
+
+export type Verification = typeof verifications.$inferSelect;
+
+export const users = sqliteTable("users", {
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  email: text().notNull().unique(),
+  createdAt: integer({
+    mode: "timestamp",
+  })
+    .notNull()
+    .default(sqlTimestampNow),
+  name: text().notNull(),
+  role: text({ enum: ["admin", "user"] }).notNull(),
+});
+
+export const passwords = sqliteTable("passwords", {
+  hash: text().notNull(),
+  userId: text()
+    .notNull()
+    .references(() => users.id)
+    .unique(),
+});
+
+export const sessions = sqliteTable("sessions", {
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  createdAt: integer({
+    mode: "timestamp",
+  })
+    .notNull()
+    .default(sqlTimestampNow),
+  updatedAt: integer({
+    mode: "timestamp",
+  })
+    .notNull()
+    .default(sqlTimestampNow),
+  expirationDate: integer({
+    mode: "timestamp",
+  }).notNull(),
+  userId: text()
+    .notNull()
+    .references(() => users.id),
+});
+
+export type Session = typeof sessions.$inferSelect;
