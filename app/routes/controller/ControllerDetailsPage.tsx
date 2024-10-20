@@ -31,7 +31,7 @@ import { ControllerMenu } from "./shared/ControllerMenu";
 import { TemperatureChart } from "./shared/TemperatureChart";
 
 export const loader = async ({ params, request }: LoaderArgs) => {
-  await requireUser(request);
+  const currentUser = await requireUser(request);
   const interval =
     new URL(request.url).searchParams.get("interval") ?? "timestamp";
   const controllerId = parseInt(params.controllerId);
@@ -42,7 +42,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
     totalCount,
     totalErrorCount,
   ] = await Promise.all([
-    getController(controllerId),
+    getController(controllerId, currentUser),
     getControllerTemperatures(controllerId, interval),
     getLatestControllerTemperature(controllerId),
     getControllerTemperaturesTotalCount(controllerId),
@@ -62,8 +62,20 @@ export const loader = async ({ params, request }: LoaderArgs) => {
   };
 };
 
+const requireUserOwnerOfController = async (
+  request: Request,
+  controllerId: number,
+) => {
+  const currentUser = await requireUser(request);
+  const controller = await getController(controllerId, currentUser);
+  if (controller?.userId !== currentUser.id) {
+    throw new Response("Unauthorized", { status: 403 });
+  }
+};
+
 export const action = async ({ request, params }: ActionArgs) => {
   const controllerId = parseInt(params.controllerId);
+  await requireUserOwnerOfController(request, controllerId);
   const formData = await request.formData();
   const intent = formData.get("intent");
   if (request.method === "PUT" && intent === "edit-name") {

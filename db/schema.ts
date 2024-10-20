@@ -22,6 +22,9 @@ export const batches = sqliteTable("batches", {
   })
     .notNull()
     .default(sqlTimestampNow),
+  userId: text()
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
 });
 
 export type Batch = typeof batches.$inferSelect;
@@ -34,7 +37,7 @@ export const ingredients = sqliteTable("ingredients", {
   time: integer(), // Relevent for hops (cooking time)
   batchId: integer()
     .notNull()
-    .references(() => batches.id),
+    .references(() => batches.id, { onDelete: "cascade" }),
 });
 
 export type Ingredient = typeof ingredients.$inferSelect;
@@ -43,13 +46,16 @@ export const controllers = sqliteTable("controllers", {
   id: integer().primaryKey(),
   name: text().notNull(),
   isRelayOn: integer({ mode: "boolean" }).notNull().default(false),
+  userId: text()
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
 });
 
 export const controllerTemperatures = sqliteTable("controller_temperatures", {
   id: integer().primaryKey(),
   controllerId: integer()
     .notNull()
-    .references(() => controllers.id),
+    .references(() => controllers.id, { onDelete: "cascade" }),
   temperature: real().notNull(),
   timestamp: integer({
     mode: "timestamp",
@@ -89,11 +95,13 @@ export const users = sqliteTable("users", {
   role: text({ enum: ["admin", "user"] }).notNull(),
 });
 
+export type User = typeof users.$inferSelect;
+
 export const passwords = sqliteTable("passwords", {
   hash: text().notNull(),
   userId: text()
     .notNull()
-    .references(() => users.id)
+    .references(() => users.id, { onDelete: "cascade" })
     .unique(),
 });
 
@@ -116,7 +124,7 @@ export const sessions = sqliteTable("sessions", {
   }).notNull(),
   userId: text()
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id, { onDelete: "cascade" }),
 });
 
 export type Session = typeof sessions.$inferSelect;

@@ -16,8 +16,14 @@ export const getBatch = async (batchId: number) => {
   )[0];
 };
 
-export const postBatch = async (name: string) => {
-  return await db.insert(batches).values({ name });
+export const postBatch = async ({
+  name,
+  userId,
+}: {
+  name: string;
+  userId: string;
+}) => {
+  return await db.insert(batches).values({ name, userId });
 };
 
 export const putBatch = async (

@@ -12,23 +12,34 @@ import {
   postIngredient,
   putIngredient,
 } from "~/.server/data-layer/ingredients";
+import { getUser, requireUser } from "~/lib/auth.server";
 
 import { MaltForm } from "./shared/MaltForm";
 import { MashingForm } from "./shared/MashingForm";
 import { GravityForm } from "./shared/GravityForm";
 
 export const loader = async ({
+  request,
   params: { batchId: batchIdParam },
 }: LoaderArgs) => {
   const batchId = parseInt(batchIdParam);
-  const [batch, batchIngredients] = await Promise.all([
+  const [batch, batchIngredients, user] = await Promise.all([
     getBatch(batchId),
     getBatchIngredients(batchId),
+    getUser(request),
   ]);
   if (!batch) {
     throw new Response("Fant ikke brygg med id " + batchId, { status: 404 });
   }
-  return { batch, batchIngredients };
+  return { batch, batchIngredients, user };
+};
+
+const requireUserOwnerOfBatch = async (request: Request, batchId: number) => {
+  const currentUser = await requireUser(request);
+  const batch = await getBatch(batchId);
+  if (batch?.userId !== currentUser.id) {
+    throw new Response("Unauthorized", { status: 403 });
+  }
 };
 
 export const action = async ({
@@ -36,6 +47,7 @@ export const action = async ({
   request,
 }: ActionArgs) => {
   const batchId = parseInt(batchIdParam);
+  await requireUserOwnerOfBatch(request, batchId);
   const formData = await request.formData();
   const intent = String(formData.get("intent"));
   if (intent === "put-gravity") {
@@ -87,8 +99,9 @@ export const action = async ({
 };
 
 export default function BatchPage({
-  loaderData: { batch, batchIngredients },
+  loaderData: { batch, batchIngredients, user },
 }: ComponentProps) {
+  const readOnly = batch.userId !== user?.id;
   return (
     <Main>
       <h1 className="text-4xl">{batch.name}</h1>
@@ -96,10 +109,14 @@ export default function BatchPage({
         Opprettet: {batch.createdTimestamp.toLocaleDateString("nb")}{" "}
         {batch.createdTimestamp.toLocaleTimeString("nb")}
       </div>
-      <div className="flex flex-col gap-2">
-        <MaltForm ingredients={batchIngredients} />
-        <MashingForm batch={batch} ingredients={batchIngredients} />
-        <GravityForm batch={batch} />
+      <div className="mb-10 flex flex-col gap-2">
+        <MaltForm ingredients={batchIngredients} readOnly={readOnly} />
+        <MashingForm
+          batch={batch}
+          ingredients={batchIngredients}
+          readOnly={readOnly}
+        />
+        <GravityForm batch={batch} readOnly={readOnly} />
       </div>
     </Main>
   );

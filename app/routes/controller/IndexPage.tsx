@@ -23,18 +23,19 @@ import { insertVerification } from "~/.server/data-layer/verifications";
 import { requireUser } from "~/lib/auth.server";
 
 export const loader = async ({ request }: LoaderArgs) => {
-  await requireUser(request);
-  const controllers = await getControllers();
+  const user = await requireUser(request);
+  const controllers = await getControllers(user);
   return { controllers };
 };
 
 export const action = async ({ request }: ActionArgs) => {
   if (request.method === "POST") {
+    const user = await requireUser(request);
     const formdata = await request.formData();
     const name = String(formdata.get("name"));
     const secret = createControllerSecret();
 
-    const id = await postController({ name });
+    const id = await postController({ name, userId: user.id });
     await insertVerification({
       secret: encryptSecret(secret, process.env.ENCRYPTION_KEY!),
       target: id.toString(),
@@ -52,18 +53,22 @@ export default function ControllersPage({
     <Main className="flex flex-col gap-2">
       <ControllerForm />
       <h2 className="text-4xl">Kontrollere</h2>
-      <ul className="divide-y">
-        {controllers.map((controller) => (
-          <li key={controller.id}>
-            <Link
-              to={`/controller/${controller.id}`}
-              className="flex p-2 text-lg hover:bg-slate-50"
-            >
-              {controller.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
+      {controllers.length > 0 ? (
+        <ul className="divide-y">
+          {controllers.map((controller) => (
+            <li key={controller.id}>
+              <Link
+                to={`/controller/${controller.id}`}
+                className="flex p-2 text-lg hover:bg-slate-50"
+              >
+                {controller.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="text-muted-foreground">Ingen kontrollere funnet.</div>
+      )}
     </Main>
   );
 }
@@ -83,7 +88,11 @@ const ControllerForm = () => {
   );
   return (
     <div className="flex flex-col gap-2 rounded border p-4">
-      <fetcher.Form className="flex items-end gap-2" method="POST" ref={$form}>
+      <fetcher.Form
+        className="flex flex-wrap items-end gap-2"
+        method="POST"
+        ref={$form}
+      >
         <div>
           <Label htmlFor={id}>Navn på kontroller</Label>
           <Input
