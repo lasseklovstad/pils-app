@@ -5,21 +5,26 @@ import { Form, redirect, useActionData, type MetaFunction } from "react-router";
 import { z } from "zod";
 import * as E from "@react-email/components";
 
-import type { ActionArgs, ActionData } from "./+types.SignUpPage";
+import type { ActionArgs, ActionData, LoaderArgs } from "./+types.SignUpPage";
 
 import { Field } from "~/components/Form";
 import { Main } from "~/components/Main";
 import { Button } from "~/components/ui/button";
 import { useIsPending } from "~/lib/useIsPending";
-import { EmailSchema } from "~/lib/user-validation";
+import { EmailSchema } from "~/routes/auth/user-validation";
 import { sendMail } from "~/.server/emailService";
 import { getUserByEmail } from "~/.server/data-layer/users";
+import { requireAnonymous } from "~/lib/auth.server";
 
 import { prepareVerification } from "./verify.server";
 
 const SignUpFormSchema = z.object({
   email: EmailSchema,
 });
+
+export const loader = async ({ request }: LoaderArgs) => {
+  await requireAnonymous(request);
+};
 
 export async function action({ request }: ActionArgs) {
   const formData = await request.formData();

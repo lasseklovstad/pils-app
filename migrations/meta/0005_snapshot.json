@@ -112,12 +112,8 @@
           "name": "controller_temperatures_controller_id_controllers_id_fk",
           "tableFrom": "controller_temperatures",
           "tableTo": "controllers",
-          "columnsFrom": [
-            "controller_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["controller_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -210,12 +206,8 @@
           "name": "ingredients_batch_id_batches_id_fk",
           "tableFrom": "ingredients",
           "tableTo": "batches",
-          "columnsFrom": [
-            "batch_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["batch_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -245,9 +237,7 @@
       "indexes": {
         "passwords_userId_unique": {
           "name": "passwords_userId_unique",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": true
         }
       },
@@ -256,12 +246,8 @@
           "name": "passwords_user_id_users_id_fk",
           "tableFrom": "passwords",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -317,12 +303,8 @@
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -374,9 +356,7 @@
       "indexes": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         }
       },
@@ -435,10 +415,7 @@
       "indexes": {
         "verifications_type_target_unique": {
           "name": "verifications_type_target_unique",
-          "columns": [
-            "type",
-            "target"
-          ],
+          "columns": ["type", "target"],
           "isUnique": true
         }
       },

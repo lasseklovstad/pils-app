@@ -15,7 +15,7 @@ const authorizeRequest = async (controllerId: string, request: Request) => {
   if (!hmac || !timestamp || !nonce) {
     throw new Response("Incorrect headers provided.", { status: 401 });
   }
-  const verification = await getVerification(controllerId);
+  const verification = await getVerification(controllerId, "controller");
   if (!verification) {
     throw new Response("Could not find controller with id " + controllerId, {
       status: 404,

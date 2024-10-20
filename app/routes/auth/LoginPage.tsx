@@ -1,7 +1,7 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { Loader2, LogIn } from "lucide-react";
-import { Form, Link, useActionData } from "react-router";
+import { Form, Link, useActionData, useSearchParams } from "react-router";
 import { z } from "zod";
 
 import type { ActionData, ActionArgs, LoaderArgs } from "./+types.LoginPage";
@@ -10,13 +10,14 @@ import { CheckboxField, ErrorList, Field } from "~/components/Form";
 import { Main } from "~/components/Main";
 import { Button } from "~/components/ui/button";
 import { useIsPending } from "~/lib/useIsPending";
-import { EmailSchema, PasswordSchema } from "~/lib/user-validation";
+import { EmailSchema, PasswordSchema } from "~/routes/auth/user-validation";
 import { login, requireAnonymous } from "~/lib/auth.server";
 import { handleNewSession } from "~/lib/login.server";
 
 const LoginFormSchema = z.object({
   email: EmailSchema,
   password: PasswordSchema,
+  redirectTo: z.string().optional(),
   remember: z.boolean().optional(),
 });
 
@@ -51,22 +52,25 @@ export async function action({ request }: ActionArgs) {
     return submission.reply({ hideFields: ["password"] });
   }
 
-  const { session, remember } = submission.value;
+  const { session, remember, redirectTo } = submission.value;
 
   return handleNewSession({
     request,
     session,
     remember: remember ?? false,
+    redirectTo,
   });
 }
 
 export default function LoginPage() {
+  const [searchParams] = useSearchParams();
   const actionData = useActionData() as ActionData;
   const isPending = useIsPending();
   const [form, fields] = useForm({
     id: "login-form",
     constraint: getZodConstraint(LoginFormSchema),
     lastResult: actionData,
+    defaultValue: { redirectTo: searchParams.get("redirectTo") },
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: LoginFormSchema });
     },
@@ -107,6 +111,7 @@ export default function LoginPage() {
           })}
           errors={fields.remember.errors}
         />
+        <input {...getInputProps(fields.redirectTo, { type: "hidden" })} />
         <ErrorList errors={form.errors} id={form.errorId} className="mb-2" />
         <Button type="submit">
           {isPending ? <Loader2 className="animate-spin" /> : <LogIn />}

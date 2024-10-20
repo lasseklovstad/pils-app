@@ -7,6 +7,7 @@ export const routes: RouteConfig = [
   route("batch/:batchId", "routes/batch/BatchDetailsPage.tsx"),
   route("login", "routes/auth/LoginPage.tsx"),
   route("sign-up", "routes/auth/SignUpPage.tsx"),
+  route("logout", "routes/auth/LogoutPage.tsx"),
   route("verify", "routes/auth/VerifyPage.tsx"),
   route("on-boarding", "routes/auth/OnBoardingPage.tsx"),
   route("health", "routes/HealthApi.ts"),

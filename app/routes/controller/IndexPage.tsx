@@ -6,6 +6,7 @@ import type {
   ComponentProps,
   ActionArgs,
   ActionData,
+  LoaderArgs,
 } from "./+types.IndexPage";
 
 import {
@@ -19,8 +20,10 @@ import { Main } from "~/components/Main";
 import { createControllerSecret, encryptSecret } from "~/lib/utils";
 import { ControllerSecretSuccessMessage } from "~/components/ControllerSecretSuccessMessage";
 import { insertVerification } from "~/.server/data-layer/verifications";
+import { requireUser } from "~/lib/auth.server";
 
-export const loader = async () => {
+export const loader = async ({ request }: LoaderArgs) => {
+  await requireUser(request);
   const controllers = await getControllers();
   return { controllers };
 };

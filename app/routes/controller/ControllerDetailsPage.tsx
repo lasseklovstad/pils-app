@@ -25,11 +25,13 @@ import { Switch } from "~/components/ui/switch";
 import { useRevalidateOnFocus } from "~/lib/useRevalidateOnFocus";
 import { cn, createControllerSecret, encryptSecret } from "~/lib/utils";
 import { insertVerification } from "~/.server/data-layer/verifications";
+import { requireUser } from "~/lib/auth.server";
 
 import { ControllerMenu } from "./shared/ControllerMenu";
 import { TemperatureChart } from "./shared/TemperatureChart";
 
 export const loader = async ({ params, request }: LoaderArgs) => {
+  await requireUser(request);
   const interval =
     new URL(request.url).searchParams.get("interval") ?? "timestamp";
   const controllerId = parseInt(params.controllerId);

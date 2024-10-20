@@ -13,19 +13,13 @@ import {
 
 import { authSessionStorage } from "./session.server";
 
-export type ProviderUser = {
-  id: string;
-  email: string;
-  name: string;
-};
-
-export const SESSION_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30;
-export const getSessionExpirationDate = () =>
+const SESSION_EXPIRATION_TIME = 1000 * 60 * 60 * 24 * 30; // 30 days
+const getSessionExpirationDate = () =>
   new Date(Date.now() + SESSION_EXPIRATION_TIME);
 
 export const sessionKey = "sessionId";
 
-export async function getUserId(request: Request) {
+export async function getUser(request: Request) {
   const authSession = await authSessionStorage.getSession(
     request.headers.get("cookie"),
   );
@@ -39,15 +33,15 @@ export async function getUserId(request: Request) {
       },
     });
   }
-  return user.id;
+  return user;
 }
 
-export async function requireUserId(
+export async function requireUser(
   request: Request,
   { redirectTo }: { redirectTo?: string | null } = {},
 ) {
-  const userId = await getUserId(request);
-  if (!userId) {
+  const user = await getUser(request);
+  if (!user) {
     const requestUrl = new URL(request.url);
     redirectTo =
       redirectTo === null
@@ -59,12 +53,12 @@ export async function requireUserId(
       .join("?");
     throw redirect(loginRedirect);
   }
-  return userId;
+  return user;
 }
 
 export async function requireAnonymous(request: Request) {
-  const userId = await getUserId(request);
-  if (userId) {
+  const user = await getUser(request);
+  if (user) {
     throw redirect("/");
   }
 }
@@ -100,7 +94,11 @@ export async function signup({
     {
       expirationDate: getSessionExpirationDate(),
     },
-    { email: email.toLowerCase(), name, role: "user" },
+    {
+      email: email.toLowerCase(),
+      name,
+      role: email === "lasse.klovstad@gmail.com" ? "admin" : "user",
+    },
     {
       hash: hashedPassword,
     },
@@ -126,12 +124,12 @@ export async function logout(request: Request) {
   });
 }
 
-export async function getPasswordHash(password: string) {
+async function getPasswordHash(password: string) {
   const hash = await bcrypt.hash(password, 10);
   return hash;
 }
 
-export async function verifyUserPassword(email: string, password: string) {
+async function verifyUserPassword(email: string, password: string) {
   const userPassword = await getUserPasswordByEmail(email);
   if (!userPassword) {
     return null;

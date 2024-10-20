@@ -22,7 +22,7 @@ import { useIsPending } from "~/lib/useIsPending";
 import {
   NameSchema,
   PasswordAndConfirmPasswordSchema,
-} from "~/lib/user-validation";
+} from "~/routes/auth/user-validation";
 import { verifySessionStorage } from "~/lib/verification.server";
 import { requireAnonymous, sessionKey, signup } from "~/lib/auth.server";
 import { authSessionStorage } from "~/lib/session.server";
@@ -36,8 +36,7 @@ const SignupFormSchema = z
   .object({
     name: NameSchema,
     agreeToTermsOfServiceAndPrivacyPolicy: z.boolean({
-      required_error:
-        "You must agree to the terms of service and privacy policy",
+      required_error: "Du må godta våre vilkår for bruk og personvernerklæring",
     }),
     remember: z.boolean().optional(),
     redirectTo: z.string().optional(),

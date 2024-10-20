@@ -3,8 +3,6 @@ import { z } from "zod";
 import { parseWithZod } from "@conform-to/zod";
 import { redirect } from "react-router";
 
-import type { Submission } from "@conform-to/react";
-
 import { getDomainUrl } from "~/lib/utils";
 import {
   deleteVerification,
@@ -16,17 +14,7 @@ import { verifySessionStorage } from "~/lib/verification.server";
 import { codeQueryParam, targetQueryParam, VerifySchema } from "./VerifyPage";
 import { onboardingEmailSessionKey } from "./OnBoardingPage";
 
-export type VerifyFunctionArgs = {
-  request: Request;
-  submission: Submission<
-    z.input<typeof VerifySchema>,
-    string[],
-    z.output<typeof VerifySchema>
-  >;
-  body: FormData | URLSearchParams;
-};
-
-export function getRedirectToUrl({
+function getRedirectToUrl({
   request,
   target,
 }: {
@@ -70,13 +58,7 @@ export async function prepareVerification({
   return { otp: verificationConfig.otp, redirectTo, verifyUrl };
 }
 
-export async function isCodeValid({
-  code,
-  target,
-}: {
-  code: string;
-  target: string;
-}) {
+async function isCodeValid({ code, target }: { code: string; target: string }) {
   const verification = await getVerification(target, "onboarding");
   if (!verification) return false;
   const result = verifyTOTP({
