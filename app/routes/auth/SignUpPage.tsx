@@ -60,7 +60,7 @@ export async function action({ request }: ActionArgs) {
   });
 
   if (response.status === "success") {
-    return redirect(redirectTo.toString());
+    throw redirect(redirectTo.toString());
   } else {
     return submission.reply({ formErrors: [response.message] });
   }
@@ -98,7 +98,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function SignUpPage() {
-  const actionData = useActionData() as ActionData;
+  const actionData = useActionData<ActionData>();
   const isPending = useIsPending();
   const [form, fields] = useForm({
     id: "login-form",

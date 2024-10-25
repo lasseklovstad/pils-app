@@ -114,7 +114,9 @@ export const ControllerMenu = ({ controller }: Props) => {
               )}
               Generer ny nøkkel
             </Button>
-            {editSecretFetcher.data?.ok && editSecretFetcher.data.secret ? (
+            {editSecretFetcher.data?.ok &&
+            "secret" in editSecretFetcher.data &&
+            editSecretFetcher.data.secret ? (
               <ControllerSecretSuccessMessage
                 controller={{
                   ...controller,

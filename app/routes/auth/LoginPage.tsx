@@ -54,7 +54,7 @@ export async function action({ request }: ActionArgs) {
 
   const { session, remember, redirectTo } = submission.value;
 
-  return handleNewSession({
+  handleNewSession({
     request,
     session,
     remember: remember ?? false,
@@ -64,7 +64,7 @@ export async function action({ request }: ActionArgs) {
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const actionData = useActionData() as ActionData;
+  const actionData = useActionData<ActionData>();
   const isPending = useIsPending();
   const [form, fields] = useForm({
     id: "login-form",

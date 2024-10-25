@@ -22,7 +22,7 @@ export async function handleNewSession({
   );
   authSession.set(sessionKey, session.id);
 
-  return redirect(safeRedirect(redirectTo), {
+  throw redirect(safeRedirect(redirectTo), {
     headers: {
       "set-cookie": await authSessionStorage.commitSession(authSession, {
         expires: remember ? session.expirationDate : undefined,

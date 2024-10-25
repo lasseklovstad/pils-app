@@ -101,7 +101,7 @@ export async function validateRequest(
   await deleteVerification(submissionValue[targetQueryParam], "onboarding");
   const verifySession = await verifySessionStorage.getSession();
   verifySession.set(onboardingEmailSessionKey, submission.value.target);
-  return redirect("/on-boarding", {
+  throw redirect("/on-boarding", {
     headers: {
       "set-cookie": await verifySessionStorage.commitSession(verifySession),
     },

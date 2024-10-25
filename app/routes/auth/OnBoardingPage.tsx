@@ -97,7 +97,7 @@ export async function action({ request }: ActionArgs) {
     await verifySessionStorage.destroySession(verifySession),
   );
 
-  return redirect(safeRedirect(redirectTo), { headers });
+  throw redirect(safeRedirect(redirectTo), { headers });
 }
 
 export const meta: MetaFunction = () => {
@@ -107,7 +107,7 @@ export const meta: MetaFunction = () => {
 export default function OnboardingRoute({
   loaderData: { email },
 }: ComponentProps) {
-  const actionData = useActionData() as ActionData;
+  const actionData = useActionData<ActionData>();
   const isPending = useIsPending();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo");
