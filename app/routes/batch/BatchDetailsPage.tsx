@@ -1,3 +1,7 @@
+import { LocalFileStorage } from "@mjackson/file-storage/local";
+import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
+import { Form } from "react-router";
+
 import type {
   ActionArgs,
   ComponentProps,
@@ -5,33 +9,44 @@ import type {
 } from "./+types.BatchDetailsPage";
 
 import { getBatch, putBatch } from "~/.server/data-layer/batches";
-import { Main } from "~/components/Main";
+import { getBatchFiles, insertFile } from "~/.server/data-layer/batchFiles";
 import {
   deleteIngredient,
   getBatchIngredients,
   postIngredient,
   putIngredient,
 } from "~/.server/data-layer/ingredients";
+import { Main } from "~/components/Main";
+import { Input } from "~/components/ui/input";
 import { getUser, requireUser } from "~/lib/auth.server";
 
+import { GravityForm } from "./shared/GravityForm";
 import { MaltForm } from "./shared/MaltForm";
 import { MashingForm } from "./shared/MashingForm";
-import { GravityForm } from "./shared/GravityForm";
 
 export const loader = async ({
   request,
   params: { batchId: batchIdParam },
 }: LoaderArgs) => {
   const batchId = parseInt(batchIdParam);
-  const [batch, batchIngredients, user] = await Promise.all([
+  const [batch, batchIngredients, user, batchFiles] = await Promise.all([
     getBatch(batchId),
     getBatchIngredients(batchId),
     getUser(request),
+    getBatchFiles(batchId),
   ]);
   if (!batch) {
     throw new Response("Fant ikke brygg med id " + batchId, { status: 404 });
   }
-  return { batch, batchIngredients, user };
+  return {
+    batch,
+    batchIngredients,
+    user,
+    batchFiles: batchFiles.map((file) => ({
+      ...file,
+      publicUrl: `/api/files/${file.type}/${file.id}`,
+    })),
+  };
 };
 
 const requireUserOwnerOfBatch = async (request: Request, batchId: number) => {
@@ -40,6 +55,7 @@ const requireUserOwnerOfBatch = async (request: Request, batchId: number) => {
   if (batch?.userId !== currentUser.id) {
     throw new Response("Unauthorized", { status: 403 });
   }
+  return currentUser;
 };
 
 export const action = async ({
@@ -48,8 +64,18 @@ export const action = async ({
 }: ActionArgs) => {
   const batchId = parseInt(batchIdParam);
   await requireUserOwnerOfBatch(request, batchId);
-  const formData = await request.formData();
+
+  const formData = await parseFormData(
+    request,
+    createBatchUploadHandler(batchId),
+  );
   const intent = String(formData.get("intent"));
+  if (intent === "upload-media") {
+    const files = formData.getAll("media") as File[];
+    console.log(files.map((file) => file.name));
+
+    return { ok: true };
+  }
   if (intent === "put-gravity") {
     const originalGravity = parseInt(String(formData.get("original-gravity")));
     const finalGravity = parseInt(String(formData.get("final-gravity")));
@@ -98,8 +124,31 @@ export const action = async ({
   throw new Error("Invalid intent");
 };
 
+function createBatchUploadHandler(batchId: number) {
+  const directory = `${process.env.MEDIA_DIRECTORY}/media/batch-${batchId}`;
+  const fileStorage = new LocalFileStorage(directory);
+
+  async function uploadHandler(fileUpload: FileUpload) {
+    if (fileUpload.fieldName === "media") {
+      const fileId = await insertFile({
+        batchId,
+        type: fileUpload.type.startsWith("video")
+          ? "video"
+          : fileUpload.type.startsWith("image")
+            ? "image"
+            : "unknown",
+      });
+      await fileStorage.set(fileId, fileUpload);
+      return fileStorage.get(fileId);
+    }
+
+    // Ignore any files we don't recognize the name of...
+  }
+  return uploadHandler;
+}
+
 export default function BatchPage({
-  loaderData: { batch, batchIngredients, user },
+  loaderData: { batch, batchIngredients, user, batchFiles },
 }: ComponentProps) {
   const readOnly = batch.userId !== user?.id;
   return (
@@ -117,6 +166,45 @@ export default function BatchPage({
           readOnly={readOnly}
         />
         <GravityForm batch={batch} readOnly={readOnly} />
+        <Form encType="multipart/form-data" method="POST">
+          <Input
+            onChange={(e) => e.target.form?.requestSubmit()}
+            className="w-fit"
+            type="file"
+            multiple
+            name="media"
+            accept="image/*,video/*"
+          />
+          <input readOnly name="intent" value="upload-media" hidden />
+        </Form>
+        <div className="flex flex-wrap gap-2">
+          {batchFiles
+            .filter((file) => file.type !== "unknown")
+            .map((file) => {
+              if (file.type === "image") {
+                return (
+                  <img
+                    className="aspect-auto max-h-40 w-fit"
+                    key={file.id}
+                    src={file.publicUrl}
+                  />
+                );
+              }
+              if (file.type === "video") {
+                return (
+                  <video
+                    className="aspect-auto max-h-40 w-fit"
+                    controls
+                    playsInline
+                    loop
+                    key={file.id}
+                    src={file.publicUrl}
+                  />
+                );
+              }
+              return <div key={file.id}>{file.id}</div>;
+            })}
+        </div>
       </div>
     </Main>
   );

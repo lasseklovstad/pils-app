@@ -11,3 +11,4 @@ db-backups
 /blob-report/
 /playwright/.cache/
 /tests/fixtures/email/
+/data

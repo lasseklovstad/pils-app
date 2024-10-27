@@ -17,5 +17,7 @@ export const routes: RouteConfig = [
   ]),
   ...prefix("api", [
     route("controller/:controllerId", "routes/api/controllerApi.ts"),
+    route("files/image/:fileId", "routes/api/batchImageApi.ts"),
+    route("files/video/:fileId", "routes/api/batchVideoApi.ts"),
   ]),
 ];
