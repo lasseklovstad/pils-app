@@ -159,6 +159,7 @@ export default function BatchPage({
   loaderData: { batch, batchIngredients, user, batchFiles },
 }: ComponentProps) {
   const readOnly = batch.userId !== user?.id;
+  const filesToShow = batchFiles.filter((file) => file.type !== "unknown");
   return (
     <Main>
       <h1 className="text-4xl">{batch.name}</h1>
@@ -174,6 +175,7 @@ export default function BatchPage({
           readOnly={readOnly}
         />
         <GravityForm batch={batch} readOnly={readOnly} />
+        <h2 className="text-2xl">Last opp bilder/film</h2>
         <Form encType="multipart/form-data" method="POST">
           <Input
             onChange={(e) => e.target.form?.requestSubmit()}
@@ -185,11 +187,10 @@ export default function BatchPage({
           />
           <input readOnly name="intent" value="upload-media" hidden />
         </Form>
-        <Carousel opts={{ align: "end" }}>
-          <CarouselContent>
-            {batchFiles
-              .filter((file) => file.type !== "unknown")
-              .map((file) => (
+        {filesToShow.length > 0 ? (
+          <Carousel opts={{ align: "end" }}>
+            <CarouselContent>
+              {filesToShow.map((file) => (
                 <CarouselItem
                   key={file.id}
                   className="md:basis-1/2 lg:basis-1/3"
@@ -200,10 +201,11 @@ export default function BatchPage({
                   />
                 </CarouselItem>
               ))}
-          </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
-        </Carousel>
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
+        ) : null}
       </div>
     </Main>
   );
