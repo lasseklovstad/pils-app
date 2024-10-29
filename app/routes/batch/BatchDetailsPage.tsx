@@ -1,3 +1,6 @@
+import os from "os";
+import path from "path";
+
 import { LocalFileStorage } from "@mjackson/file-storage/local";
 import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
 import { Form } from "react-router";
@@ -75,12 +78,30 @@ export const action = async ({
 
   const formData = await parseFormData(
     request,
-    createBatchUploadHandler(batchId),
+    createTempUploadHandler("batch-uploads"),
+    { maxFileSize: 20 * 1024 * 1024 },
   );
   const intent = String(formData.get("intent"));
   if (intent === "upload-media") {
     const files = formData.getAll("media") as File[];
-    console.log(files.map((file) => file.name));
+    const directory = `${process.env.MEDIA_DIRECTORY}/media/batch-${batchId}`;
+    const fileStorage = new LocalFileStorage(directory);
+    for (const file of files) {
+      const type = file.type.startsWith("video")
+        ? "video"
+        : file.type.startsWith("image")
+          ? "image"
+          : "unknown";
+      if (type === "unknown") {
+        console.warn("Unknown file tried to upload");
+        return;
+      }
+      const fileId = await insertFile({
+        batchId,
+        type,
+      });
+      await fileStorage.set(fileId, file);
+    }
 
     return { ok: true };
   }
@@ -132,22 +153,16 @@ export const action = async ({
   throw new Error("Invalid intent");
 };
 
-function createBatchUploadHandler(batchId: number) {
-  const directory = `${process.env.MEDIA_DIRECTORY}/media/batch-${batchId}`;
+function createTempUploadHandler(prefix: string) {
+  const directory = path.join(os.tmpdir(), prefix);
+  console.log("Uploading to tep dir: " + directory);
   const fileStorage = new LocalFileStorage(directory);
 
   async function uploadHandler(fileUpload: FileUpload) {
     if (fileUpload.fieldName === "media") {
-      const fileId = await insertFile({
-        batchId,
-        type: fileUpload.type.startsWith("video")
-          ? "video"
-          : fileUpload.type.startsWith("image")
-            ? "image"
-            : "unknown",
-      });
-      await fileStorage.set(fileId, fileUpload);
-      return fileStorage.get(fileId);
+      const key = new Date().getTime().toString(36);
+      await fileStorage.set(key, fileUpload);
+      return fileStorage.get(key);
     }
 
     // Ignore any files we don't recognize the name of...
