@@ -128,3 +128,18 @@ export const sessions = sqliteTable("sessions", {
 });
 
 export type Session = typeof sessions.$inferSelect;
+
+export const batchFiles = sqliteTable("batch_files", {
+  id: text()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  createdAt: integer({
+    mode: "timestamp",
+  })
+    .notNull()
+    .default(sqlTimestampNow),
+  type: text({ enum: ["image", "video", "unknown"] }).notNull(),
+  batchId: integer()
+    .notNull()
+    .references(() => batches.id),
+});

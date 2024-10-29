@@ -8,6 +8,7 @@ WORKDIR /app
 # Set production environment
 ENV NODE_ENV=production
 ENV APP_DATABASE_URL=/data/sqlite.db
+ENV MEDIA_DIRECTORY=/data
 
 
 # Throw-away build stage to reduce size of final image
