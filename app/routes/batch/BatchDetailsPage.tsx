@@ -17,12 +17,20 @@ import {
   putIngredient,
 } from "~/.server/data-layer/ingredients";
 import { Main } from "~/components/Main";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "~/components/ui/carousel";
 import { Input } from "~/components/ui/input";
 import { getUser, requireUser } from "~/lib/auth.server";
 
 import { GravityForm } from "./shared/GravityForm";
 import { MaltForm } from "./shared/MaltForm";
 import { MashingForm } from "./shared/MashingForm";
+import { Media } from "./shared/Media";
 
 export const loader = async ({
   request,
@@ -177,34 +185,25 @@ export default function BatchPage({
           />
           <input readOnly name="intent" value="upload-media" hidden />
         </Form>
-        <div className="flex flex-wrap gap-2">
-          {batchFiles
-            .filter((file) => file.type !== "unknown")
-            .map((file) => {
-              if (file.type === "image") {
-                return (
-                  <img
-                    className="aspect-auto max-h-40 w-fit"
-                    key={file.id}
-                    src={file.publicUrl}
+        <Carousel opts={{ align: "end" }}>
+          <CarouselContent>
+            {batchFiles
+              .filter((file) => file.type !== "unknown")
+              .map((file) => (
+                <CarouselItem
+                  key={file.id}
+                  className="md:basis-1/2 lg:basis-1/3"
+                >
+                  <Media
+                    file={file}
+                    className="h-96 w-full rounded-sm object-cover object-center"
                   />
-                );
-              }
-              if (file.type === "video") {
-                return (
-                  <video
-                    className="aspect-auto max-h-40 w-fit"
-                    controls
-                    playsInline
-                    loop
-                    key={file.id}
-                    src={file.publicUrl}
-                  />
-                );
-              }
-              return <div key={file.id}>{file.id}</div>;
-            })}
-        </div>
+                </CarouselItem>
+              ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </Main>
   );
