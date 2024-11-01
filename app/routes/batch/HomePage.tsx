@@ -47,7 +47,11 @@ export default function Home({
                 className="flex gap-2 p-2 hover:bg-slate-50"
               >
                 <img
-                  src={batch.picture + "?w=100"}
+                  src={
+                    batch.picture
+                      ? batch.picture + "?w=100"
+                      : "/android-chrome-192x192.png"
+                  }
                   className="aspect-square w-24 rounded object-cover"
                 ></img>
                 <div className="flex flex-col">

@@ -9,7 +9,7 @@ export const getBatches = async () => {
   return await db
     .select({
       ...getTableColumns(batches),
-      picture: sql<string>`${db
+      picture: sql<string | null>`${db
         .select({
           publicFileUrlSql,
         })
