@@ -44,13 +44,19 @@ export default function Home({
             <li key={batch.id}>
               <Link
                 to={`/batch/${batch.id}`}
-                className="flex flex-col p-2 hover:bg-slate-50"
+                className="flex gap-2 p-2 hover:bg-slate-50"
               >
-                <span className="text-lg">{batch.name}</span>
-                <span className="text-sm text-muted-foreground">
-                  {batch.createdTimestamp.toLocaleDateString("nb")}{" "}
-                  {batch.createdTimestamp.toLocaleTimeString("nb")}
-                </span>
+                <img
+                  src={batch.picture + "?w=100"}
+                  className="aspect-square w-24 rounded object-cover"
+                ></img>
+                <div className="flex flex-col">
+                  <span className="text-lg">{batch.name}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {batch.createdTimestamp.toLocaleDateString("nb")}{" "}
+                    {batch.createdTimestamp.toLocaleTimeString("nb")}
+                  </span>
+                </div>
               </Link>
             </li>
           ))}
