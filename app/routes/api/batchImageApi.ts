@@ -21,8 +21,8 @@ export const loader = async ({ params, request }: LoaderArgs) => {
 
   let imageBuffer = await file.arrayBuffer();
   if (width) {
-    console.log("width", width);
     const resizedImage = await sharp(imageBuffer)
+      .rotate()
       .resize({ width: parseInt(width, 10) })
       .toBuffer();
     imageBuffer = resizedImage;

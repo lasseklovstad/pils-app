@@ -1,6 +1,22 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended"
+    "config:recommended", ":automergePatch"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": [
+        "minor"
+      ],
+      "groupName": "Npm minor dependencies"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": [
+        "patch"
+      ],
+      "groupName": "Npm patch dependencies"
+    }
   ]
 }
