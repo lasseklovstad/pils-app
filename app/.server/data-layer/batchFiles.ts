@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, getTableColumns, sql } from "drizzle-orm";
 
 import { db } from "db/config.server";
 import { batchFiles } from "db/schema";
@@ -14,9 +14,14 @@ export const insertFile = async (value: typeof batchFiles.$inferInsert) => {
   return result[0].id;
 };
 
+export const publicFileUrlSql = sql<string>`'/api/files/'||${batchFiles.type}||'/'||${batchFiles.id}`;
+
 export const getBatchFiles = async (batchId: number) => {
   return await db
-    .select()
+    .select({
+      ...getTableColumns(batchFiles),
+      publicUrl: publicFileUrlSql,
+    })
     .from(batchFiles)
     .where(eq(batchFiles.batchId, batchId));
 };

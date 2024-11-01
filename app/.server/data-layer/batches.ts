@@ -1,11 +1,24 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, getTableColumns, sql } from "drizzle-orm";
 
 import { db } from "db/config.server";
-import { batches } from "db/schema";
+import { batches, batchFiles } from "db/schema";
+
+import { publicFileUrlSql } from "./batchFiles";
 
 export const getBatches = async () => {
   return await db
-    .select()
+    .select({
+      ...getTableColumns(batches),
+      picture: sql<string | null>`${db
+        .select({
+          publicFileUrlSql,
+        })
+        .from(batchFiles)
+        .where(
+          and(eq(batchFiles.batchId, batches.id), eq(batchFiles.type, "image")),
+        )
+        .limit(1)}`,
+    })
     .from(batches)
     .orderBy(desc(batches.createdTimestamp));
 };

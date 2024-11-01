@@ -53,10 +53,7 @@ export const loader = async ({
     batch,
     batchIngredients,
     user,
-    batchFiles: batchFiles.map((file) => ({
-      ...file,
-      publicUrl: `/api/files/${file.type}/${file.id}`,
-    })),
+    batchFiles,
   };
 };
 
@@ -155,7 +152,6 @@ export const action = async ({
 
 function createTempUploadHandler(prefix: string) {
   const directory = path.join(os.tmpdir(), prefix);
-  console.log("Uploading to tep dir: " + directory);
   const fileStorage = new LocalFileStorage(directory);
 
   async function uploadHandler(fileUpload: FileUpload) {
