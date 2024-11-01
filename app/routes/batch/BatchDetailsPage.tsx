@@ -199,7 +199,7 @@ export default function BatchPage({
           <input readOnly name="intent" value="upload-media" hidden />
         </Form>
         {filesToShow.length > 0 ? (
-          <Carousel opts={{ containScroll: "keepSnaps" }}>
+          <Carousel>
             <CarouselContent>
               {filesToShow.map((file) => (
                 <CarouselItem
