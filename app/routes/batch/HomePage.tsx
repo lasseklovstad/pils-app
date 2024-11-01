@@ -49,7 +49,7 @@ export default function Home({
                 <img
                   src={
                     batch.picture
-                      ? batch.picture + "?w=100"
+                      ? batch.picture + "?w=200"
                       : "/android-chrome-192x192.png"
                   }
                   className="aspect-square w-24 rounded object-cover"
