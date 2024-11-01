@@ -7,11 +7,16 @@
     {
       "matchManagers": ["npm"],
       "matchUpdateTypes": [
-        "minor",
+        "minor"
+      ],
+      "groupName": "Npm minor dependencies"
+    },
+    {
+      "matchManagers": ["npm"],
+      "matchUpdateTypes": [
         "patch"
       ],
-      "groupName": "Npm non-major dependencies",
-      "groupSlug": "npm-minor-patch"
+      "groupName": "Npm patch dependencies"
     }
   ]
 }
