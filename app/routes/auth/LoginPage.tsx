@@ -69,7 +69,7 @@ export default function LoginPage() {
   const [form, fields] = useForm({
     id: "login-form",
     constraint: getZodConstraint(LoginFormSchema),
-    lastResult: actionData,
+    lastResult: typeof actionData.status !== "number" ? actionData : undefined,
     defaultValue: { redirectTo: searchParams.get("redirectTo") },
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: LoginFormSchema });

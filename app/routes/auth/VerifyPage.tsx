@@ -37,7 +37,7 @@ export default function VerifyRoute() {
   const [form, fields] = useForm({
     id: "verify-form",
     constraint: getZodConstraint(VerifySchema),
-    lastResult: actionData,
+    lastResult: typeof actionData.status !== "number" ? actionData : undefined,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: VerifySchema });
     },

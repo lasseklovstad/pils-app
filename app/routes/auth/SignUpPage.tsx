@@ -103,7 +103,7 @@ export default function SignUpPage() {
   const [form, fields] = useForm({
     id: "login-form",
     constraint: getZodConstraint(SignUpFormSchema),
-    lastResult: actionData,
+    lastResult: typeof actionData.status !== "number" ? actionData : undefined,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: SignUpFormSchema });
     },

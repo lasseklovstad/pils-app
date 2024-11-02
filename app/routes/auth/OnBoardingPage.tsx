@@ -116,7 +116,7 @@ export default function OnboardingRoute({
     id: "onboarding-form",
     constraint: getZodConstraint(SignupFormSchema),
     defaultValue: { redirectTo },
-    lastResult: actionData,
+    lastResult: typeof actionData.status !== "number" ? actionData : undefined,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: SignupFormSchema });
     },
