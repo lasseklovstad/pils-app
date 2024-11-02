@@ -1,10 +1,5 @@
 import { Ingredient } from "db/schema";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "~/components/ui/accordion";
+import { AccordionContent, AccordionTrigger } from "~/components/ui/accordion";
 import { calculateTotalAmount, filterIngredients } from "~/lib/utils";
 
 import { IngredientForm } from "./IngredientForm";

@@ -4,7 +4,6 @@ import path from "path";
 import { LocalFileStorage } from "@mjackson/file-storage/local";
 import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
 import { Form } from "react-router";
-import { Ellipsis, Eye, Menu, Trash } from "lucide-react";
 
 import type {
   ActionArgs,
@@ -25,31 +24,16 @@ import {
   putIngredient,
 } from "~/.server/data-layer/ingredients";
 import { Main } from "~/components/Main";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "~/components/ui/carousel";
+import { Accordion, AccordionItem } from "~/components/ui/accordion";
 import { Input } from "~/components/ui/input";
 import { getUser, requireUser } from "~/lib/auth.server";
-import { Accordion, AccordionItem } from "~/components/ui/accordion";
-import { Button } from "~/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
 import { getBatchFileStorage } from "~/lib/batchFileStorage";
 
+import { BatchPreviewImage } from "./shared/BatchPreviewImage";
 import { GravityForm } from "./shared/GravityForm";
 import { MaltForm } from "./shared/MaltForm";
 import { MashingForm } from "./shared/MashingForm";
-import { Media } from "./shared/Media";
 import { MediaCarousel } from "./shared/MediaCarousel";
-import { BatchPreviewImage } from "./shared/BatchPreviewImage";
 
 export const loader = async ({
   request,
