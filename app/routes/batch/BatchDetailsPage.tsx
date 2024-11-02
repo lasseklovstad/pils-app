@@ -230,7 +230,9 @@ export default function BatchPage({
             <input readOnly name="intent" value="upload-media" hidden />
           </Form>
         ) : null}
-        {filesToShow.length > 0 ? <MediaCarousel files={filesToShow} /> : null}
+        {filesToShow.length > 0 ? (
+          <MediaCarousel files={filesToShow} showMenu={!readOnly} />
+        ) : null}
       </div>
     </Main>
   );

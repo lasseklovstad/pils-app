@@ -26,9 +26,10 @@ type Props = {
     type: "video" | "image" | "unknown";
     batchId: number;
   }[];
+  showMenu: boolean;
 };
 
-export const MediaCarousel = ({ files }: Props) => {
+export const MediaCarousel = ({ files, showMenu }: Props) => {
   const submit = useSubmit();
   return (
     <Carousel>
@@ -42,41 +43,43 @@ export const MediaCarousel = ({ files }: Props) => {
               file={file}
               className="h-96 w-full rounded-sm object-cover object-center"
             />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button size="icon" className="absolute right-2 top-1">
-                  <Ellipsis className="size-6" />
-                  <span className="sr-only">Åpne meny</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem
-                  className="flex items-center gap-2"
-                  onSelect={() =>
-                    submit(
-                      { fileId: file.id, intent: "set-preview-file" },
-                      { preventScrollReset: true, method: "POST" },
-                    )
-                  }
-                  disabled={file.type !== "image"}
-                >
-                  <Eye />
-                  Velg som forsidebilde
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="flex items-center gap-2"
-                  onSelect={() =>
-                    submit(
-                      { fileId: file.id, intent: "delete-file" },
-                      { preventScrollReset: true, method: "DELETE" },
-                    )
-                  }
-                >
-                  <Trash />
-                  Slett
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {showMenu ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="icon" className="absolute right-2 top-1">
+                    <Ellipsis className="size-6" />
+                    <span className="sr-only">Åpne meny</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    className="flex items-center gap-2"
+                    onSelect={() =>
+                      submit(
+                        { fileId: file.id, intent: "set-preview-file" },
+                        { preventScrollReset: true, method: "POST" },
+                      )
+                    }
+                    disabled={file.type !== "image"}
+                  >
+                    <Eye />
+                    Velg som forsidebilde
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="flex items-center gap-2"
+                    onSelect={() =>
+                      submit(
+                        { fileId: file.id, intent: "delete-file" },
+                        { preventScrollReset: true, method: "DELETE" },
+                      )
+                    }
+                  >
+                    <Trash />
+                    Slett
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : null}
           </CarouselItem>
         ))}
       </CarouselContent>
