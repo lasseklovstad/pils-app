@@ -64,12 +64,12 @@ export async function action({ request }: ActionArgs) {
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const actionData = useActionData() as ActionData;
+  const actionData = useActionData<ActionData>();
   const isPending = useIsPending();
   const [form, fields] = useForm({
     id: "login-form",
     constraint: getZodConstraint(LoginFormSchema),
-    lastResult: typeof actionData.status !== "number" ? actionData : undefined,
+    lastResult: typeof actionData?.status !== "number" ? actionData : undefined,
     defaultValue: { redirectTo: searchParams.get("redirectTo") },
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: LoginFormSchema });
