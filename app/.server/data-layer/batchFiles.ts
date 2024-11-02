@@ -1,7 +1,7 @@
 import { eq, getTableColumns, sql } from "drizzle-orm";
 
 import { db } from "db/config.server";
-import { batchFiles } from "db/schema";
+import { batches, batchFiles } from "db/schema";
 
 export const insertFile = async (value: typeof batchFiles.$inferInsert) => {
   const result = await db
@@ -30,4 +30,14 @@ export const getBatchFile = async (fileId: string) => {
   return (
     await db.select().from(batchFiles).where(eq(batchFiles.id, fileId))
   )[0];
+};
+
+export const deleteFile = async (fileId: string) => {
+  await db.transaction(async (tx) => {
+    await tx
+      .update(batches)
+      .set({ previewFileId: null })
+      .where(eq(batches.previewFileId, fileId));
+    await tx.delete(batchFiles).where(eq(batchFiles.id, fileId));
+  });
 };

@@ -16,6 +16,8 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { getUser, requireUser } from "~/lib/auth.server";
 
+import { BatchPreviewImage } from "./shared/BatchPreviewImage";
+
 export const loader = async ({ request }: LoaderArgs) => {
   const [user, batches] = await Promise.all([getUser(request), getBatches()]);
   return { batches, user };
@@ -46,14 +48,7 @@ export default function Home({
                 to={`/batch/${batch.id}`}
                 className="flex gap-2 p-2 hover:bg-slate-50"
               >
-                <img
-                  src={
-                    batch.picture
-                      ? batch.picture + "?w=200"
-                      : "/android-chrome-192x192.png"
-                  }
-                  className="aspect-square w-24 rounded object-cover"
-                ></img>
+                <BatchPreviewImage publicUrl={batch.previewFilePublicUrl} />
                 <div className="flex flex-col">
                   <span className="text-lg">{batch.name}</span>
                   <span className="text-sm text-muted-foreground">

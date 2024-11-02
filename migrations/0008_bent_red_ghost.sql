@@ -1,0 +1,1 @@
+ALTER TABLE `batches` ADD `preview_file_id` text REFERENCES batch_files(id);

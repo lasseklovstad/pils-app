@@ -5,6 +5,7 @@ import {
   sqliteTable,
   text,
   unique,
+  type AnySQLiteColumn,
 } from "drizzle-orm/sqlite-core";
 
 const sqlTimestampNow = sql`(unixepoch())`;
@@ -25,6 +26,9 @@ export const batches = sqliteTable("batches", {
   userId: text()
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  previewFileId: text().references((): AnySQLiteColumn => batchFiles.id, {
+    onDelete: "set null",
+  }),
 });
 
 export type Batch = typeof batches.$inferSelect;
