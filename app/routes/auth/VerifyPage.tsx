@@ -32,12 +32,12 @@ export async function action({ request }: ActionArgs) {
 export default function VerifyRoute() {
   const [searchParams] = useSearchParams();
   const isPending = useIsPending();
-  const actionData = useActionData() as ActionData;
+  const actionData = useActionData<ActionData>();
 
   const [form, fields] = useForm({
     id: "verify-form",
     constraint: getZodConstraint(VerifySchema),
-    lastResult: actionData,
+    lastResult: typeof actionData?.status !== "number" ? actionData : undefined,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: VerifySchema });
     },

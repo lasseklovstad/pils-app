@@ -98,12 +98,12 @@ export const meta: MetaFunction = () => {
 };
 
 export default function SignUpPage() {
-  const actionData = useActionData() as ActionData;
+  const actionData = useActionData<ActionData>();
   const isPending = useIsPending();
   const [form, fields] = useForm({
     id: "login-form",
     constraint: getZodConstraint(SignUpFormSchema),
-    lastResult: actionData,
+    lastResult: typeof actionData?.status !== "number" ? actionData : undefined,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: SignUpFormSchema });
     },

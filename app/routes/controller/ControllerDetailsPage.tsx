@@ -93,7 +93,7 @@ export const action = async ({ request, params }: ActionArgs) => {
   }
   if (request.method === "DELETE") {
     await deleteController(controllerId);
-    return redirect("/controller");
+    throw redirect("/controller");
   }
   if (request.method === "PUT") {
     const isRelayOn = formData.get("checked") === "true";

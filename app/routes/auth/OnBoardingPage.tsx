@@ -107,7 +107,7 @@ export const meta: MetaFunction = () => {
 export default function OnboardingRoute({
   loaderData: { email },
 }: ComponentProps) {
-  const actionData = useActionData() as ActionData;
+  const actionData = useActionData<ActionData>();
   const isPending = useIsPending();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo");
@@ -116,7 +116,7 @@ export default function OnboardingRoute({
     id: "onboarding-form",
     constraint: getZodConstraint(SignupFormSchema),
     defaultValue: { redirectTo },
-    lastResult: actionData,
+    lastResult: typeof actionData?.status !== "number" ? actionData : undefined,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: SignupFormSchema });
     },
