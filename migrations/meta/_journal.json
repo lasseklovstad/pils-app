@@ -57,6 +57,13 @@
       "when": 1729952711063,
       "tag": "0007_lumpy_songbird",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1730549638805,
+      "tag": "0008_bent_red_ghost",
+      "breakpoints": true
     }
   ]
 }

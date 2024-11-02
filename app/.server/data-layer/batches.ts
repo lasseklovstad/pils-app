@@ -1,4 +1,4 @@
-import { and, desc, eq, getTableColumns, sql } from "drizzle-orm";
+import { desc, eq, getTableColumns } from "drizzle-orm";
 
 import { db } from "db/config.server";
 import { batches, batchFiles } from "db/schema";
@@ -9,23 +9,24 @@ export const getBatches = async () => {
   return await db
     .select({
       ...getTableColumns(batches),
-      picture: sql<string | null>`${db
-        .select({
-          publicFileUrlSql,
-        })
-        .from(batchFiles)
-        .where(
-          and(eq(batchFiles.batchId, batches.id), eq(batchFiles.type, "image")),
-        )
-        .limit(1)}`,
+      previewFilePublicUrl: publicFileUrlSql,
     })
     .from(batches)
+    .leftJoin(batchFiles, eq(batchFiles.id, batches.previewFileId))
     .orderBy(desc(batches.createdTimestamp));
 };
 
 export const getBatch = async (batchId: number) => {
   return (
-    await db.select().from(batches).where(eq(batches.id, batchId)).limit(1)
+    await db
+      .select({
+        ...getTableColumns(batches),
+        previewFilePublicUrl: publicFileUrlSql,
+      })
+      .from(batches)
+      .leftJoin(batchFiles, eq(batchFiles.id, batches.previewFileId))
+      .where(eq(batches.id, batchId))
+      .limit(1)
   )[0];
 };
 
@@ -50,6 +51,7 @@ export const putBatch = async (
       | "mashingStrikeWaterVolume"
       | "mashingTemperature"
       | "mashingMaltTemperature"
+      | "previewFileId"
     >
   >,
 ) => {

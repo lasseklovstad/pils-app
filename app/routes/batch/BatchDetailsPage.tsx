@@ -12,7 +12,11 @@ import type {
 } from "./+types.BatchDetailsPage";
 
 import { getBatch, putBatch } from "~/.server/data-layer/batches";
-import { getBatchFiles, insertFile } from "~/.server/data-layer/batchFiles";
+import {
+  deleteFile,
+  getBatchFiles,
+  insertFile,
+} from "~/.server/data-layer/batchFiles";
 import {
   deleteIngredient,
   getBatchIngredients,
@@ -20,20 +24,16 @@ import {
   putIngredient,
 } from "~/.server/data-layer/ingredients";
 import { Main } from "~/components/Main";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "~/components/ui/carousel";
+import { Accordion, AccordionItem } from "~/components/ui/accordion";
 import { Input } from "~/components/ui/input";
 import { getUser, requireUser } from "~/lib/auth.server";
+import { getBatchFileStorage } from "~/lib/batchFileStorage";
 
+import { BatchPreviewImage } from "./shared/BatchPreviewImage";
 import { GravityForm } from "./shared/GravityForm";
 import { MaltForm } from "./shared/MaltForm";
 import { MashingForm } from "./shared/MashingForm";
-import { Media } from "./shared/Media";
+import { MediaCarousel } from "./shared/MediaCarousel";
 
 export const loader = async ({
   request,
@@ -81,8 +81,7 @@ export const action = async ({
   const intent = String(formData.get("intent"));
   if (intent === "upload-media") {
     const files = formData.getAll("media") as File[];
-    const directory = `${process.env.MEDIA_DIRECTORY}/media/batch-${batchId}`;
-    const fileStorage = new LocalFileStorage(directory);
+    const fileStorage = getBatchFileStorage(batchId);
     for (const file of files) {
       const type = file.type.startsWith("video")
         ? "video"
@@ -100,6 +99,18 @@ export const action = async ({
       await fileStorage.set(fileId, file);
     }
 
+    return { ok: true };
+  }
+  if (intent === "set-preview-file") {
+    const previewFileId = String(formData.get("fileId"));
+    await putBatch(batchId, { previewFileId });
+    return { ok: true };
+  }
+  if (intent === "delete-file") {
+    const fileId = String(formData.get("fileId"));
+    const fileStorage = getBatchFileStorage(batchId);
+    await fileStorage.remove(fileId);
+    await deleteFile(fileId);
     return { ok: true };
   }
   if (intent === "put-gravity") {
@@ -173,49 +184,54 @@ export default function BatchPage({
   const filesToShow = batchFiles.filter((file) => file.type !== "unknown");
   return (
     <Main>
-      <h1 className="text-4xl">{batch.name}</h1>
-      <div className="mb-4 text-sm">
-        Opprettet: {batch.createdTimestamp.toLocaleDateString("nb")}{" "}
-        {batch.createdTimestamp.toLocaleTimeString("nb")}
+      <div className="flex items-center gap-2">
+        <BatchPreviewImage
+          publicUrl={batch.previewFilePublicUrl}
+          className="w-16"
+        />
+        <div>
+          <h1 className="text-4xl">{batch.name}</h1>
+          <div className="mb-4 text-sm">
+            Opprettet: {batch.createdTimestamp.toLocaleDateString("nb")}{" "}
+            {batch.createdTimestamp.toLocaleTimeString("nb")}
+          </div>
+        </div>
       </div>
       <div className="mb-10 flex flex-col gap-2">
-        <MaltForm ingredients={batchIngredients} readOnly={readOnly} />
-        <MashingForm
-          batch={batch}
-          ingredients={batchIngredients}
-          readOnly={readOnly}
-        />
-        <GravityForm batch={batch} readOnly={readOnly} />
-        <h2 className="text-2xl">Last opp bilder/film</h2>
-        <Form encType="multipart/form-data" method="POST">
-          <Input
-            onChange={(e) => e.target.form?.requestSubmit()}
-            className="w-fit"
-            type="file"
-            multiple
-            name="media"
-            accept="image/*,video/*"
-          />
-          <input readOnly name="intent" value="upload-media" hidden />
-        </Form>
+        <Accordion type="single" collapsible>
+          <AccordionItem value="malt">
+            <MaltForm ingredients={batchIngredients} readOnly={readOnly} />
+          </AccordionItem>
+          <AccordionItem value="mashing">
+            <MashingForm
+              batch={batch}
+              ingredients={batchIngredients}
+              readOnly={readOnly}
+            />
+          </AccordionItem>
+          <AccordionItem value="gravity">
+            <GravityForm batch={batch} readOnly={readOnly} />
+          </AccordionItem>
+        </Accordion>
+
+        <h2 className="text-2xl">
+          Last opp bilder/video ({filesToShow.length})
+        </h2>
+        {!readOnly ? (
+          <Form encType="multipart/form-data" method="POST">
+            <Input
+              onChange={(e) => e.target.form?.requestSubmit()}
+              className="w-fit"
+              type="file"
+              multiple
+              name="media"
+              accept="image/*,video/*"
+            />
+            <input readOnly name="intent" value="upload-media" hidden />
+          </Form>
+        ) : null}
         {filesToShow.length > 0 ? (
-          <Carousel>
-            <CarouselContent>
-              {filesToShow.map((file) => (
-                <CarouselItem
-                  key={file.id}
-                  className="md:basis-1/2 lg:basis-1/3"
-                >
-                  <Media
-                    file={file}
-                    className="h-96 w-full rounded-sm object-cover object-center"
-                  />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+          <MediaCarousel files={filesToShow} showMenu={!readOnly} />
         ) : null}
       </div>
     </Main>
