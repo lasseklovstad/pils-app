@@ -52,6 +52,8 @@ export const putBatch = async (
       | "mashingTemperature"
       | "mashingMaltTemperature"
       | "previewFileId"
+      | "controllerId"
+      | "mode"
     >
   >,
 ) => {

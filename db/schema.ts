@@ -29,6 +29,10 @@ export const batches = sqliteTable("batches", {
   previewFileId: text().references((): AnySQLiteColumn => batchFiles.id, {
     onDelete: "set null",
   }),
+  controllerId: text().references(() => controllers.id, {
+    onDelete: "set null",
+  }),
+  mode: text({ enum: ["warm", "cold"] }),
 });
 
 export type Batch = typeof batches.$inferSelect;

@@ -12,10 +12,11 @@ import { cn } from "~/lib/utils";
 
 type Props = {
   ingredient?: Ingredient;
-  amountUnit: string;
+  amountUnit: "kg" | "g" | "stk";
   type: Ingredient["type"];
   showLabel: boolean;
   readOnly: boolean;
+  namePlaceholder?: string;
 };
 
 export const IngredientForm = ({
@@ -24,6 +25,7 @@ export const IngredientForm = ({
   type,
   showLabel,
   readOnly,
+  namePlaceholder,
 }: Props) => {
   const nameId = useId();
   const amountId = useId();
@@ -64,6 +66,7 @@ export const IngredientForm = ({
             required
             defaultValue={ingredient?.name ?? ""}
             readOnly={readOnly}
+            placeholder={namePlaceholder}
           />
         </div>
         <div>
@@ -74,7 +77,7 @@ export const IngredientForm = ({
             id={amountId}
             name="amount"
             type="number"
-            step={0.01}
+            step={amountUnit === "kg" ? 0.01 : 1}
             autoComplete="off"
             required
             defaultValue={ingredient?.amount ?? ""}

@@ -52,8 +52,11 @@ export default function Home({
                 <div className="flex flex-col">
                   <span className="text-lg">{batch.name}</span>
                   <span className="text-sm text-muted-foreground">
-                    {batch.createdTimestamp.toLocaleDateString("nb")}{" "}
-                    {batch.createdTimestamp.toLocaleTimeString("nb")}
+                    {batch.createdTimestamp.toLocaleDateString("nb", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
+                    })}
                   </span>
                 </div>
               </Link>

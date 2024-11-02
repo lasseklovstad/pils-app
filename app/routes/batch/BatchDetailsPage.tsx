@@ -28,24 +28,28 @@ import { Accordion, AccordionItem } from "~/components/ui/accordion";
 import { Input } from "~/components/ui/input";
 import { getUser, requireUser } from "~/lib/auth.server";
 import { getBatchFileStorage } from "~/lib/batchFileStorage";
+import { getControllersFromBatchId } from "~/.server/data-layer/controllers";
 
 import { BatchPreviewImage } from "./shared/BatchPreviewImage";
 import { GravityForm } from "./shared/GravityForm";
 import { MaltForm } from "./shared/MaltForm";
 import { MashingForm } from "./shared/MashingForm";
 import { MediaCarousel } from "./shared/MediaCarousel";
+import { Fermentation } from "./shared/Fermentation";
 
 export const loader = async ({
   request,
   params: { batchId: batchIdParam },
 }: LoaderArgs) => {
   const batchId = parseInt(batchIdParam);
-  const [batch, batchIngredients, user, batchFiles] = await Promise.all([
-    getBatch(batchId),
-    getBatchIngredients(batchId),
-    getUser(request),
-    getBatchFiles(batchId),
-  ]);
+  const [batch, batchIngredients, user, batchFiles, controllers] =
+    await Promise.all([
+      getBatch(batchId),
+      getBatchIngredients(batchId),
+      getUser(request),
+      getBatchFiles(batchId),
+      getControllersFromBatchId(batchId),
+    ]);
   if (!batch) {
     throw new Response("Fant ikke brygg med id " + batchId, { status: 404 });
   }
@@ -54,6 +58,7 @@ export const loader = async ({
     batchIngredients,
     user,
     batchFiles,
+    controllers,
   };
 };
 
@@ -119,6 +124,15 @@ export const action = async ({
     await putBatch(batchId, { originalGravity, finalGravity });
     return { ok: true };
   }
+  if (intent === "put-batch-controller") {
+    const controllerId = String(formData.get("controllerId"));
+    const mode = String(formData.get("controllerMode")) as "warm" | "cold";
+    await putBatch(batchId, {
+      controllerId: controllerId || null,
+      mode: mode || null,
+    });
+    return { ok: true };
+  }
   if (intent === "put-mashing") {
     const mashingStrikeWaterVolume = parseInt(
       String(formData.get("mashing-strike-water-volume")),
@@ -145,7 +159,7 @@ export const action = async ({
     const name = String(formData.get("name"));
     const type = String(formData.get("type"));
     const amount = parseFloat(String(formData.get("amount")));
-    if (type !== "malt") {
+    if (type !== "malt" && type !== "yeast") {
       throw new Error("Invalid ingredient type");
     }
     if (request.method === "POST") {
@@ -178,7 +192,7 @@ function createTempUploadHandler(prefix: string) {
 }
 
 export default function BatchPage({
-  loaderData: { batch, batchIngredients, user, batchFiles },
+  loaderData: { batch, batchIngredients, user, batchFiles, controllers },
 }: ComponentProps) {
   const readOnly = batch.userId !== user?.id;
   const filesToShow = batchFiles.filter((file) => file.type !== "unknown");
@@ -192,8 +206,12 @@ export default function BatchPage({
         <div>
           <h1 className="text-4xl">{batch.name}</h1>
           <div className="mb-4 text-sm">
-            Opprettet: {batch.createdTimestamp.toLocaleDateString("nb")}{" "}
-            {batch.createdTimestamp.toLocaleTimeString("nb")}
+            Opprettet:{" "}
+            {batch.createdTimestamp.toLocaleDateString("nb", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}
           </div>
         </div>
       </div>
@@ -207,6 +225,15 @@ export default function BatchPage({
               batch={batch}
               ingredients={batchIngredients}
               readOnly={readOnly}
+            />
+          </AccordionItem>
+          <AccordionItem value="fermentation">
+            <Fermentation
+              ingredients={batchIngredients}
+              readOnly={readOnly}
+              controllers={controllers}
+              controllerId={batch.controllerId}
+              mode={batch.mode}
             />
           </AccordionItem>
           <AccordionItem value="gravity">
