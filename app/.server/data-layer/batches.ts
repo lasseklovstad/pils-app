@@ -81,7 +81,10 @@ export const setBatchControllerStatus = async (
     .update(batches)
     .set(
       controllerStatus === "active"
-        ? { controllerStatus, fermentationStartDate: new Date() }
+        ? {
+            controllerStatus,
+            fermentationStartDate: new Date(),
+          }
         : { controllerStatus },
     )
     .where(eq(batches.id, batchId));

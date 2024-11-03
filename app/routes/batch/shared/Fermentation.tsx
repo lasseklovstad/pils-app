@@ -1,6 +1,11 @@
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
+import { CartesianGrid, Line, LineChart, ReferenceLine, XAxis } from "recharts";
 
-import { type Ingredient, type BatchTemperature, type Batch } from "db/schema";
+import {
+  type Ingredient,
+  type BatchTemperature,
+  type Batch,
+  type ControllerTemperature,
+} from "db/schema";
 import { AccordionContent, AccordionTrigger } from "~/components/ui/accordion";
 import {
   ChartContainer,
@@ -24,6 +29,7 @@ type Props = {
     name: string;
   }[];
   batchTemperatures: BatchTemperature[];
+  controllerTemperatures: ControllerTemperature[];
   batch: Batch;
 };
 
@@ -31,7 +37,16 @@ const type = "yeast";
 const amountUnit = "stk";
 const chartConfig = {
   temperature: {
-    label: "Temperatur °C",
+    label: "Mål-Temperatur °C",
+    color: "hsl(var(--chart-1))",
+  },
+  controllerTemperature: {
+    label: "Fakitsk Temperatur °C",
+    color: "hsl(var(--chart-2))",
+  },
+  referenceLine: {
+    label: "Nå",
+    color: "hsl(var(--chart-3))",
   },
   dayIndex: {
     label: "Dag",
@@ -44,9 +59,15 @@ export const Fermentation = ({
   controllers,
   batchTemperatures,
   batch,
+  controllerTemperatures,
 }: Props) => {
   const yeastIngredients = filterIngredients(ingredients, type);
-
+  const dayInMillis = 1000 * 60 * 60 * 24;
+  const referenceLineNowInDays = batch.fermentationStartDate
+    ? (Date.now() - batch.fermentationStartDate.valueOf()) / dayInMillis
+    : undefined;
+  const dayTicks = batchTemperatures.map((bt) => bt.dayIndex);
+  const startDate = batch.fermentationStartDate ?? Date.now();
   return (
     <>
       <AccordionTrigger>
@@ -75,6 +96,15 @@ export const Fermentation = ({
             {batch.fermentationStartDate.toLocaleTimeString("nb")}
           </p>
         ) : null}
+        {referenceLineNowInDays ? (
+          <p className="my-2 text-muted-foreground">
+            Dager gjæret: {referenceLineNowInDays.toFixed(2)}
+          </p>
+        ) : null}
+        <p className="my-2 text-muted-foreground">
+          Antall målinger: {controllerTemperatures.length}
+        </p>
+
         <Tabs defaultValue="chart">
           <TabsList>
             <TabsTrigger value="chart">Graf</TabsTrigger>
@@ -83,17 +113,46 @@ export const Fermentation = ({
           </TabsList>
           <TabsContent value="chart">
             <ChartContainer config={chartConfig}>
-              <LineChart accessibilityLayer data={batchTemperatures}>
+              <LineChart accessibilityLayer>
                 <CartesianGrid vertical={false} />
                 <XAxis
                   label="Dag"
                   type="number"
                   dataKey="dayIndex"
                   tickLine={false}
-                  ticks={batchTemperatures.map((bt) => bt.dayIndex)}
+                  ticks={dayTicks}
                   domain={[0, "dataMax"]}
                 />
-                <Line dataKey="temperature" strokeWidth={2} type="stepAfter" />
+                <Line
+                  dataKey="temperature"
+                  stroke="var(--color-temperature)"
+                  strokeWidth={2}
+                  type="stepAfter"
+                  data={batchTemperatures}
+                />
+                <Line
+                  dataKey="controllerTemperature"
+                  stroke="var(--color-controllerTemperature)"
+                  strokeWidth={2}
+                  dot={false}
+                  type="natural"
+                  data={controllerTemperatures.map((ct) => {
+                    return {
+                      controllerTemperature: ct.temperature,
+                      dayIndex:
+                        (ct.timestamp.valueOf() - startDate.valueOf()) /
+                        dayInMillis,
+                    };
+                  })}
+                />
+                {referenceLineNowInDays &&
+                referenceLineNowInDays <= Math.max(...dayTicks) ? (
+                  <ReferenceLine
+                    x={referenceLineNowInDays}
+                    stroke="var(--color-referenceLine)"
+                    label="Nå"
+                  />
+                ) : null}
                 <ChartTooltip content={<ChartTooltipContent hideLabel />} />
               </LineChart>
             </ChartContainer>

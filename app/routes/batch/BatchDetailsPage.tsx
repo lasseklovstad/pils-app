@@ -30,6 +30,7 @@ import { Accordion, AccordionItem } from "~/components/ui/accordion";
 import { Input } from "~/components/ui/input";
 import { getUser, requireUser } from "~/lib/auth.server";
 import { getBatchFileStorage } from "~/lib/batchFileStorage";
+import { getControllerTemperaturesFromBatchId } from "~/.server/data-layer/controllerTemperatures";
 
 import { BatchPreviewImage } from "./shared/BatchPreviewImage";
 import { Fermentation } from "./shared/Fermentation";
@@ -57,6 +58,7 @@ export const loader = async ({
     batchFiles,
     controllers,
     batchTemperatures,
+    controllerTemperatures,
   ] = await Promise.all([
     getBatch(batchId),
     getBatchIngredients(batchId),
@@ -64,6 +66,7 @@ export const loader = async ({
     getBatchFiles(batchId),
     getControllersFromBatchId(batchId),
     getBatchTemperatures(batchId),
+    getControllerTemperaturesFromBatchId(batchId),
   ]);
   if (!batch) {
     throw new Response("Fant ikke brygg med id " + batchId, { status: 404 });
@@ -75,6 +78,7 @@ export const loader = async ({
     batchFiles,
     controllers,
     batchTemperatures,
+    controllerTemperatures,
   };
 };
 
@@ -128,6 +132,7 @@ export default function BatchPage({
     batchFiles,
     controllers,
     batchTemperatures,
+    controllerTemperatures,
   },
 }: ComponentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -179,6 +184,7 @@ export default function BatchPage({
               controllers={controllers}
               batch={batch}
               batchTemperatures={batchTemperatures}
+              controllerTemperatures={controllerTemperatures}
             />
           </AccordionItem>
           <AccordionItem value="gravity">

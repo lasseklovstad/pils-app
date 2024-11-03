@@ -74,7 +74,10 @@ export const controllerTemperatures = sqliteTable("controller_temperatures", {
   })
     .notNull()
     .default(sqlTimestampNow),
+  batchId: integer().references(() => batches.id, { onDelete: "cascade" }),
 });
+
+export type ControllerTemperature = typeof controllerTemperatures.$inferSelect;
 
 export const verifications = sqliteTable(
   "verifications",
