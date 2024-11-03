@@ -18,6 +18,7 @@ import {
   getControllerTemperaturesErrorTotalCount,
   getControllerTemperaturesTotalCount,
   getLatestControllerTemperature,
+  postControllerTemperature,
 } from "~/.server/data-layer/controllerTemperatures";
 import { Main } from "~/components/Main";
 import { Button } from "~/components/ui/button";
@@ -85,6 +86,11 @@ export const action = async ({ request, params }: ActionArgs) => {
   if (request.method === "PUT" && intent === "edit-name") {
     const name = String(formData.get("name"));
     await putController(controllerId, { name });
+  }
+  if (intent === "test-temperature") {
+    const temperature = parseFloat(String(formData.get("temperature")));
+    await postControllerTemperature({ temperature, controllerId });
+    return { ok: true };
   }
   if (request.method === "PUT" && intent === "edit-secret") {
     const secret = createControllerSecret();

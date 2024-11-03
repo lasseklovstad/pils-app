@@ -1,5 +1,6 @@
-import { Link, useSearchParams } from "react-router";
+import { Form, Link, useSearchParams } from "react-router";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import { Save } from "lucide-react";
 
 import type { Batch } from "db/schema";
 
@@ -13,6 +14,7 @@ import {
 } from "~/components/ui/chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
+import { Field } from "~/components/Form";
 
 type Props = {
   controllerTemperatures: {
@@ -136,6 +138,28 @@ export const TemperatureChart = ({
           )}
         </TabsContent>
         <TabsContent value="temps">
+          <Form method="POST" className="flex gap-2">
+            <Field
+              inputProps={{
+                name: "temperature",
+                type: "number",
+                step: 0.1,
+                required: true,
+                placeholder: "Test temperatur",
+              }}
+              labelProps={{ children: "Test temp" }}
+            />
+            <Button
+              name="intent"
+              value="test-temperature"
+              variant="outline"
+              type="submit"
+              className="mt-6"
+            >
+              <Save />
+              Lagre
+            </Button>
+          </Form>
           <div className="w-full max-w-full overflow-x-auto">
             <table className="w-full">
               <thead>

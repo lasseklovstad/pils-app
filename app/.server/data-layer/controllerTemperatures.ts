@@ -1,12 +1,33 @@
-import { and, desc, eq, ne, sql } from "drizzle-orm";
+import { and, desc, eq, ne, not, or, sql } from "drizzle-orm";
 
 import { db } from "db/config.server";
-import { controllerTemperatures } from "db/schema";
+import { batches, controllerTemperatures } from "db/schema";
 
 export const postControllerTemperature = async (
-  controllerTemperature: typeof controllerTemperatures.$inferInsert,
+  controllerTemperature: Pick<
+    typeof controllerTemperatures.$inferInsert,
+    "controllerId" | "temperature"
+  >,
 ) => {
-  await db.insert(controllerTemperatures).values(controllerTemperature);
+  await db.insert(controllerTemperatures).values({
+    ...controllerTemperature,
+    batchId: sql`${db
+      .select({ id: batches.id })
+      .from(batches)
+      .where(
+        and(
+          eq(batches.controllerId, controllerTemperature.controllerId),
+          not(eq(batches.controllerStatus, "inactive")),
+        ),
+      )}`,
+  });
+};
+
+export const getControllerTemperaturesFromBatchId = async (batchId: number) => {
+  return await db
+    .select()
+    .from(controllerTemperatures)
+    .where(eq(controllerTemperatures.batchId, batchId));
 };
 
 export const getControllerTemperatures = async (
@@ -70,8 +91,10 @@ export const getControllerTemperaturesErrorTotalCount = async (
         .where(
           and(
             eq(controllerTemperatures.controllerId, controllerId),
-            eq(controllerTemperatures.temperature, 85),
-            eq(controllerTemperatures.temperature, -127),
+            or(
+              eq(controllerTemperatures.temperature, 85),
+              eq(controllerTemperatures.temperature, -127),
+            ),
           ),
         )
         .limit(1)

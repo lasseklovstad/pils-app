@@ -71,6 +71,13 @@
       "when": 1730652575309,
       "tag": "0009_past_molecule_man",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1730660335164,
+      "tag": "0010_smooth_mentallo",
+      "breakpoints": true
     }
   ]
 }
