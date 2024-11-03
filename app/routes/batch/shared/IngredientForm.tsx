@@ -41,7 +41,11 @@ export const IngredientForm = ({
 
   useEffect(
     function resetFormOnSuccess() {
-      if (fetcher.state === "idle" && fetcher.data?.ok && !ingredient) {
+      if (
+        fetcher.state === "idle" &&
+        fetcher.data?.status === "success" &&
+        !ingredient
+      ) {
         $form.current?.reset();
       }
     },

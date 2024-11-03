@@ -1,9 +1,10 @@
 import { Link, useSearchParams } from "react-router";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
-import { Check, Dot, X } from "lucide-react";
 
 import type { Batch } from "db/schema";
 
+import { BatchStatus } from "~/components/BatchStatus";
+import { Button } from "~/components/ui/button";
 import {
   ChartConfig,
   ChartContainer,
@@ -12,8 +13,6 @@ import {
 } from "~/components/ui/chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
-import { Button } from "~/components/ui/button";
-import { BatchStatus } from "~/components/BatchStatus";
 
 type Props = {
   controllerTemperatures: {

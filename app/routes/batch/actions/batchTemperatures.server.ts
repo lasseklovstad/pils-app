@@ -1,5 +1,4 @@
 import { parseWithZod } from "@conform-to/zod";
-import { z } from "zod";
 
 import { deleteAndInsertBatchTemperatures } from "~/.server/data-layer/batchTemperatures";
 
