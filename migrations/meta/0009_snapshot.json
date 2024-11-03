@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "06e79c09-736e-4c79-a32b-82ff59503edc",
+  "id": "3b00169c-8ba8-4a31-80c0-84c4961f34bc",
   "prevId": "2fafdfba-1cf3-4693-afcd-6032ddee6cbb",
   "tables": {
     "batch_files": {
@@ -50,6 +50,58 @@
             "id"
           ],
           "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "batch_temperatures": {
+      "name": "batch_temperatures",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "day_index": {
+          "name": "day_index",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "temperature": {
+          "name": "temperature",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "batch_id": {
+          "name": "batch_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "batch_temperatures_batch_id_batches_id_fk": {
+          "name": "batch_temperatures_batch_id_batches_id_fk",
+          "tableFrom": "batch_temperatures",
+          "tableTo": "batches",
+          "columnsFrom": [
+            "batch_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -135,7 +187,7 @@
         },
         "controller_id": {
           "name": "controller_id",
-          "type": "text",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -143,6 +195,21 @@
         "mode": {
           "name": "mode",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "controller_status": {
+          "name": "controller_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'inactive'"
+        },
+        "fermentation_start_date": {
+          "name": "fermentation_start_date",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

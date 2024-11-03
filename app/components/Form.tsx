@@ -1,11 +1,10 @@
-import { useId, type ComponentProps } from "react";
 import { useInputControl } from "@conform-to/react";
 import { REGEXP_ONLY_DIGITS_AND_CHARS, type OTPInputProps } from "input-otp";
+import { useId, type ComponentProps } from "react";
 
 import { Checkbox } from "~/components/ui/checkbox";
 import { cn } from "~/lib/utils";
 
-import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import {
   InputOTP,
@@ -13,6 +12,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "./ui/input-otp";
+import { Label } from "./ui/label";
 
 type ListOfErrors = Array<string | null | undefined> | null | undefined;
 
@@ -45,7 +45,7 @@ export function Field({
   className,
 }: {
   labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
-  inputProps: React.InputHTMLAttributes<HTMLInputElement>;
+  inputProps: React.InputHTMLAttributes<HTMLInputElement> & { key?: string };
   errors?: ListOfErrors;
   className?: string;
 }) {
@@ -60,8 +60,9 @@ export function Field({
         aria-invalid={errorId ? true : undefined}
         aria-describedby={errorId}
         {...inputProps}
+        key={inputProps.key}
       />
-      <div className="min-h-[32px] pb-1 pt-1">
+      <div className="min-h-[32px]">
         {errorId ? <ErrorList id={errorId} errors={errors} /> : null}
       </div>
     </div>
@@ -125,7 +126,7 @@ export function CheckboxField({
           className="text-body-xs self-center text-muted-foreground"
         />
       </div>
-      <div className="px-4 pb-3 pt-1">
+      <div className="px-4">
         {errorId ? <ErrorList id={errorId} errors={errors} /> : null}
       </div>
     </div>
@@ -175,3 +176,34 @@ export function OTPField({
     </div>
   );
 }
+
+type NativeSelectFieldProps = {
+  labelProps: React.LabelHTMLAttributes<HTMLLabelElement>;
+  selectProps: React.InputHTMLAttributes<HTMLSelectElement>;
+  errors?: ListOfErrors;
+  className?: string;
+};
+
+export const NativeSelectField = ({
+  labelProps,
+  selectProps,
+  errors,
+  className,
+}: NativeSelectFieldProps) => {
+  const fallbackId = useId();
+  const id = selectProps.id ?? fallbackId;
+  const errorId = errors?.length ? `${id}-error` : undefined;
+  return (
+    <div className={cn("flex flex-col items-start gap-2", className)}>
+      <Label htmlFor={id} {...labelProps} />
+      <select
+        id={id}
+        {...selectProps}
+        className={cn("rounded border p-1", selectProps.className)}
+      />
+      <div className="min-h-[32px]">
+        {errorId ? <ErrorList id={errorId} errors={errors} /> : null}
+      </div>
+    </div>
+  );
+};

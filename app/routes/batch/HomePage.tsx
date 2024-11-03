@@ -9,6 +9,7 @@ import type {
   LoaderArgs,
 } from "./+types.HomePage";
 
+import { deleteAndInsertBatchTemperatures } from "~/.server/data-layer/batchTemperatures";
 import { getBatches, postBatch } from "~/.server/data-layer/batches";
 import { Main } from "~/components/Main";
 import { Button } from "~/components/ui/button";
@@ -28,7 +29,11 @@ export const action = async ({ request }: ActionArgs) => {
     const user = await requireUser(request);
     const formdata = await request.formData();
     const name = String(formdata.get("name"));
-    await postBatch({ name, userId: user.id });
+    const { id } = await postBatch({ name, userId: user.id });
+    await deleteAndInsertBatchTemperatures(id, [
+      { dayIndex: 0, temperature: 18 },
+      { dayIndex: 14, temperature: 18 },
+    ]);
   }
   return { ok: true };
 };

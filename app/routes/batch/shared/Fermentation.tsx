@@ -1,17 +1,20 @@
 import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
 
-import { Ingredient } from "db/schema";
+import { type Ingredient, type BatchTemperature, type Batch } from "db/schema";
 import { AccordionContent, AccordionTrigger } from "~/components/ui/accordion";
 import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  type ChartConfig,
 } from "~/components/ui/chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { filterIngredients } from "~/lib/utils";
+import { BatchStatus } from "~/components/BatchStatus";
 
 import { ControllerForm } from "./ControllerForm";
 import { IngredientForm } from "./IngredientForm";
+import { BatchTemperaturesForm } from "./BatchTemperaturesForm";
 
 type Props = {
   ingredients: Ingredient[];
@@ -20,32 +23,38 @@ type Props = {
     id: number;
     name: string;
   }[];
-  controllerId: string | null;
-  mode: string | null;
+  batchTemperatures: BatchTemperature[];
+  batch: Batch;
 };
+
 const type = "yeast";
 const amountUnit = "stk";
+const chartConfig = {
+  temperature: {
+    label: "Temperatur °C",
+  },
+  dayIndex: {
+    label: "Dag",
+  },
+} satisfies ChartConfig;
+
 export const Fermentation = ({
   ingredients,
   readOnly,
   controllers,
-  controllerId,
-  mode,
+  batchTemperatures,
+  batch,
 }: Props) => {
   const yeastIngredients = filterIngredients(ingredients, type);
-  const chartData = [
-    { days: 0, temp: 10 },
-    { days: 5, temp: 10 },
-    { days: 7, temp: 14 },
-    { days: 9, temp: 18 },
-    { days: 10, temp: 18 },
-    { days: 11, temp: 2 },
-    { days: 14, temp: 2 },
-  ];
-  //   https://blogg.bryggselv.no/beste-metoden-gjaering-lager/
+
   return (
     <>
-      <AccordionTrigger>Gjæring</AccordionTrigger>
+      <AccordionTrigger>
+        <span className="flex items-center gap-2">
+          Gjæring
+          <BatchStatus status={batch.controllerStatus} />
+        </span>
+      </AccordionTrigger>
       <AccordionContent>
         <IngredientForm
           type={type}
@@ -55,6 +64,17 @@ export const Fermentation = ({
           ingredient={yeastIngredients[0]}
           namePlaceholder="Gjærtype"
         />
+        {batch.fermentationStartDate ? (
+          <p className="my-2 text-muted-foreground">
+            Startet å gjære{" "}
+            {batch.fermentationStartDate.toLocaleDateString("nb", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric",
+            })}{" "}
+            {batch.fermentationStartDate.toLocaleTimeString("nb")}
+          </p>
+        ) : null}
         <Tabs defaultValue="chart">
           <TabsList>
             <TabsTrigger value="chart">Graf</TabsTrigger>
@@ -62,26 +82,30 @@ export const Fermentation = ({
             <TabsTrigger value="controller">Kontroller</TabsTrigger>
           </TabsList>
           <TabsContent value="chart">
-            <ChartContainer config={{}}>
-              <LineChart accessibilityLayer data={chartData}>
+            <ChartContainer config={chartConfig}>
+              <LineChart accessibilityLayer data={batchTemperatures}>
                 <CartesianGrid vertical={false} />
-                <XAxis dataKey="days" tickLine={false} axisLine={false} />
-                <Line dataKey="temp" strokeWidth={2} />
-                <ChartTooltip
-                  cursor={false}
-                  content={<ChartTooltipContent hideLabel />}
+                <XAxis
+                  label="Dag"
+                  type="number"
+                  dataKey="dayIndex"
+                  tickLine={false}
+                  ticks={batchTemperatures.map((bt) => bt.dayIndex)}
+                  domain={[0, "dataMax"]}
                 />
+                <Line dataKey="temperature" strokeWidth={2} type="stepAfter" />
+                <ChartTooltip content={<ChartTooltipContent hideLabel />} />
               </LineChart>
             </ChartContainer>
           </TabsContent>
           <TabsContent value="temps">
             <h2 className="text-lg">Temperaturforløp under gjæringsprosess</h2>
+            <BatchTemperaturesForm batchTemperatures={batchTemperatures} />
           </TabsContent>
           <TabsContent value="controller">
             <ControllerForm
-              controllerId={controllerId}
+              batch={batch}
               controllers={controllers}
-              mode={mode}
               readOnly={readOnly}
             />
           </TabsContent>

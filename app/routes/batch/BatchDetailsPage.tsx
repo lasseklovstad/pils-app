@@ -3,7 +3,7 @@ import path from "path";
 
 import { LocalFileStorage } from "@mjackson/file-storage/local";
 import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
-import { Form } from "react-router";
+import { Form, useSearchParams } from "react-router";
 
 import type {
   ActionArgs,
@@ -17,6 +17,8 @@ import {
   getBatchFiles,
   insertFile,
 } from "~/.server/data-layer/batchFiles";
+import { getBatchTemperatures } from "~/.server/data-layer/batchTemperatures";
+import { getControllersFromBatchId } from "~/.server/data-layer/controllers";
 import {
   deleteIngredient,
   getBatchIngredients,
@@ -28,28 +30,41 @@ import { Accordion, AccordionItem } from "~/components/ui/accordion";
 import { Input } from "~/components/ui/input";
 import { getUser, requireUser } from "~/lib/auth.server";
 import { getBatchFileStorage } from "~/lib/batchFileStorage";
-import { getControllersFromBatchId } from "~/.server/data-layer/controllers";
 
 import { BatchPreviewImage } from "./shared/BatchPreviewImage";
+import { Fermentation } from "./shared/Fermentation";
 import { GravityForm } from "./shared/GravityForm";
 import { MaltForm } from "./shared/MaltForm";
 import { MashingForm } from "./shared/MashingForm";
 import { MediaCarousel } from "./shared/MediaCarousel";
-import { Fermentation } from "./shared/Fermentation";
+import { batchTemperaturesAction } from "./actions/batchTemperatures.server";
+import { batchTemperaturesIntent } from "./actions/batchTemperatures.schema";
+import { batchControllerStatusIntent } from "./actions/batchController.schema";
+import { batchControllerStatusAction } from "./actions/batchController.server";
+import { deleteBatchIntent, editBatchNameIntent } from "./actions/batch.schema";
+import { deleteBatchAction, editBatchNameAction } from "./actions/batch.server";
+import { BatchMenu } from "./shared/BatchMenu";
 
 export const loader = async ({
   request,
   params: { batchId: batchIdParam },
 }: LoaderArgs) => {
   const batchId = parseInt(batchIdParam);
-  const [batch, batchIngredients, user, batchFiles, controllers] =
-    await Promise.all([
-      getBatch(batchId),
-      getBatchIngredients(batchId),
-      getUser(request),
-      getBatchFiles(batchId),
-      getControllersFromBatchId(batchId),
-    ]);
+  const [
+    batch,
+    batchIngredients,
+    user,
+    batchFiles,
+    controllers,
+    batchTemperatures,
+  ] = await Promise.all([
+    getBatch(batchId),
+    getBatchIngredients(batchId),
+    getUser(request),
+    getBatchFiles(batchId),
+    getControllersFromBatchId(batchId),
+    getBatchTemperatures(batchId),
+  ]);
   if (!batch) {
     throw new Response("Fant ikke brygg med id " + batchId, { status: 404 });
   }
@@ -59,16 +74,8 @@ export const loader = async ({
     user,
     batchFiles,
     controllers,
+    batchTemperatures,
   };
-};
-
-const requireUserOwnerOfBatch = async (request: Request, batchId: number) => {
-  const currentUser = await requireUser(request);
-  const batch = await getBatch(batchId);
-  if (batch?.userId !== currentUser.id) {
-    throw new Response("Unauthorized", { status: 403 });
-  }
-  return currentUser;
 };
 
 export const action = async ({
@@ -84,139 +91,77 @@ export const action = async ({
     { maxFileSize: 20 * 1024 * 1024 },
   );
   const intent = String(formData.get("intent"));
-  if (intent === "upload-media") {
-    const files = formData.getAll("media") as File[];
-    const fileStorage = getBatchFileStorage(batchId);
-    for (const file of files) {
-      const type = file.type.startsWith("video")
-        ? "video"
-        : file.type.startsWith("image")
-          ? "image"
-          : "unknown";
-      if (type === "unknown") {
-        console.warn("Unknown file tried to upload");
-        return;
-      }
-      const fileId = await insertFile({
-        batchId,
-        type,
-      });
-      await fileStorage.set(fileId, file);
-    }
-
-    return { ok: true };
-  }
-  if (intent === "set-preview-file") {
-    const previewFileId = String(formData.get("fileId"));
-    await putBatch(batchId, { previewFileId });
-    return { ok: true };
-  }
-  if (intent === "delete-file") {
-    const fileId = String(formData.get("fileId"));
-    const fileStorage = getBatchFileStorage(batchId);
-    await fileStorage.remove(fileId);
-    await deleteFile(fileId);
-    return { ok: true };
-  }
-  if (intent === "put-gravity") {
-    const originalGravity = parseInt(String(formData.get("original-gravity")));
-    const finalGravity = parseInt(String(formData.get("final-gravity")));
-    await putBatch(batchId, { originalGravity, finalGravity });
-    return { ok: true };
-  }
-  if (intent === "put-batch-controller") {
-    const controllerId = String(formData.get("controllerId"));
-    const mode = String(formData.get("controllerMode")) as "warm" | "cold";
-    await putBatch(batchId, {
-      controllerId: controllerId || null,
-      mode: mode || null,
-    });
-    return { ok: true };
-  }
-  if (intent === "put-mashing") {
-    const mashingStrikeWaterVolume = parseInt(
-      String(formData.get("mashing-strike-water-volume")),
-    );
-    const mashingTemperature = parseInt(
-      String(formData.get("mashing-temperature")),
-    );
-    const mashingMaltTemperature = parseInt(
-      String(formData.get("mashing-malt-temperature")),
-    );
-    await putBatch(batchId, {
-      mashingStrikeWaterVolume,
-      mashingTemperature,
-      mashingMaltTemperature,
-    });
-    return { ok: true };
-  }
-  if (intent === "ingredient") {
-    if (request.method === "DELETE") {
-      const id = parseInt(String(formData.get("id")));
-      await deleteIngredient(id);
-      return { ok: true };
-    }
-    const name = String(formData.get("name"));
-    const type = String(formData.get("type"));
-    const amount = parseFloat(String(formData.get("amount")));
-    if (type !== "malt" && type !== "yeast") {
-      throw new Error("Invalid ingredient type");
-    }
-    if (request.method === "POST") {
-      await postIngredient({ name, type, batchId, amount });
-      return { ok: true };
-    }
-    if (request.method === "PUT") {
-      const id = parseInt(String(formData.get("id")));
-      await putIngredient({ name, type, amount, id });
-      return { ok: true };
+  switch (intent) {
+    case "upload-media":
+      return uploadFilesAction({ formData, batchId });
+    case "set-preview-file":
+      return setPreviewFileAction({ formData, batchId });
+    case "delete-file":
+      return deleteFileAction({ formData, batchId });
+    case "put-gravity":
+      return putGravityAction({ formData, batchId });
+    case "put-batch-controller":
+      return putBatchControllerAction({ formData, batchId });
+    case "put-mashing":
+      return putMashingAction({ formData, batchId });
+    case "ingredient":
+      return ingredientAction({ formData, batchId, request });
+    case batchTemperaturesIntent:
+      return batchTemperaturesAction({ formData, batchId });
+    case batchControllerStatusIntent:
+      return batchControllerStatusAction({ formData, batchId });
+    case deleteBatchIntent:
+      return deleteBatchAction(batchId);
+    case editBatchNameIntent:
+      return editBatchNameAction({ batchId, formData });
+    default: {
+      throw new Response(`Invalid intent "${intent}"`, { status: 400 });
     }
   }
-  throw new Error("Invalid intent");
 };
 
-function createTempUploadHandler(prefix: string) {
-  const directory = path.join(os.tmpdir(), prefix);
-  const fileStorage = new LocalFileStorage(directory);
-
-  async function uploadHandler(fileUpload: FileUpload) {
-    if (fileUpload.fieldName === "media") {
-      const key = new Date().getTime().toString(36);
-      await fileStorage.set(key, fileUpload);
-      return fileStorage.get(key);
-    }
-
-    // Ignore any files we don't recognize the name of...
-  }
-  return uploadHandler;
-}
-
 export default function BatchPage({
-  loaderData: { batch, batchIngredients, user, batchFiles, controllers },
+  loaderData: {
+    batch,
+    batchIngredients,
+    user,
+    batchFiles,
+    controllers,
+    batchTemperatures,
+  },
 }: ComponentProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
   const readOnly = batch.userId !== user?.id;
   const filesToShow = batchFiles.filter((file) => file.type !== "unknown");
   return (
     <Main>
-      <div className="flex items-center gap-2">
-        <BatchPreviewImage
-          publicUrl={batch.previewFilePublicUrl}
-          className="w-16"
-        />
-        <div>
-          <h1 className="text-4xl">{batch.name}</h1>
-          <div className="mb-4 text-sm">
-            Opprettet:{" "}
-            {batch.createdTimestamp.toLocaleDateString("nb", {
-              day: "2-digit",
-              month: "2-digit",
-              year: "numeric",
-            })}
+      <div className="flex justify-between">
+        <div className="flex items-center gap-2">
+          <BatchPreviewImage
+            publicUrl={batch.previewFilePublicUrl}
+            className="w-16"
+          />
+          <div>
+            <h1 className="text-4xl">{batch.name}</h1>
+            <div className="mb-4 text-sm">
+              Opprettet:{" "}
+              {batch.createdTimestamp.toLocaleDateString("nb", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })}
+            </div>
           </div>
         </div>
+        <BatchMenu batch={batch} />
       </div>
       <div className="mb-10 flex flex-col gap-2">
-        <Accordion type="single" collapsible>
+        <Accordion
+          type="single"
+          value={searchParams.get("open") ?? undefined}
+          collapsible
+          onValueChange={(value) => setSearchParams({ open: value })}
+        >
           <AccordionItem value="malt">
             <MaltForm ingredients={batchIngredients} readOnly={readOnly} />
           </AccordionItem>
@@ -232,8 +177,8 @@ export default function BatchPage({
               ingredients={batchIngredients}
               readOnly={readOnly}
               controllers={controllers}
-              controllerId={batch.controllerId}
-              mode={batch.mode}
+              batch={batch}
+              batchTemperatures={batchTemperatures}
             />
           </AccordionItem>
           <AccordionItem value="gravity">
@@ -263,4 +208,167 @@ export default function BatchPage({
       </div>
     </Main>
   );
+}
+
+async function uploadFilesAction({
+  formData,
+  batchId,
+}: {
+  formData: FormData;
+  batchId: number;
+}) {
+  const files = formData.getAll("media") as File[];
+  const fileStorage = getBatchFileStorage(batchId);
+  for (const file of files) {
+    const type = file.type.startsWith("video")
+      ? "video"
+      : file.type.startsWith("image")
+        ? "image"
+        : "unknown";
+    if (type === "unknown") {
+      console.warn("Unknown file tried to upload");
+      return;
+    }
+    const fileId = await insertFile({
+      batchId,
+      type,
+    });
+    await fileStorage.set(fileId, file);
+  }
+
+  return { status: "success" };
+}
+async function setPreviewFileAction({
+  formData,
+  batchId,
+}: {
+  formData: FormData;
+  batchId: number;
+}) {
+  const previewFileId = String(formData.get("fileId"));
+  await putBatch(batchId, { previewFileId });
+  return { status: "success" };
+}
+
+async function deleteFileAction({
+  formData,
+  batchId,
+}: {
+  formData: FormData;
+  batchId: number;
+}) {
+  const fileId = String(formData.get("fileId"));
+  const fileStorage = getBatchFileStorage(batchId);
+  await fileStorage.remove(fileId);
+  await deleteFile(fileId);
+  return { status: "success" };
+}
+
+async function putGravityAction({
+  formData,
+  batchId,
+}: {
+  formData: FormData;
+  batchId: number;
+}) {
+  const originalGravity = parseInt(String(formData.get("original-gravity")));
+  const finalGravity = parseInt(String(formData.get("final-gravity")));
+  await putBatch(batchId, { originalGravity, finalGravity });
+  return { status: "success" };
+}
+
+async function putBatchControllerAction({
+  formData,
+  batchId,
+}: {
+  formData: FormData;
+  batchId: number;
+}) {
+  const controllerId = parseInt(String(formData.get("controllerId")));
+  const mode = String(formData.get("controllerMode")) as "warm" | "cold";
+  await putBatch(batchId, {
+    controllerId: controllerId || null,
+    mode: mode || null,
+  });
+  return { status: "success" };
+}
+
+async function putMashingAction({
+  formData,
+  batchId,
+}: {
+  formData: FormData;
+  batchId: number;
+}) {
+  const mashingStrikeWaterVolume = parseInt(
+    String(formData.get("mashing-strike-water-volume")),
+  );
+  const mashingTemperature = parseInt(
+    String(formData.get("mashing-temperature")),
+  );
+  const mashingMaltTemperature = parseInt(
+    String(formData.get("mashing-malt-temperature")),
+  );
+  await putBatch(batchId, {
+    mashingStrikeWaterVolume,
+    mashingTemperature,
+    mashingMaltTemperature,
+  });
+  return { status: "success" };
+}
+
+async function ingredientAction({
+  formData,
+  batchId,
+  request,
+}: {
+  formData: FormData;
+  batchId: number;
+  request: Request;
+}) {
+  if (request.method === "DELETE") {
+    const id = parseInt(String(formData.get("id")));
+    await deleteIngredient(id);
+    return { status: "success" };
+  }
+  const name = String(formData.get("name"));
+  const type = String(formData.get("type"));
+  const amount = parseFloat(String(formData.get("amount")));
+  if (type !== "malt" && type !== "yeast") {
+    throw new Error("Invalid ingredient type");
+  }
+  if (request.method === "POST") {
+    await postIngredient({ name, type, batchId, amount });
+    return { status: "success" };
+  }
+  if (request.method === "PUT") {
+    const id = parseInt(String(formData.get("id")));
+    await putIngredient({ name, type, amount, id });
+    return { status: "success" };
+  }
+}
+
+function createTempUploadHandler(prefix: string) {
+  const directory = path.join(os.tmpdir(), prefix);
+  const fileStorage = new LocalFileStorage(directory);
+
+  async function uploadHandler(fileUpload: FileUpload) {
+    if (fileUpload.fieldName === "media") {
+      const key = new Date().getTime().toString(36);
+      await fileStorage.set(key, fileUpload);
+      return fileStorage.get(key);
+    }
+
+    // Ignore any files we don't recognize the name of...
+  }
+  return uploadHandler;
+}
+
+async function requireUserOwnerOfBatch(request: Request, batchId: number) {
+  const currentUser = await requireUser(request);
+  const batch = await getBatch(batchId);
+  if (batch?.userId !== currentUser.id) {
+    throw new Response("Unauthorized", { status: 403 });
+  }
+  return currentUser;
 }

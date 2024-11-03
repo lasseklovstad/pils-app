@@ -26,6 +26,7 @@ import { useRevalidateOnFocus } from "~/lib/useRevalidateOnFocus";
 import { cn, createControllerSecret, encryptSecret } from "~/lib/utils";
 import { insertVerification } from "~/.server/data-layer/verifications";
 import { requireUser } from "~/lib/auth.server";
+import { getBatchesFromControllerId } from "~/.server/data-layer/batches";
 
 import { ControllerMenu } from "./shared/ControllerMenu";
 import { TemperatureChart } from "./shared/TemperatureChart";
@@ -41,12 +42,14 @@ export const loader = async ({ params, request }: LoaderArgs) => {
     latestTemperature,
     totalCount,
     totalErrorCount,
+    batches,
   ] = await Promise.all([
     getControllerByUser(controllerId, currentUser),
     getControllerTemperatures(controllerId, interval),
     getLatestControllerTemperature(controllerId),
     getControllerTemperaturesTotalCount(controllerId),
     getControllerTemperaturesErrorTotalCount(controllerId),
+    getBatchesFromControllerId(controllerId),
   ]);
   if (!controller) {
     throw new Response(`Fant ingen kontroller med id ${params.controllerId}`, {
@@ -59,6 +62,7 @@ export const loader = async ({ params, request }: LoaderArgs) => {
     latestTemperature,
     totalCount,
     totalErrorCount,
+    batches,
   };
 };
 
@@ -109,6 +113,7 @@ export default function ControllerPage({
     latestTemperature,
     totalErrorCount,
     totalCount,
+    batches,
   },
 }: ComponentProps) {
   const revalidator = useRevalidateOnFocus();
@@ -163,6 +168,7 @@ export default function ControllerPage({
       <TemperatureChart
         controllerTemperatures={controllerTemperatures}
         totalCount={totalCount}
+        batches={batches}
       />
     </Main>
   );

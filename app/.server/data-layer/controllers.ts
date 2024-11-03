@@ -81,5 +81,7 @@ export const putController = async (
 };
 
 export const deleteController = async (controllerId: number) => {
+  // TODO: Delete batches referncing this controller and set controller status to "inactive"
+  // https://github.com/lasseklovstad/pils-app/issues/66
   return await db.delete(controllers).where(eq(controllers.id, controllerId));
 };
