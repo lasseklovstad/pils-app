@@ -32,9 +32,8 @@ fly certs add pils.gataersamla.no
 
 ```bash
 # Get database file from production
-fly sftp get /data/sqlite.db db-backups/sqlite_20_10_2024_prod.db
-fly sftp get /data/sqlite.db-wal db-backups/sqlite_20_10_2024_prod.db-wal
-fly sftp get /data/sqlite.db-shm db-backups/sqlite_20_10_2024_prod.db-shm
+.\copy-prod-db.ps1
+
 # Connect to sftp shell and upload dump file
 fly sftp shell
 cd tmp

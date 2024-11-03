@@ -1,7 +1,7 @@
 import { and, eq } from "drizzle-orm";
 
 import { db } from "db/config.server";
-import { controllers, users, type User } from "db/schema";
+import { batches, controllers, users, type User } from "db/schema";
 
 export const getControllers = async (currentUser: User) => {
   return await db
@@ -9,6 +9,14 @@ export const getControllers = async (currentUser: User) => {
     .from(controllers)
     .innerJoin(users, eq(users.id, currentUser.id))
     .where(eq(users.id, currentUser.id));
+};
+
+export const getControllersFromBatchId = async (batchId: number) => {
+  return await db
+    .select({ id: controllers.id, name: controllers.name })
+    .from(controllers)
+    .innerJoin(batches, eq(batches.userId, controllers.userId))
+    .where(eq(batches.id, batchId));
 };
 
 export const getControllerByUser = async (
@@ -73,5 +81,7 @@ export const putController = async (
 };
 
 export const deleteController = async (controllerId: number) => {
+  // TODO: Delete batches referncing this controller and set controller status to "inactive"
+  // https://github.com/lasseklovstad/pils-app/issues/66
   return await db.delete(controllers).where(eq(controllers.id, controllerId));
 };

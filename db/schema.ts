@@ -29,6 +29,14 @@ export const batches = sqliteTable("batches", {
   previewFileId: text().references((): AnySQLiteColumn => batchFiles.id, {
     onDelete: "set null",
   }),
+  controllerId: integer().references(() => controllers.id, {
+    onDelete: "set null",
+  }),
+  mode: text({ enum: ["warm", "cold"] }),
+  controllerStatus: text({ enum: ["inactive", "active", "prepare"] })
+    .default("inactive")
+    .notNull(),
+  fermentationStartDate: integer({ mode: "timestamp" }),
 });
 
 export type Batch = typeof batches.$inferSelect;
@@ -147,3 +155,14 @@ export const batchFiles = sqliteTable("batch_files", {
     .notNull()
     .references(() => batches.id),
 });
+
+export const batchTemperatures = sqliteTable("batch_temperatures", {
+  id: integer().primaryKey(),
+  dayIndex: integer().notNull(),
+  temperature: real().notNull(),
+  batchId: integer()
+    .references(() => batches.id, { onDelete: "cascade" })
+    .notNull(),
+});
+
+export type BatchTemperature = typeof batchTemperatures.$inferSelect;
