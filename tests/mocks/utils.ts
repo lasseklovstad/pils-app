@@ -1,11 +1,9 @@
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 import fsExtra from "fs-extra";
 import { z } from "zod";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const fixturesDirPath = path.join(__dirname, "..", "fixtures");
+const fixturesDirPath = "./tests/fixtures";
 
 async function readFixture(subdir: string, name: string) {
   return fsExtra.readJSON(path.join(fixturesDirPath, subdir, `${name}.json`));
