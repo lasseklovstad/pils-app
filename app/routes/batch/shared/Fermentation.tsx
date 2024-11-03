@@ -1,4 +1,5 @@
 import { CartesianGrid, Line, LineChart, ReferenceLine, XAxis } from "recharts";
+import { useState } from "react";
 
 import {
   type Ingredient,
@@ -16,6 +17,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { filterIngredients } from "~/lib/utils";
 import { BatchStatus } from "~/components/BatchStatus";
+import { Toggle } from "~/components/ui/toggle";
 
 import { ControllerForm } from "./ControllerForm";
 import { IngredientForm } from "./IngredientForm";
@@ -46,7 +48,7 @@ const chartConfig = {
   },
   referenceLine: {
     label: "Nå",
-    color: "hsl(var(--chart-3))",
+    color: "hsl(var(--primary))",
   },
   dayIndex: {
     label: "Dag",
@@ -61,6 +63,7 @@ export const Fermentation = ({
   batch,
   controllerTemperatures,
 }: Props) => {
+  const [hideFuture, setHideFuture] = useState(false);
   const yeastIngredients = filterIngredients(ingredients, type);
   const dayInMillis = 1000 * 60 * 60 * 24;
   const referenceLineNowInDays = batch.fermentationStartDate
@@ -121,7 +124,13 @@ export const Fermentation = ({
                   dataKey="dayIndex"
                   tickLine={false}
                   ticks={dayTicks}
-                  domain={[0, "dataMax"]}
+                  domain={[
+                    "dataMin",
+                    hideFuture && referenceLineNowInDays
+                      ? referenceLineNowInDays
+                      : "dataMax",
+                  ]}
+                  allowDataOverflow
                 />
                 <Line
                   dataKey="temperature"
@@ -133,9 +142,8 @@ export const Fermentation = ({
                 <Line
                   dataKey="controllerTemperature"
                   stroke="var(--color-controllerTemperature)"
-                  strokeWidth={2}
+                  strokeWidth={1}
                   dot={false}
-                  type="natural"
                   data={controllerTemperatures.map((ct) => {
                     return {
                       controllerTemperature: ct.temperature,
@@ -156,6 +164,12 @@ export const Fermentation = ({
                 <ChartTooltip content={<ChartTooltipContent hideLabel />} />
               </LineChart>
             </ChartContainer>
+            <Toggle
+              pressed={hideFuture}
+              onPressedChange={() => setHideFuture(!hideFuture)}
+            >
+              Skjul fremtiden
+            </Toggle>
           </TabsContent>
           <TabsContent value="temps">
             <h2 className="text-lg">Temperaturforløp under gjæringsprosess</h2>
