@@ -11,8 +11,9 @@ import type { EntryContext } from "react-router";
 const ABORT_DELAY = 5_000;
 
 if (process.env.ENABLE_MOCKS === "true") {
-  const { server } = await import("tests/mocks/mockServer");
-  server.listen({ onUnhandledRequest: "warn" });
+  import("tests/mocks/mockServer").then(({ server }) =>
+    server.listen({ onUnhandledRequest: "warn" }),
+  );
 }
 
 export default function handleRequest(
