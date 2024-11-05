@@ -1,4 +1,6 @@
 import { Form, Link, useFetcher } from "react-router";
+import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
+import { useState } from "react";
 
 import type { Batch } from "db/schema";
 import type { Route } from "../+types.BatchDetailsPage";
@@ -6,6 +8,13 @@ import type { Route } from "../+types.BatchDetailsPage";
 import { ErrorList, NativeSelectField } from "~/components/Form";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { Button } from "~/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+} from "~/components/ui/dialog";
 
 import { batchControllerStatusIntent } from "../actions/batchController.schema";
 
@@ -19,8 +28,22 @@ type Props = {
 };
 
 export const ControllerForm = ({ batch, controllers, readOnly }: Props) => {
+  const [stopFermentationDialog, setStopFermentationDialog] =
+    useState<string>();
   const statusFetcher = useFetcher<Route.ActionData>();
   const formValid = batch.mode && batch.controllerId;
+
+  const postControllerStatus = (value: string) => {
+    statusFetcher.submit(
+      {
+        intent: batchControllerStatusIntent,
+        status: value,
+        controllerId: batch.controllerId,
+      },
+      { method: "POST" },
+    );
+  };
+
   return (
     <div className="flex flex-col items-start justify-start gap-1">
       <Form method="PUT" className="flex gap-2">
@@ -65,15 +88,14 @@ export const ControllerForm = ({ batch, controllers, readOnly }: Props) => {
         />
 
         <input hidden name="intent" value="put-batch-controller" readOnly />
+        {batch.controllerId ? (
+          <Button variant="link" asChild className="mt-5">
+            <Link to={`/controller/${batch.controllerId}`}>
+              Gå til kontroller
+            </Link>
+          </Button>
+        ) : null}
       </Form>
-
-      {batch.controllerId ? (
-        <Button variant="link" asChild>
-          <Link to={`/controller/${batch.controllerId}`}>
-            Gå til kontroller
-          </Link>
-        </Button>
-      ) : null}
 
       <ToggleGroup
         type="single"
@@ -85,14 +107,11 @@ export const ControllerForm = ({ batch, controllers, readOnly }: Props) => {
           if (!value) {
             return;
           }
-          statusFetcher.submit(
-            {
-              intent: batchControllerStatusIntent,
-              status: value,
-              controllerId: batch.controllerId,
-            },
-            { method: "POST" },
-          );
+          if (batch.controllerStatus === "active") {
+            setStopFermentationDialog(value);
+          } else {
+            postControllerStatus(value);
+          }
         }}
       >
         <ToggleGroupItem
@@ -114,6 +133,40 @@ export const ControllerForm = ({ batch, controllers, readOnly }: Props) => {
           Aktiv
         </ToggleGroupItem>
       </ToggleGroup>
+      <Dialog
+        open={!!stopFermentationDialog}
+        onOpenChange={(open) => {
+          if (!open) {
+            setStopFermentationDialog(undefined);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Bekreftelse</DialogTitle>
+            <DialogDescription>
+              Er du sikker du vil avslutte gjæring?
+            </DialogDescription>
+            <DialogFooter>
+              <Button
+                variant="ghost"
+                type="button"
+                onClick={() => {
+                  if (stopFermentationDialog) {
+                    postControllerStatus(stopFermentationDialog);
+                  }
+                  setStopFermentationDialog(undefined);
+                }}
+              >
+                Ja, stopp
+              </Button>
+              <DialogClose asChild>
+                <Button>Avbryt</Button>
+              </DialogClose>
+            </DialogFooter>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
       {statusFetcher.data &&
       statusFetcher.data.status !== "success" &&
       "error" in statusFetcher.data &&
