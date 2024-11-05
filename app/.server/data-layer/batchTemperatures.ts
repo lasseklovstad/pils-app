@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 
 import { db } from "db/config.server";
 import { batchTemperatures } from "db/schema";
@@ -7,7 +7,8 @@ export const getBatchTemperatures = async (batchId: number) => {
   return await db
     .select()
     .from(batchTemperatures)
-    .where(eq(batchTemperatures.batchId, batchId));
+    .where(eq(batchTemperatures.batchId, batchId))
+    .orderBy(asc(batchTemperatures.dayIndex));
 };
 
 export const deleteAndInsertBatchTemperatures = async (

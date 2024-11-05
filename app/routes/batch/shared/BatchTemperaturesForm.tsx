@@ -70,6 +70,7 @@ export const BatchTemperaturesForm = ({ batchTemperatures }: Props) => {
                 </Button>
                 <Button
                   variant="ghost"
+                  disabled={index === 0}
                   size="icon"
                   {...form.reorder.getButtonProps({
                     name: "batchTemperatures",

@@ -194,13 +194,15 @@ export const NativeSelectField = ({
   const id = selectProps.id ?? fallbackId;
   const errorId = errors?.length ? `${id}-error` : undefined;
   return (
-    <div className={cn("flex flex-col items-start gap-2", className)}>
-      <Label htmlFor={id} {...labelProps} />
-      <select
-        id={id}
-        {...selectProps}
-        className={cn("rounded border p-1", selectProps.className)}
-      />
+    <div>
+      <div className={cn("flex flex-col items-start gap-2", className)}>
+        <Label htmlFor={id} {...labelProps} />
+        <select
+          id={id}
+          {...selectProps}
+          className={cn("rounded border p-1", selectProps.className)}
+        />
+      </div>
       <div className="min-h-[32px]">
         {errorId ? <ErrorList id={errorId} errors={errors} /> : null}
       </div>

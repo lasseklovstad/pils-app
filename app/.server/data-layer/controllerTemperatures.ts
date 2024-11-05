@@ -27,7 +27,13 @@ export const getControllerTemperaturesFromBatchId = async (batchId: number) => {
   return await db
     .select()
     .from(controllerTemperatures)
-    .where(eq(controllerTemperatures.batchId, batchId));
+    .where(
+      and(
+        eq(controllerTemperatures.batchId, batchId),
+        ne(controllerTemperatures.temperature, 85),
+        ne(controllerTemperatures.temperature, -127),
+      ),
+    );
 };
 
 export const getControllerTemperatures = async (

@@ -27,6 +27,7 @@ import { Input } from "~/components/ui/input";
 import { getUser, requireUser } from "~/lib/auth.server";
 import { getBatchFileStorage } from "~/lib/batchFileStorage";
 import { getControllerTemperaturesFromBatchId } from "~/.server/data-layer/controllerTemperatures";
+import { useRevalidateOnFocus } from "~/lib/useRevalidateOnFocus";
 
 import { BatchPreviewImage } from "./shared/BatchPreviewImage";
 import { Fermentation } from "./shared/Fermentation";
@@ -131,6 +132,7 @@ export default function BatchPage({
     controllerTemperatures,
   },
 }: Route.ComponentProps) {
+  useRevalidateOnFocus();
   const [searchParams, setSearchParams] = useSearchParams();
   const readOnly = batch.userId !== user?.id;
   const filesToShow = batchFiles.filter((file) => file.type !== "unknown");
@@ -154,7 +156,7 @@ export default function BatchPage({
             </div>
           </div>
         </div>
-        <BatchMenu batch={batch} />
+        {!readOnly ? <BatchMenu batch={batch} /> : null}
       </div>
       <div className="mb-10 flex flex-col gap-2">
         <Accordion
