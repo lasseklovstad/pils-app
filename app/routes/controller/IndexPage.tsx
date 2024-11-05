@@ -2,12 +2,7 @@ import { Loader2, Plus } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 import { Link, useFetcher } from "react-router";
 
-import type {
-  ComponentProps,
-  ActionArgs,
-  ActionData,
-  LoaderArgs,
-} from "./+types.IndexPage";
+import type { Route } from "./+types.IndexPage";
 
 import {
   getControllers,
@@ -22,13 +17,13 @@ import { ControllerSecretSuccessMessage } from "~/components/ControllerSecretSuc
 import { insertVerification } from "~/.server/data-layer/verifications";
 import { requireUser } from "~/lib/auth.server";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const user = await requireUser(request);
   const controllers = await getControllers(user);
   return { controllers };
 };
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   if (request.method === "POST") {
     const user = await requireUser(request);
     const formdata = await request.formData();
@@ -48,7 +43,7 @@ export const action = async ({ request }: ActionArgs) => {
 
 export default function ControllersPage({
   loaderData: { controllers },
-}: ComponentProps) {
+}: Route.ComponentProps) {
   return (
     <Main className="flex flex-col gap-2">
       <ControllerForm />
@@ -75,7 +70,7 @@ export default function ControllersPage({
 
 const ControllerForm = () => {
   const id = useId();
-  const fetcher = useFetcher<ActionData>();
+  const fetcher = useFetcher<Route.ActionData>();
   const $form = useRef<HTMLFormElement>(null);
 
   useEffect(

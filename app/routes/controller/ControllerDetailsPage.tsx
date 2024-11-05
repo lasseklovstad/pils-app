@@ -2,11 +2,7 @@ import { sub } from "date-fns";
 import { Check, RefreshCw, X } from "lucide-react";
 import { redirect, useSubmit } from "react-router";
 
-import type {
-  ActionArgs,
-  ComponentProps,
-  LoaderArgs,
-} from "./+types.ControllerDetailsPage";
+import type { Route } from "./+types.ControllerDetailsPage";
 
 import {
   deleteController,
@@ -32,7 +28,7 @@ import { getBatchesFromControllerId } from "~/.server/data-layer/batches";
 import { ControllerMenu } from "./shared/ControllerMenu";
 import { TemperatureChart } from "./shared/TemperatureChart";
 
-export const loader = async ({ params, request }: LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const currentUser = await requireUser(request);
   const interval =
     new URL(request.url).searchParams.get("interval") ?? "timestamp";
@@ -78,7 +74,7 @@ const requireUserOwnerOfController = async (
   }
 };
 
-export const action = async ({ request, params }: ActionArgs) => {
+export const action = async ({ request, params }: Route.ActionArgs) => {
   const controllerId = parseInt(params.controllerId);
   await requireUserOwnerOfController(request, controllerId);
   const formData = await request.formData();
@@ -121,7 +117,7 @@ export default function ControllerPage({
     totalCount,
     batches,
   },
-}: ComponentProps) {
+}: Route.ComponentProps) {
   const revalidator = useRevalidateOnFocus();
   const submit = useSubmit();
 

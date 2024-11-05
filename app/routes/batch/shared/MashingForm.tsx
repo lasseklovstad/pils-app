@@ -1,7 +1,7 @@
 import { Loader2, Save } from "lucide-react";
 import { useFetcher } from "react-router";
 
-import type { ActionData } from "../+types.BatchDetailsPage";
+import type { Route } from "../+types.BatchDetailsPage";
 
 import { Batch, Ingredient } from "db/schema";
 import { AccordionContent, AccordionTrigger } from "~/components/ui/accordion";
@@ -21,7 +21,7 @@ type Props = {
 };
 
 export const MashingForm = ({ batch, ingredients, readOnly }: Props) => {
-  const fetcher = useFetcher<ActionData>();
+  const fetcher = useFetcher<Route.ActionData>();
   const maltIngredients = filterIngredients(ingredients, "malt");
   const totalAmount = calculateTotalAmount(maltIngredients);
   return (

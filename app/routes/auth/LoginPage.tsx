@@ -4,7 +4,7 @@ import { Loader2, LogIn } from "lucide-react";
 import { Form, Link, useActionData, useSearchParams } from "react-router";
 import { z } from "zod";
 
-import type { ActionData, ActionArgs, LoaderArgs } from "./+types.LoginPage";
+import type { Route } from "./+types.LoginPage";
 
 import { CheckboxField, ErrorList, Field } from "~/components/Form";
 import { Main } from "~/components/Main";
@@ -21,12 +21,12 @@ const LoginFormSchema = z.object({
   remember: z.boolean().optional(),
 });
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   await requireAnonymous(request);
   return {};
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   await requireAnonymous(request);
   const formData = await request.formData();
   const submission = await parseWithZod(formData, {
@@ -64,7 +64,7 @@ export async function action({ request }: ActionArgs) {
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const actionData = useActionData<ActionData>();
+  const actionData = useActionData<Route.ActionData>();
   const isPending = useIsPending();
   const [form, fields] = useForm({
     id: "login-form",

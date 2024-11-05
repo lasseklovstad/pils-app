@@ -5,7 +5,7 @@ import { Form, redirect, useActionData, type MetaFunction } from "react-router";
 import { z } from "zod";
 import * as E from "@react-email/components";
 
-import type { ActionArgs, ActionData, LoaderArgs } from "./+types.SignUpPage";
+import type { Route } from "./+types.SignUpPage";
 
 import { Field } from "~/components/Form";
 import { Main } from "~/components/Main";
@@ -22,11 +22,11 @@ const SignUpFormSchema = z.object({
   email: EmailSchema,
 });
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   await requireAnonymous(request);
 };
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
 
   const submission = await parseWithZod(formData, {
@@ -98,7 +98,7 @@ export const meta: MetaFunction = () => {
 };
 
 export default function SignUpPage() {
-  const actionData = useActionData<ActionData>();
+  const actionData = useActionData<Route.ActionData>();
   const isPending = useIsPending();
   const [form, fields] = useForm({
     id: "login-form",

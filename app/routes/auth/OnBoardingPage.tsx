@@ -10,12 +10,7 @@ import {
 } from "react-router";
 import { z } from "zod";
 
-import type {
-  ActionArgs,
-  ActionData,
-  ComponentProps,
-  LoaderArgs,
-} from "./+types.OnBoardingPage";
+import type { Route } from "./+types.OnBoardingPage";
 
 import { CheckboxField, Field } from "~/components/Form";
 import { useIsPending } from "~/lib/useIsPending";
@@ -55,12 +50,12 @@ async function requireOnboardingEmail(request: Request) {
   return email;
 }
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const email = await requireOnboardingEmail(request);
   return { email };
 }
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const email = await requireOnboardingEmail(request);
   const formData = await request.formData();
   const submission = await parseWithZod(formData, {
@@ -106,8 +101,8 @@ export const meta: MetaFunction = () => {
 
 export default function OnboardingRoute({
   loaderData: { email },
-}: ComponentProps) {
-  const actionData = useActionData<ActionData>();
+}: Route.ComponentProps) {
+  const actionData = useActionData<Route.ActionData>();
   const isPending = useIsPending();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo");

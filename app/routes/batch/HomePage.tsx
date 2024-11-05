@@ -2,12 +2,7 @@ import { Loader2, Plus } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 import { Link, useFetcher } from "react-router";
 
-import type {
-  ActionArgs,
-  ActionData,
-  ComponentProps,
-  LoaderArgs,
-} from "./+types.HomePage";
+import type { Route } from "./+types.HomePage";
 
 import { deleteAndInsertBatchTemperatures } from "~/.server/data-layer/batchTemperatures";
 import { getBatches, postBatch } from "~/.server/data-layer/batches";
@@ -19,12 +14,12 @@ import { getUser, requireUser } from "~/lib/auth.server";
 
 import { BatchPreviewImage } from "./shared/BatchPreviewImage";
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const [user, batches] = await Promise.all([getUser(request), getBatches()]);
   return { batches, user };
 };
 
-export const action = async ({ request }: ActionArgs) => {
+export const action = async ({ request }: Route.ActionArgs) => {
   if (request.method === "POST") {
     const user = await requireUser(request);
     const formdata = await request.formData();
@@ -40,7 +35,7 @@ export const action = async ({ request }: ActionArgs) => {
 
 export default function Home({
   loaderData: { batches, user },
-}: ComponentProps) {
+}: Route.ComponentProps) {
   return (
     <Main className="flex flex-col gap-2">
       {user ? <BatchForm /> : null}
@@ -77,7 +72,7 @@ export default function Home({
 
 const BatchForm = () => {
   const id = useId();
-  const fetcher = useFetcher<ActionData>();
+  const fetcher = useFetcher<Route.ActionData>();
   const $form = useRef<HTMLFormElement>(null);
 
   useEffect(

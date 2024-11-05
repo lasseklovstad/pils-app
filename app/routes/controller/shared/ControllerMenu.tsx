@@ -3,7 +3,7 @@ import { Edit, Loader2, Menu, Plus, Save, Trash } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { DialogClose } from "@radix-ui/react-dialog";
 
-import type { ActionData } from "../+types.ControllerDetailsPage";
+import type { Route } from "../+types.ControllerDetailsPage";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -31,8 +31,8 @@ type Props = {
 
 export const ControllerMenu = ({ controller }: Props) => {
   const nameInputId = useId();
-  const editNameFetcher = useFetcher<ActionData>();
-  const editSecretFetcher = useFetcher<ActionData>();
+  const editNameFetcher = useFetcher<Route.ActionData>();
+  const editSecretFetcher = useFetcher<Route.ActionData>();
   const [editNameDialogOpen, setEditNameDialogOpen] = useState(false);
 
   useEffect(() => {
