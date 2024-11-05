@@ -11,7 +11,7 @@ export type InsertUser = Omit<typeof users.$inferInsert, "id" | "createdAt"> & {
 
 export type CreatedUser = InsertUser & { id: string };
 
-export const createUser = (user?: Partial<InsertUser>): InsertUser => ({
+const createUser = (user?: Partial<InsertUser>): InsertUser => ({
   email: faker.internet.email(),
   name: faker.person.fullName(),
   role: "user",
