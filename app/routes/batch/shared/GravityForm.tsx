@@ -1,7 +1,7 @@
 import { useFetcher } from "react-router";
 import { Loader2, Save } from "lucide-react";
 
-import type { ActionData } from "../+types.BatchDetailsPage";
+import type { Route } from "../+types.BatchDetailsPage";
 
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -15,7 +15,7 @@ type Props = {
 };
 
 export const GravityForm = ({ batch, readOnly }: Props) => {
-  const fetcher = useFetcher<ActionData>();
+  const fetcher = useFetcher<Route.ActionData>();
   const abv =
     batch.finalGravity && batch.originalGravity
       ? ((batch.originalGravity - batch.finalGravity) / 7.169).toFixed(1)

@@ -1,6 +1,6 @@
 import * as crypto from "node:crypto";
 
-import type { ActionArgs, LoaderArgs } from "./+types.controllerApi";
+import type { Route } from "./+types.controllerApi";
 
 import { getController } from "~/.server/data-layer/controllers";
 import { postControllerTemperature } from "~/.server/data-layer/controllerTemperatures";
@@ -41,7 +41,7 @@ const authorizeRequest = async (controllerId: string, request: Request) => {
   }
 };
 
-export const loader = async ({ request, params }: LoaderArgs) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const controllerId = parseInt(params.controllerId);
   await authorizeRequest(params.controllerId, request);
   const controller = await getController(controllerId);
@@ -49,7 +49,7 @@ export const loader = async ({ request, params }: LoaderArgs) => {
   return new Response(controller.isRelayOn.toString(), { status: 200 });
 };
 
-export const action = async ({ request, params }: ActionArgs) => {
+export const action = async ({ request, params }: Route.ActionArgs) => {
   const controllerId = parseInt(params.controllerId);
   await authorizeRequest(params.controllerId, request);
   if (request.method === "POST") {

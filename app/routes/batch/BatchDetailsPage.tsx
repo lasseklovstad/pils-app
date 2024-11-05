@@ -5,11 +5,7 @@ import { LocalFileStorage } from "@mjackson/file-storage/local";
 import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
 import { Form, useSearchParams } from "react-router";
 
-import type {
-  ActionArgs,
-  ComponentProps,
-  LoaderArgs,
-} from "./+types.BatchDetailsPage";
+import type { Route } from "./+types.BatchDetailsPage";
 
 import { getBatch, putBatch } from "~/.server/data-layer/batches";
 import {
@@ -49,7 +45,7 @@ import { BatchMenu } from "./shared/BatchMenu";
 export const loader = async ({
   request,
   params: { batchId: batchIdParam },
-}: LoaderArgs) => {
+}: Route.LoaderArgs) => {
   const batchId = parseInt(batchIdParam);
   const [
     batch,
@@ -85,7 +81,7 @@ export const loader = async ({
 export const action = async ({
   params: { batchId: batchIdParam },
   request,
-}: ActionArgs) => {
+}: Route.ActionArgs) => {
   const batchId = parseInt(batchIdParam);
   await requireUserOwnerOfBatch(request, batchId);
 
@@ -134,7 +130,7 @@ export default function BatchPage({
     batchTemperatures,
     controllerTemperatures,
   },
-}: ComponentProps) {
+}: Route.ComponentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const readOnly = batch.userId !== user?.id;
   const filesToShow = batchFiles.filter((file) => file.type !== "unknown");

@@ -1,7 +1,7 @@
 import { Form, Link, useFetcher } from "react-router";
 
 import type { Batch } from "db/schema";
-import type { ActionData } from "../+types.BatchDetailsPage";
+import type { Route } from "../+types.BatchDetailsPage";
 
 import { ErrorList, NativeSelectField } from "~/components/Form";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
@@ -19,7 +19,7 @@ type Props = {
 };
 
 export const ControllerForm = ({ batch, controllers, readOnly }: Props) => {
-  const statusFetcher = useFetcher<ActionData>();
+  const statusFetcher = useFetcher<Route.ActionData>();
   const formValid = batch.mode && batch.controllerId;
   return (
     <div className="flex flex-col items-start justify-start gap-1">

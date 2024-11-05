@@ -4,7 +4,7 @@ import { Form, useActionData, useSearchParams } from "react-router";
 import { z } from "zod";
 import { Loader2, Send } from "lucide-react";
 
-import type { ActionArgs, ActionData } from "./+types.VerifyPage";
+import type { Route } from "./+types.VerifyPage";
 
 import { ErrorList, OTPField } from "~/components/Form";
 import { useIsPending } from "~/lib/useIsPending";
@@ -24,7 +24,7 @@ export const VerifySchema = z.object({
   }),
 });
 
-export async function action({ request }: ActionArgs) {
+export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
   return validateRequest(request, formData);
 }
@@ -32,7 +32,7 @@ export async function action({ request }: ActionArgs) {
 export default function VerifyRoute() {
   const [searchParams] = useSearchParams();
   const isPending = useIsPending();
-  const actionData = useActionData<ActionData>();
+  const actionData = useActionData<Route.ActionData>();
 
   const [form, fields] = useForm({
     id: "verify-form",

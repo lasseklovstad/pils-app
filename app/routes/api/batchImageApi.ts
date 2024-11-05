@@ -1,11 +1,11 @@
 import { LocalFileStorage } from "@mjackson/file-storage/local";
 import sharp from "sharp";
 
-import type { LoaderArgs } from "./+types.batchImageApi";
+import type { Route } from "./+types.batchImageApi";
 
 import { getBatchFile } from "~/.server/data-layer/batchFiles";
 
-export const loader = async ({ params, request }: LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const batchFile = await getBatchFile(params.fileId);
   const url = new URL(request.url);
   const width = url.searchParams.get("w");

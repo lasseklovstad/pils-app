@@ -13,7 +13,7 @@ import {
 } from "react-router";
 
 import type { ReactNode } from "react";
-import type { ComponentProps, LoaderArgs } from "./+types.root";
+import type { Route } from "./+types.root";
 
 import stylesheet from "~/tailwind.css?url";
 
@@ -58,12 +58,12 @@ const Header = ({ children }: { children?: ReactNode }) => {
   );
 };
 
-export const loader = async ({ request }: LoaderArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const user = await getUser(request);
   return { user };
 };
 
-export default function App({ loaderData: { user } }: ComponentProps) {
+export default function App({ loaderData: { user } }: Route.ComponentProps) {
   return (
     <>
       <Header>
