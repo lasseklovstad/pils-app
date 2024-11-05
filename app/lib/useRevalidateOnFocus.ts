@@ -2,12 +2,13 @@ import { useRevalidator } from "react-router";
 import { useEffect } from "react";
 
 export function useRevalidateOnFocus() {
+  // eslint-disable-next-line @typescript-eslint/unbound-method
   const { revalidate, state } = useRevalidator();
 
   useEffect(
     function revalidateOnFocus() {
       function onFocus() {
-        revalidate();
+        void revalidate();
       }
       window.addEventListener("focus", onFocus);
       return () => window.removeEventListener("focus", onFocus);
@@ -20,7 +21,7 @@ export function useRevalidateOnFocus() {
       function onVisibilityChange() {
         // Only revalidate when coming back
         if (!document.hidden) return;
-        revalidate();
+        void revalidate();
       }
       window.addEventListener("visibilitychange", onVisibilityChange);
       return () =>

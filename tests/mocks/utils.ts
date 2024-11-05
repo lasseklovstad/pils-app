@@ -5,7 +5,7 @@ import { z } from "zod";
 
 const fixturesDirPath = "./tests/fixtures";
 
-async function readFixture(subdir: string, name: string) {
+function readFixture(subdir: string, name: string) {
   return fsExtra.readJSON(path.join(fixturesDirPath, subdir, `${name}.json`));
 }
 
@@ -41,7 +41,7 @@ export async function writeEmail(rawEmail: unknown) {
 
 export async function readEmail(recipient: string) {
   try {
-    const email = await readFixture("email", recipient.toLowerCase());
+    const email: unknown = await readFixture("email", recipient.toLowerCase());
     return EmailSchema.parse(email);
   } catch (error) {
     console.error(`Error reading email`, error);

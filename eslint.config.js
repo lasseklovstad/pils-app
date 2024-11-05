@@ -4,7 +4,7 @@ import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
 import eslintConfigPrettier from "eslint-config-prettier";
 import eslintConfigPrettierRecommended from "eslint-plugin-prettier/recommended";
-import importPlugin from "eslint-plugin-import";
+import * as importPlugin from "eslint-plugin-import";
 import "eslint-import-resolver-typescript";
 
 /** @type {import('eslint').Linter.Config} */
@@ -16,6 +16,7 @@ export default [
       ".react-router",
       "test-results",
       "playwright-report",
+      "server.mjs",
     ],
   },
   {
@@ -58,6 +59,7 @@ export default [
   ...tseslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   pluginReact.configs.flat.recommended,
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   importPlugin.flatConfigs.recommended,
   {
     rules: {

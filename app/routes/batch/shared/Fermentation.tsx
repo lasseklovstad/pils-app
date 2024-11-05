@@ -129,7 +129,7 @@ export const Fermentation = ({
                   type="number"
                   dataKey="dayIndex"
                   tickCount={Math.max(...dayTicks) + 1}
-                  tickFormatter={(tick) => tick.toFixed(0)}
+                  tickFormatter={(tick: number) => tick.toFixed(0)}
                   domain={[
                     "dataMin",
                     hideFuture && referenceLineNowInDays

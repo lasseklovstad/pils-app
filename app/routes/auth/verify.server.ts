@@ -61,7 +61,7 @@ export async function prepareVerification({
 async function isCodeValid({ code, target }: { code: string; target: string }) {
   const verification = await getVerification(target, "onboarding");
   if (!verification) return false;
-  const result = verifyTOTP({
+  const result = await verifyTOTP({
     otp: code,
     ...verification,
   });

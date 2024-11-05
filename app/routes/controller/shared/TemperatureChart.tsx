@@ -70,7 +70,7 @@ export const TemperatureChart = ({
                     tickLine={false}
                     axisLine={false}
                     tickMargin={8}
-                    tickFormatter={(date) => {
+                    tickFormatter={(date: Date) => {
                       return `${date.toLocaleDateString("nb", {
                         month: "short",
                         day: "numeric",
@@ -98,7 +98,8 @@ export const TemperatureChart = ({
                     content={
                       <ChartTooltipContent
                         labelFormatter={(label, [item]) => {
-                          const date = item?.payload.timestamp;
+                          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+                          const date: Date = item?.payload.timestamp;
                           return `${label} ${date.toLocaleDateString("nb", {
                             month: "short",
                             day: "numeric",

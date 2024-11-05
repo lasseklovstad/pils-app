@@ -54,12 +54,12 @@ export const MediaCarousel = ({ files, showMenu }: Props) => {
                 <DropdownMenuContent>
                   <DropdownMenuItem
                     className="flex items-center gap-2"
-                    onSelect={() =>
-                      submit(
+                    onSelect={() => {
+                      void submit(
                         { fileId: file.id, intent: "set-preview-file" },
                         { preventScrollReset: true, method: "POST" },
-                      )
-                    }
+                      );
+                    }}
                     disabled={file.type !== "image"}
                   >
                     <Eye />
@@ -67,12 +67,12 @@ export const MediaCarousel = ({ files, showMenu }: Props) => {
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="flex items-center gap-2"
-                    onSelect={() =>
-                      submit(
+                    onSelect={() => {
+                      void submit(
                         { fileId: file.id, intent: "delete-file" },
                         { preventScrollReset: true, method: "DELETE" },
-                      )
-                    }
+                      );
+                    }}
                   >
                     <Trash />
                     Slett

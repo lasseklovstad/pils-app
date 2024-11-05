@@ -1,6 +1,10 @@
 import { createCookieSessionStorage } from "react-router";
 
-export const verifySessionStorage = createCookieSessionStorage({
+import type { onboardingEmailSessionKey } from "~/routes/auth/OnBoardingPage";
+
+export const verifySessionStorage = createCookieSessionStorage<{
+  [onboardingEmailSessionKey]: string;
+}>({
   cookie: {
     name: "en_verification",
     sameSite: "lax", // CSRF protection is advised if changing to 'none'
