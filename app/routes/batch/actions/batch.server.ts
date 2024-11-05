@@ -8,7 +8,7 @@ export async function deleteBatchAction(batchId: number) {
   const files = await getBatchFiles(batchId);
   const batchFilesStorage = getBatchFileStorage(batchId);
   for (const file of files) {
-    batchFilesStorage.remove(file.id);
+    await batchFilesStorage.remove(file.id);
     await deleteFile(file.id);
   }
   await deleteBatch(batchId);

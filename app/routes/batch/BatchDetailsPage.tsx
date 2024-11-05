@@ -289,7 +289,7 @@ async function putBatchControllerAction({
   batchId: number;
 }) {
   const controllerId = parseInt(String(formData.get("controllerId")));
-  const mode = String(formData.get("controllerMode")) as "warm" | "cold";
+  const mode = String(formData.get("controllerMode")) as "warm" | "cold" | "";
   await putBatch(batchId, {
     controllerId: controllerId || null,
     mode: mode || null,

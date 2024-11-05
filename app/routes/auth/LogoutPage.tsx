@@ -4,10 +4,10 @@ import type { Route } from "./+types.LogoutPage";
 
 import { logout } from "~/lib/auth.server";
 
-export async function loader() {
+export function loader() {
   return redirect("/");
 }
 
-export async function action({ request }: Route.ActionArgs) {
+export function action({ request }: Route.ActionArgs) {
   return logout(request);
 }

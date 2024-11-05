@@ -4,7 +4,7 @@ import tseslint from "typescript-eslint";
 import pluginReact from "eslint-plugin-react";
 import eslintConfigPrettier from "eslint-config-prettier";
 import eslintConfigPrettierRecommended from "eslint-plugin-prettier/recommended";
-import importPlugin from "eslint-plugin-import";
+import * as importPlugin from "eslint-plugin-import";
 import "eslint-import-resolver-typescript";
 
 /** @type {import('eslint').Linter.Config} */
@@ -16,10 +16,19 @@ export default [
       ".react-router",
       "test-results",
       "playwright-report",
+      "server.mjs",
     ],
   },
   {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
+  },
+  {
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
   },
   {
     settings: {
@@ -48,12 +57,19 @@ export default [
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
   pluginReact.configs.flat.recommended,
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
   importPlugin.flatConfigs.recommended,
   {
     rules: {
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
+      "require-await": "warn",
+      "@typescript-eslint/no-unnecessary-condition": "warn",
+      "@typescript-eslint/no-floating-promises": ["warn"],
+      "@typescript-eslint/await-thenable": ["warn"],
+      "@typescript-eslint/only-throw-error": "off",
       "import/order": [
         "error",
         {

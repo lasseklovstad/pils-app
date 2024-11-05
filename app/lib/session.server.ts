@@ -1,6 +1,11 @@
 import { createCookieSessionStorage } from "react-router";
 
-export const authSessionStorage = createCookieSessionStorage({
+import type { sessionKey } from "./auth.server";
+
+export const authSessionStorage = createCookieSessionStorage<{
+  [sessionKey]: string;
+  expires: Date;
+}>({
   cookie: {
     name: "en_session",
     sameSite: "lax", // CSRF protection is advised if changing to 'none'
@@ -26,9 +31,7 @@ Object.defineProperty(authSessionStorage, "commitSession", {
     if (options?.maxAge) {
       session.set("expires", new Date(Date.now() + options.maxAge * 1000));
     }
-    const expires = session.has("expires")
-      ? new Date(session.get("expires"))
-      : undefined;
+    const expires = session.has("expires") ? session.get("expires") : undefined;
     const setCookieHeader = await originalCommitSession(session, {
       ...options,
       expires,

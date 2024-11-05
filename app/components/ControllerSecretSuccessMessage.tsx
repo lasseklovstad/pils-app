@@ -23,8 +23,8 @@ export const ControllerSecretSuccessMessage = ({ controller }: Props) => {
           variant="secondary"
           size="icon"
           onClick={() => {
-            if (controller?.secret) {
-              navigator.clipboard.writeText(controller.secret);
+            if (controller.secret) {
+              void navigator.clipboard.writeText(controller.secret);
             }
           }}
         >

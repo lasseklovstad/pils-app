@@ -100,12 +100,12 @@ export const ControllerMenu = ({ controller }: Props) => {
               <DialogTitle>Generer ny nøkkel</DialogTitle>
             </DialogHeader>
             <Button
-              onClick={() =>
-                editSecretFetcher.submit(
+              onClick={() => {
+                void editSecretFetcher.submit(
                   { intent: "edit-secret" },
                   { method: "PUT" },
-                )
-              }
+                );
+              }}
             >
               {editSecretFetcher.state !== "idle" ? (
                 <Loader2 className="animate-spin" />

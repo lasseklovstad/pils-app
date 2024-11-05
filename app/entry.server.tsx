@@ -11,7 +11,7 @@ import type { EntryContext } from "react-router";
 const ABORT_DELAY = 5_000;
 
 if (process.env.ENABLE_MOCKS === "true") {
-  import("tests/mocks/mockServer").then(({ server }) =>
+  void import("tests/mocks/mockServer").then(({ server }) =>
     server.listen({ onUnhandledRequest: "warn" }),
   );
 }
@@ -57,7 +57,7 @@ export default function handleRequest(
           pipe(body);
         },
         onShellError(error: unknown) {
-          reject(error);
+          reject(error as Error);
         },
         onError(error: unknown) {
           responseStatusCode = 500;

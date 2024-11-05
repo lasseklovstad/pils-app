@@ -34,7 +34,7 @@ export const ControllerForm = ({ batch, controllers, readOnly }: Props) => {
   const formValid = batch.mode && batch.controllerId;
 
   const postControllerStatus = (value: string) => {
-    statusFetcher.submit(
+    void statusFetcher.submit(
       {
         intent: batchControllerStatusIntent,
         status: value,

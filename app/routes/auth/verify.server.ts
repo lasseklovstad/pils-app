@@ -27,24 +27,24 @@ function getRedirectToUrl({
   return redirectToUrl;
 }
 
+const totpOptions = {
+  algorithm: "SHA-256",
+  // Leaving off 0, O, and I on purpose to avoid confusing users.
+  charSet: "ABCDEFGHJKLMNPQRSTUVWXYZ123456789",
+  period: 10 * 60,
+};
+
 export async function prepareVerification({
-  period,
   request,
   target,
 }: {
-  period: number;
   request: Request;
   target: string;
 }) {
   const verifyUrl = getRedirectToUrl({ request, target });
   const redirectTo = new URL(verifyUrl.toString());
 
-  const verificationConfig = await generateTOTP({
-    algorithm: "SHA-256",
-    // Leaving off 0, O, and I on purpose to avoid confusing users.
-    charSet: "ABCDEFGHJKLMNPQRSTUVWXYZ123456789",
-    period,
-  });
+  const verificationConfig = await generateTOTP(totpOptions);
   await insertVerification({
     secret: verificationConfig.secret,
     target,
@@ -61,8 +61,9 @@ export async function prepareVerification({
 async function isCodeValid({ code, target }: { code: string; target: string }) {
   const verification = await getVerification(target, "onboarding");
   if (!verification) return false;
-  const result = verifyTOTP({
+  const result = await verifyTOTP({
     otp: code,
+    ...totpOptions,
     ...verification,
   });
   if (!result) return false;

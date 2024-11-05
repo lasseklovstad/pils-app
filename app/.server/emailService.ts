@@ -57,7 +57,7 @@ export async function sendMail({
       console.log("Email sent successfully!");
       return { status: "success" };
     } else {
-      const errorData = await response.json();
+      const errorData: unknown = await response.json();
       console.error("Error sending email:", errorData);
       return { status: "error", message: "Ukjent feil ved sending av e-post" };
     }

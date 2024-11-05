@@ -138,7 +138,11 @@ export default function ControllerPage({
         </h2>
         <ControllerMenu controller={controller} />
       </div>
-      <Button onClick={revalidator.revalidate}>
+      <Button
+        onClick={() => {
+          void revalidator.revalidate();
+        }}
+      >
         <RefreshCw
           className={cn(revalidator.state !== "idle" && "animate-spin")}
         />
@@ -163,7 +167,9 @@ export default function ControllerPage({
       <label className="flex items-center gap-1">
         <Switch
           checked={controller.isRelayOn}
-          onCheckedChange={(checked) => submit({ checked }, { method: "PUT" })}
+          onCheckedChange={(checked) => {
+            void submit({ checked }, { method: "PUT" });
+          }}
         />
         Relay on
       </label>
