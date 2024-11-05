@@ -1,8 +1,7 @@
-import { test, expect } from "@playwright/test";
 import { faker } from "@faker-js/faker";
 
 import { getEmailContentAsText, readEmail } from "tests/mocks/utils";
-import { insertNewUser } from "tests/db-utils";
+import { expect, test } from "tests/playwright-utils";
 
 const URL_REGEX = /(?<url>https?:\/\/[^\s$.?#].[^\s]*)/;
 const CODE_REGEX = /Her er koden: (?<code>[\d\w]+)/;
@@ -113,7 +112,7 @@ test("onboarding with link", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Logg ut" })).toBeVisible();
 });
 
-test("login as existing user", async ({ page }) => {
+test("login as existing user", async ({ page, insertNewUser }) => {
   const user = await insertNewUser();
   await page.goto("/login");
   await page.getByRole("textbox", { name: "E-post" }).fill(user.email);
