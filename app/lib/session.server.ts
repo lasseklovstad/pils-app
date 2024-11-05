@@ -25,6 +25,7 @@ Object.defineProperty(authSessionStorage, "commitSession", {
     ...args: Parameters<typeof originalCommitSession>
   ) {
     const [session, options] = args;
+    console.log(options);
     if (options?.expires) {
       session.set("expires", options.expires);
     }
