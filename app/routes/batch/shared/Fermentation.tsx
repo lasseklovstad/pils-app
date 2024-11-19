@@ -1,19 +1,20 @@
+import { useState } from "react";
 import {
   Area,
-  CartesianGrid,
   AreaChart,
+  CartesianGrid,
+  Label,
   ReferenceLine,
   XAxis,
-  Label,
 } from "recharts";
-import { useState } from "react";
 
 import {
-  type Ingredient,
-  type BatchTemperature,
   type Batch,
+  type BatchTemperature,
   type ControllerTemperature,
+  type Ingredient,
 } from "db/schema";
+import { BatchStatus } from "~/components/BatchStatus";
 import { AccordionContent, AccordionTrigger } from "~/components/ui/accordion";
 import {
   ChartContainer,
@@ -21,15 +22,13 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "~/components/ui/chart";
+import { DualRangeSlider } from "~/components/ui/dual-slider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { filterIngredients } from "~/lib/utils";
-import { BatchStatus } from "~/components/BatchStatus";
-import { Toggle } from "~/components/ui/toggle";
 
+import { BatchTemperaturesForm } from "./BatchTemperaturesForm";
 import { ControllerForm } from "./ControllerForm";
 import { IngredientForm } from "./IngredientForm";
-import { BatchTemperaturesForm } from "./BatchTemperaturesForm";
-import { DualRangeSlider } from "~/components/ui/dual-slider";
 
 type Props = {
   ingredients: Ingredient[];
@@ -77,7 +76,7 @@ export const Fermentation = ({
   const controllerDayTicks = controllerTemperatures.map((ct) => {
     if (batch.fermentationStartDate) {
       return (
-        (ct.timestamp.valueOf() - batch.fermentationStartDate?.valueOf()) /
+        (ct.timestamp.valueOf() - batch.fermentationStartDate.valueOf()) /
         dayInMillis
       );
     }
