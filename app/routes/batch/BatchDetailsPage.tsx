@@ -4,6 +4,7 @@ import path from "path";
 import { LocalFileStorage } from "@mjackson/file-storage/local";
 import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
 import { Form, useSearchParams } from "react-router";
+import QRCode from "qrcode";
 
 import type { Route } from "./+types.BatchDetailsPage";
 
@@ -47,6 +48,7 @@ export const loader = async ({
   request,
   params: { batchId: batchIdParam },
 }: Route.LoaderArgs) => {
+  const url = new URL(request.url);
   const batchId = parseInt(batchIdParam);
   const [
     batch,
@@ -56,6 +58,7 @@ export const loader = async ({
     controllers,
     batchTemperatures,
     controllerTemperatures,
+    qrCode,
   ] = await Promise.all([
     getBatch(batchId),
     getBatchIngredients(batchId),
@@ -64,6 +67,7 @@ export const loader = async ({
     getControllersFromBatchId(batchId),
     getBatchTemperatures(batchId),
     getControllerTemperaturesFromBatchId(batchId),
+    QRCode.toDataURL(url.origin + url.pathname),
   ]);
   if (!batch) {
     throw new Response("Fant ikke brygg med id " + batchId, { status: 404 });
@@ -76,6 +80,7 @@ export const loader = async ({
     controllers,
     batchTemperatures,
     controllerTemperatures,
+    qrCode,
   };
 };
 
@@ -130,6 +135,7 @@ export default function BatchPage({
     controllers,
     batchTemperatures,
     controllerTemperatures,
+    qrCode,
   },
 }: Route.ComponentProps) {
   useRevalidateOnFocus();
@@ -209,6 +215,7 @@ export default function BatchPage({
         {filesToShow.length > 0 ? (
           <MediaCarousel files={filesToShow} showMenu={!readOnly} />
         ) : null}
+        <img src={qrCode} className="size-40" />
       </div>
     </Main>
   );

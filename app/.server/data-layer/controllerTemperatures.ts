@@ -1,4 +1,15 @@
-import { and, desc, eq, ne, not, or, sql } from "drizzle-orm";
+import {
+  and,
+  desc,
+  eq,
+  getTableColumns,
+  inArray,
+  min,
+  ne,
+  not,
+  or,
+  sql,
+} from "drizzle-orm";
 
 import { db } from "db/config.server";
 import { batches, controllerTemperatures } from "db/schema";
@@ -25,13 +36,25 @@ export const postControllerTemperature = async (
 
 export const getControllerTemperaturesFromBatchId = async (batchId: number) => {
   return await db
-    .select()
+    .select({
+      ...getTableColumns(controllerTemperatures),
+      count: sql<number>`count(*) over()`,
+    })
     .from(controllerTemperatures)
     .where(
       and(
         eq(controllerTemperatures.batchId, batchId),
         ne(controllerTemperatures.temperature, 85),
         ne(controllerTemperatures.temperature, -127),
+        // Select only every minute
+        inArray(
+          controllerTemperatures.timestamp,
+          db
+            .select({ timestamp: min(controllerTemperatures.timestamp) })
+            .from(controllerTemperatures)
+            .groupBy(sql`${controllerTemperatures.timestamp}/(60)`)
+            .orderBy(desc(controllerTemperatures.temperature)),
+        ),
       ),
     );
 };
