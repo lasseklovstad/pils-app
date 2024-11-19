@@ -20,7 +20,7 @@
     "db:drop": "drizzle-kit drop",
     "db:studio": "drizzle-kit studio",
     "generate-encryption-key": "tsx generate-encryption-key.ts",
-    "launch:webkit": "tsx launch-webkit.js"
+    "launch:webkit": "tsx launch-webkit.ts"
   },
   "author": "",
   "license": "ISC",
