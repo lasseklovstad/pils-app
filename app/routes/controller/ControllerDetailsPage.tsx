@@ -2,7 +2,7 @@ import { sub } from "date-fns";
 import { Check, RefreshCw, X } from "lucide-react";
 import { redirect, useSubmit } from "react-router";
 
-import type { Route } from "./+types.ControllerDetailsPage";
+import type { Route } from "./+types/ControllerDetailsPage";
 
 import {
   deleteController,

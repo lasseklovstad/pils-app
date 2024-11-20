@@ -1,6 +1,6 @@
 import { redirect } from "react-router";
 
-import type { Route } from "./+types.LogoutPage";
+import type { Route } from "./+types/LogoutPage";
 
 import { logout } from "~/lib/auth.server";
 

@@ -1,10 +1,11 @@
-import { Form, useFetcher } from "react-router";
+import { DialogClose } from "@radix-ui/react-dialog";
 import { Edit, Loader2, Menu, Plus, Save, Trash } from "lucide-react";
 import { useEffect, useId, useState } from "react";
-import { DialogClose } from "@radix-ui/react-dialog";
+import { Form, useFetcher } from "react-router";
 
-import type { Route } from "../+types.ControllerDetailsPage";
+import type { action } from "../ControllerDetailsPage";
 
+import { ControllerSecretSuccessMessage } from "~/components/ControllerSecretSuccessMessage";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -23,7 +24,6 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { ControllerSecretSuccessMessage } from "~/components/ControllerSecretSuccessMessage";
 
 type Props = {
   controller: { name: string; id: number };
@@ -31,8 +31,8 @@ type Props = {
 
 export const ControllerMenu = ({ controller }: Props) => {
   const nameInputId = useId();
-  const editNameFetcher = useFetcher<Route.ActionData>();
-  const editSecretFetcher = useFetcher<Route.ActionData>();
+  const editNameFetcher = useFetcher<typeof action>();
+  const editSecretFetcher = useFetcher<typeof action>();
   const [editNameDialogOpen, setEditNameDialogOpen] = useState(false);
 
   useEffect(() => {

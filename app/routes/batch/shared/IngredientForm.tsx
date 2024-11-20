@@ -1,8 +1,8 @@
-import { useFetcher } from "react-router";
 import { Loader2, Plus, X } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
+import { useFetcher } from "react-router";
 
-import type { Route } from "../+types.BatchDetailsPage";
+import type { action } from "../BatchDetailsPage";
 
 import { Ingredient } from "db/schema";
 import { Button } from "~/components/ui/button";
@@ -29,7 +29,7 @@ export const IngredientForm = ({
 }: Props) => {
   const nameId = useId();
   const amountId = useId();
-  const fetcher = useFetcher<Route.ActionData>({
+  const fetcher = useFetcher<typeof action>({
     key: ingredient ? `put-ingredient-${ingredient.id}` : "create-ingredient",
   });
   const deleteFetcher = useFetcher({

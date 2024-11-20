@@ -1,12 +1,11 @@
-import { Form, Link, useFetcher } from "react-router";
 import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
 import { useState } from "react";
+import { Form, Link, useFetcher } from "react-router";
 
 import type { Batch } from "db/schema";
-import type { Route } from "../+types.BatchDetailsPage";
+import type { action } from "../BatchDetailsPage";
 
 import { ErrorList, NativeSelectField } from "~/components/Form";
-import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -15,6 +14,7 @@ import {
   DialogFooter,
   DialogHeader,
 } from "~/components/ui/dialog";
+import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 
 import { batchControllerStatusIntent } from "../actions/batchController.schema";
 
@@ -30,7 +30,7 @@ type Props = {
 export const ControllerForm = ({ batch, controllers, readOnly }: Props) => {
   const [stopFermentationDialog, setStopFermentationDialog] =
     useState<string>();
-  const statusFetcher = useFetcher<Route.ActionData>();
+  const statusFetcher = useFetcher<typeof action>();
   const formValid = batch.mode && batch.controllerId;
 
   const postControllerStatus = (value: string) => {

@@ -2,7 +2,7 @@ import { Loader2, Plus } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 import { Link, useFetcher } from "react-router";
 
-import type { Route } from "./+types.HomePage";
+import type { Route } from "./+types/HomePage";
 
 import { deleteAndInsertBatchTemperatures } from "~/.server/data-layer/batchTemperatures";
 import { getBatches, postBatch } from "~/.server/data-layer/batches";
@@ -72,7 +72,7 @@ export default function Home({
 
 const BatchForm = () => {
   const id = useId();
-  const fetcher = useFetcher<Route.ActionData>();
+  const fetcher = useFetcher<typeof action>();
   const $form = useRef<HTMLFormElement>(null);
 
   useEffect(

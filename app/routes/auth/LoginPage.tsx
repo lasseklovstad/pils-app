@@ -4,7 +4,7 @@ import { Loader2, LogIn } from "lucide-react";
 import { Form, Link, useActionData, useSearchParams } from "react-router";
 import { z } from "zod";
 
-import type { Route } from "./+types.LoginPage";
+import type { Route } from "./+types/LoginPage";
 
 import { CheckboxField, ErrorList, Field } from "~/components/Form";
 import { Main } from "~/components/Main";
@@ -64,7 +64,7 @@ export async function action({ request }: Route.ActionArgs) {
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const actionData = useActionData<Route.ActionData>();
+  const actionData = useActionData<typeof action>();
   const isPending = useIsPending();
   const [form, fields] = useForm({
     id: "login-form",
