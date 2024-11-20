@@ -13,7 +13,7 @@ import {
 } from "react-router";
 
 import type { ReactNode } from "react";
-import type { Route } from "./+types.root";
+import type { Route } from "./+types/root";
 
 import stylesheet from "~/tailwind.css?url";
 

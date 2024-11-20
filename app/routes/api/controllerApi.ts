@@ -1,6 +1,6 @@
 import * as crypto from "node:crypto";
 
-import type { Route } from "./+types.controllerApi";
+import type { Route } from "./+types/controllerApi";
 
 import { getController } from "~/.server/data-layer/controllers";
 import { postControllerTemperature } from "~/.server/data-layer/controllerTemperatures";

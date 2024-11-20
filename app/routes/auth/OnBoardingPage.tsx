@@ -10,7 +10,7 @@ import {
 } from "react-router";
 import { z } from "zod";
 
-import type { Route } from "./+types.OnBoardingPage";
+import type { Route } from "./+types/OnBoardingPage";
 
 import { CheckboxField, Field } from "~/components/Form";
 import { useIsPending } from "~/lib/useIsPending";
@@ -102,7 +102,7 @@ export const meta: MetaFunction = () => {
 export default function OnboardingRoute({
   loaderData: { email },
 }: Route.ComponentProps) {
-  const actionData = useActionData<Route.ActionData>();
+  const actionData = useActionData<typeof action>();
   const isPending = useIsPending();
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo");

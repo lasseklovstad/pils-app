@@ -1,7 +1,7 @@
 import { LocalFileStorage } from "@mjackson/file-storage/local";
 import sharp from "sharp";
 
-import type { Route } from "./+types.batchImageApi";
+import type { Route } from "./+types/batchImageApi";
 
 import { getBatchFile } from "~/.server/data-layer/batchFiles";
 

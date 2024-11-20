@@ -2,7 +2,7 @@ import { index, prefix, route } from "@react-router/dev/routes";
 
 import type { RouteConfig } from "@react-router/dev/routes";
 
-export const routes: RouteConfig = [
+const routes: RouteConfig = [
   index("routes/batch/HomePage.tsx"),
   route("batch/:batchId", "routes/batch/BatchDetailsPage.tsx"),
   route("login", "routes/auth/LoginPage.tsx"),
@@ -21,3 +21,5 @@ export const routes: RouteConfig = [
     route("files/video/:fileId", "routes/api/batchVideoApi.ts"),
   ]),
 ];
+
+export default routes;

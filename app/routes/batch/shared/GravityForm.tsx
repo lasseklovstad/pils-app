@@ -1,13 +1,12 @@
-import { useFetcher } from "react-router";
 import { Loader2, Save } from "lucide-react";
+import { useFetcher } from "react-router";
 
-import type { Route } from "../+types.BatchDetailsPage";
-
+import { Batch } from "db/schema";
+import { AccordionContent, AccordionTrigger } from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { Batch } from "db/schema";
-import { AccordionContent, AccordionTrigger } from "~/components/ui/accordion";
+import type { action } from "../BatchDetailsPage";
 
 type Props = {
   batch: Batch;
@@ -15,7 +14,7 @@ type Props = {
 };
 
 export const GravityForm = ({ batch, readOnly }: Props) => {
-  const fetcher = useFetcher<Route.ActionData>();
+  const fetcher = useFetcher<typeof action>();
   const abv =
     batch.finalGravity && batch.originalGravity
       ? ((batch.originalGravity - batch.finalGravity) / 7.169).toFixed(1)

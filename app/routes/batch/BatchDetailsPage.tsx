@@ -6,7 +6,7 @@ import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
 import { Form, useSearchParams } from "react-router";
 import QRCode from "qrcode";
 
-import type { Route } from "./+types.BatchDetailsPage";
+import type { Route } from "./+types/BatchDetailsPage";
 
 import { getBatch, putBatch } from "~/.server/data-layer/batches";
 import {

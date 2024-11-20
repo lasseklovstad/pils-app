@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Form, useFetcher } from "react-router";
 
 import type { Batch } from "db/schema";
-import type { Route } from "../+types.BatchDetailsPage";
 
 import { Field } from "~/components/Form";
 import { Button } from "~/components/ui/button";
@@ -28,13 +27,14 @@ import {
   deleteBatchIntent,
   editBatchNameIntent,
 } from "../actions/batch.schema";
+import type { action } from "../BatchDetailsPage";
 
 type Props = {
   batch: Batch;
 };
 
 export const BatchMenu = ({ batch }: Props) => {
-  const editNameFetcher = useFetcher<Route.ActionData>();
+  const editNameFetcher = useFetcher<typeof action>();
   const [editNameDialogOpen, setEditNameDialogOpen] = useState(false);
 
   useEffect(() => {

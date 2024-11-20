@@ -2,7 +2,7 @@ import { Loader2, Plus } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 import { Link, useFetcher } from "react-router";
 
-import type { Route } from "./+types.IndexPage";
+import type { Route } from "./+types/IndexPage";
 
 import {
   getControllers,
@@ -70,7 +70,7 @@ export default function ControllersPage({
 
 const ControllerForm = () => {
   const id = useId();
-  const fetcher = useFetcher<Route.ActionData>();
+  const fetcher = useFetcher<typeof action>();
   const $form = useRef<HTMLFormElement>(null);
 
   useEffect(
