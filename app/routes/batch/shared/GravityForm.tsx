@@ -1,12 +1,13 @@
 import { Loader2, Save } from "lucide-react";
 import { useFetcher } from "react-router";
 
+import type { action } from "../BatchDetailsPage";
+
 import { Batch } from "db/schema";
 import { AccordionContent, AccordionTrigger } from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import type { action } from "../BatchDetailsPage";
 
 type Props = {
   batch: Batch;

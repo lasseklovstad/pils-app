@@ -1,6 +1,8 @@
 import { Loader2, Save } from "lucide-react";
 import { useFetcher } from "react-router";
 
+import type { action } from "../BatchDetailsPage";
+
 import { Batch, Ingredient } from "db/schema";
 import { AccordionContent, AccordionTrigger } from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
@@ -11,7 +13,6 @@ import {
   calculateWaterTemperature,
   filterIngredients,
 } from "~/lib/utils";
-import type { action } from "../BatchDetailsPage";
 
 type Props = {
   ingredients: Ingredient[];

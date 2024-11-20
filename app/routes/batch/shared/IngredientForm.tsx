@@ -2,12 +2,13 @@ import { Loader2, Plus, X } from "lucide-react";
 import { useEffect, useId, useRef } from "react";
 import { useFetcher } from "react-router";
 
+import type { action } from "../BatchDetailsPage";
+
 import { Ingredient } from "db/schema";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { cn } from "~/lib/utils";
-import type { action } from "../BatchDetailsPage";
 
 type Props = {
   ingredient?: Ingredient;

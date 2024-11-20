@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Form, Link, useFetcher } from "react-router";
 
 import type { Batch } from "db/schema";
+import type { action } from "../BatchDetailsPage";
 
 import { ErrorList, NativeSelectField } from "~/components/Form";
 import { Button } from "~/components/ui/button";
@@ -16,7 +17,6 @@ import {
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 
 import { batchControllerStatusIntent } from "../actions/batchController.schema";
-import type { action } from "../BatchDetailsPage";
 
 type Props = {
   readOnly: boolean;

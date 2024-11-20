@@ -3,6 +3,8 @@ import { Edit, Loader2, Menu, Plus, Save, Trash } from "lucide-react";
 import { useEffect, useId, useState } from "react";
 import { Form, useFetcher } from "react-router";
 
+import type { action } from "../ControllerDetailsPage";
+
 import { ControllerSecretSuccessMessage } from "~/components/ControllerSecretSuccessMessage";
 import { Button } from "~/components/ui/button";
 import {
@@ -22,7 +24,6 @@ import {
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import type { action } from "../ControllerDetailsPage";
 
 type Props = {
   controller: { name: string; id: number };
