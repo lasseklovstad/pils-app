@@ -78,7 +78,7 @@
     "@radix-ui/react-tabs": "^1.1.1",
     "@radix-ui/react-toggle": "^1.1.0",
     "@radix-ui/react-toggle-group": "^1.1.0",
-    "@react-email/components": "^0.0.30",
+    "@react-email/components": "^0.0.31",
     "@react-router/express": "7.0.2",
     "@react-router/node": "7.0.2",
     "bcryptjs": "^2.4.3",
