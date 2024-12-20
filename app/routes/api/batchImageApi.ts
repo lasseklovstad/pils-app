@@ -19,14 +19,11 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     return new Response("Not found", { status: 404 });
   }
 
-  let imageBuffer = await file.arrayBuffer();
-  if (width) {
-    const resizedImage = await sharp(imageBuffer)
-      .rotate()
-      .resize({ width: parseInt(width, 10) })
-      .toBuffer();
-    imageBuffer = resizedImage;
-  }
+  const imageBuffer = await sharp(await file.arrayBuffer())
+    .rotate()
+    .resize({ width: width ? parseInt(width, 10) : undefined })
+    .jpeg({ quality: 40 })
+    .toBuffer();
 
   const headers = {
     "Content-Type": file.type,
