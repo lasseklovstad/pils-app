@@ -1,6 +1,8 @@
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
 import { Loader2, Plus } from "lucide-react";
-import { useEffect, useId, useRef } from "react";
-import { Link, useFetcher } from "react-router";
+import { Form, Link, useActionData } from "react-router";
+import { z } from "zod";
 
 import type { Route } from "./+types/IndexPage";
 
@@ -8,14 +10,14 @@ import {
   getControllers,
   postController,
 } from "~/.server/data-layer/controllers";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
-import { Main } from "~/components/Main";
-import { createControllerSecret, encryptSecret } from "~/lib/utils";
-import { ControllerSecretSuccessMessage } from "~/components/ControllerSecretSuccessMessage";
 import { insertVerification } from "~/.server/data-layer/verifications";
+import { ControllerSecretSuccessMessage } from "~/components/ControllerSecretSuccessMessage";
+import { Field } from "~/components/Form";
+import { Main } from "~/components/Main";
+import { Button } from "~/components/ui/button";
 import { requireUser } from "~/lib/auth.server";
+import { useIsPending } from "~/lib/useIsPending";
+import { createControllerSecret, encryptSecret } from "~/lib/utils";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const user = await requireUser(request);
@@ -23,22 +25,30 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   return { controllers };
 };
 
-export const action = async ({ request }: Route.ActionArgs) => {
-  if (request.method === "POST") {
-    const user = await requireUser(request);
-    const formdata = await request.formData();
-    const name = String(formdata.get("name"));
-    const secret = createControllerSecret();
+const PostControllerSchema = z.object({
+  name: z.string().trim().min(1),
+});
 
-    const id = await postController({ name, userId: user.id });
-    await insertVerification({
-      secret: encryptSecret(secret, process.env.ENCRYPTION_KEY!),
-      target: id.toString(),
-      type: "controller",
-    });
-    return { ok: true, controller: { secret, name, id } };
+export const action = async ({ request }: Route.ActionArgs) => {
+  const user = await requireUser(request);
+  const formdata = await request.formData();
+  const result = parseWithZod(formdata, { schema: PostControllerSchema });
+  if (result.status !== "success") {
+    return { status: 400, result: result.reply() };
   }
-  return { ok: true };
+  const name = result.value.name;
+  const secret = createControllerSecret();
+  const id = await postController({ name, userId: user.id });
+  await insertVerification({
+    secret: encryptSecret(secret, process.env.ENCRYPTION_KEY!),
+    target: id.toString(),
+    type: "controller",
+  });
+  return {
+    status: 200,
+    controller: { secret, name, id },
+    result: result.reply({ resetForm: true }),
+  };
 };
 
 export default function ControllersPage({
@@ -69,46 +79,37 @@ export default function ControllersPage({
 }
 
 const ControllerForm = () => {
-  const id = useId();
-  const fetcher = useFetcher<typeof action>();
-  const $form = useRef<HTMLFormElement>(null);
-
-  useEffect(
-    function resetFormOnSuccess() {
-      if (fetcher.state === "idle" && fetcher.data?.ok) {
-        $form.current?.reset();
-      }
+  const lastResult = useActionData<typeof action>();
+  const isPending = useIsPending();
+  const [form, fields] = useForm({
+    lastResult: lastResult?.result,
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: PostControllerSchema });
     },
-    [fetcher.state, fetcher.data],
-  );
+  });
   return (
     <div className="flex flex-col gap-2 rounded border p-4">
-      <fetcher.Form
-        className="flex flex-wrap items-end gap-2"
+      <Form
+        className="flex flex-wrap items-center gap-2"
         method="POST"
-        ref={$form}
+        {...getFormProps(form)}
       >
-        <div>
-          <Label htmlFor={id}>Navn på kontroller</Label>
-          <Input
-            placeholder="Eks: Min kontroller"
-            id={id}
-            required
-            autoComplete="off"
-            name="name"
-          />
-        </div>
+        <Field
+          labelProps={{ children: "Navn på kontroller" }}
+          inputProps={{
+            placeholder: "Eks: Min kontroller",
+            autoComplete: "off",
+            ...getInputProps(fields.name, { type: "text" }),
+          }}
+          errors={fields.name.errors}
+        />
         <Button type="submit">
-          {fetcher.state !== "idle" ? (
-            <Loader2 className="animate-spin" />
-          ) : (
-            <Plus />
-          )}
+          {isPending ? <Loader2 className="animate-spin" /> : <Plus />}
           Opprett
         </Button>
-      </fetcher.Form>
-      {fetcher.data?.ok && fetcher.data.controller ? (
-        <ControllerSecretSuccessMessage controller={fetcher.data.controller} />
+      </Form>
+      {lastResult?.status === 200 && lastResult.controller ? (
+        <ControllerSecretSuccessMessage controller={lastResult.controller} />
       ) : null}
     </div>
   );

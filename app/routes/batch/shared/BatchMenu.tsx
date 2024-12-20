@@ -1,7 +1,9 @@
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Edit, Loader2, Menu, Save, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Form, useFetcher } from "react-router";
+import { Form, useActionData, useNavigation } from "react-router";
 
 import type { Batch } from "db/schema";
 import type { action } from "../BatchDetailsPage";
@@ -23,10 +25,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import { useIsPending } from "~/lib/useIsPending";
 
 import {
   deleteBatchIntent,
   editBatchNameIntent,
+  EditBatchNameSchema,
 } from "../actions/batch.schema";
 
 type Props = {
@@ -34,17 +38,24 @@ type Props = {
 };
 
 export const BatchMenu = ({ batch }: Props) => {
-  const editNameFetcher = useFetcher<typeof action>();
+  const lastResult = useActionData<typeof action>();
+  const isPending = useIsPending();
+  const navigation = useNavigation();
+  const [form, fields] = useForm({
+    // Sync the result of last submission only when the state is idle
+    lastResult: navigation.state === "idle" ? lastResult?.result : null,
+    defaultValue: { name: batch.name },
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: EditBatchNameSchema });
+    },
+  });
   const [editNameDialogOpen, setEditNameDialogOpen] = useState(false);
 
   useEffect(() => {
-    if (
-      editNameFetcher.state === "idle" &&
-      editNameFetcher.data?.status === "success"
-    ) {
+    if (lastResult?.status === 200) {
       setEditNameDialogOpen(false);
     }
-  }, [editNameFetcher.state, editNameFetcher.data]);
+  }, [lastResult?.status]);
 
   return (
     <DropdownMenu>
@@ -64,7 +75,7 @@ export const BatchMenu = ({ batch }: Props) => {
             </DropdownMenuItem>
           </DialogTrigger>
           <DialogContent>
-            <editNameFetcher.Form method="PUT">
+            <Form method="PUT" {...getFormProps(form)}>
               <DialogHeader>
                 <DialogTitle>Endre navn</DialogTitle>
               </DialogHeader>
@@ -72,23 +83,17 @@ export const BatchMenu = ({ batch }: Props) => {
                 labelProps={{ children: "Navn på brygg" }}
                 inputProps={{
                   placeholder: "Eks: Pilsner",
-                  defaultValue: batch.name,
-                  required: true,
                   autoComplete: "off",
-                  name: "name",
+                  ...getInputProps(fields.name, { type: "text" }),
                 }}
               />
               <DialogFooter>
                 <Button type="submit" name="intent" value={editBatchNameIntent}>
-                  {editNameFetcher.state !== "idle" ? (
-                    <Loader2 className="animate-spin" />
-                  ) : (
-                    <Save />
-                  )}
+                  {isPending ? <Loader2 className="animate-spin" /> : <Save />}
                   Lagre
                 </Button>
               </DialogFooter>
-            </editNameFetcher.Form>
+            </Form>
           </DialogContent>
         </Dialog>
         <Dialog>

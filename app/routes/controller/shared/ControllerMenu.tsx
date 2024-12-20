@@ -1,11 +1,12 @@
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Edit, Loader2, Menu, Plus, Save, Trash } from "lucide-react";
-import { useEffect, useId, useState } from "react";
-import { Form, useFetcher } from "react-router";
-
-import type { action } from "../ControllerDetailsPage";
+import { useEffect, useState } from "react";
+import { Form, useActionData, useFetcher, useNavigation } from "react-router";
 
 import { ControllerSecretSuccessMessage } from "~/components/ControllerSecretSuccessMessage";
+import { Field } from "~/components/Form";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -22,24 +23,38 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
+import { useIsPending } from "~/lib/useIsPending";
+
+import {
+  editNameIntent,
+  EditNameSchema,
+  type action,
+} from "../ControllerDetailsPage";
 
 type Props = {
   controller: { name: string; id: number };
 };
 
 export const ControllerMenu = ({ controller }: Props) => {
-  const nameInputId = useId();
-  const editNameFetcher = useFetcher<typeof action>();
+  const lastResult = useActionData<typeof action>();
+  const isPending = useIsPending();
+  const navigation = useNavigation();
+  const [form, fields] = useForm({
+    // Sync the result of last submission only when the state is idle
+    lastResult: navigation.state === "idle" ? lastResult?.result : null,
+    defaultValue: { name: controller.name },
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: EditNameSchema });
+    },
+  });
   const editSecretFetcher = useFetcher<typeof action>();
   const [editNameDialogOpen, setEditNameDialogOpen] = useState(false);
 
   useEffect(() => {
-    if (editNameFetcher.state === "idle" && editNameFetcher.data?.ok) {
+    if (navigation.state === "idle" && lastResult?.status === 200) {
       setEditNameDialogOpen(false);
     }
-  }, [editNameFetcher.state, editNameFetcher.data]);
+  }, [navigation.state, lastResult?.status]);
 
   return (
     <DropdownMenu>
@@ -59,30 +74,25 @@ export const ControllerMenu = ({ controller }: Props) => {
             </DropdownMenuItem>
           </DialogTrigger>
           <DialogContent>
-            <editNameFetcher.Form method="PUT">
+            <Form method="PUT" {...getFormProps(form)}>
               <DialogHeader>
                 <DialogTitle>Endre navn</DialogTitle>
               </DialogHeader>
-              <Label htmlFor={nameInputId}>Navn på kontroller</Label>
-              <Input
-                placeholder="Eks: Min kontroller"
-                id={nameInputId}
-                defaultValue={controller.name}
-                required
-                autoComplete="off"
-                name="name"
+              <Field
+                labelProps={{ children: "Navn på kontroller" }}
+                inputProps={{
+                  placeholder: "Eks: Min kontroller",
+                  autoComplete: "off",
+                  ...getInputProps(fields.name, { type: "text" }),
+                }}
               />
               <DialogFooter>
-                <Button type="submit" name="intent" value="edit-name">
-                  {editNameFetcher.state !== "idle" ? (
-                    <Loader2 className="animate-spin" />
-                  ) : (
-                    <Save />
-                  )}
+                <Button type="submit" name="intent" value={editNameIntent}>
+                  {isPending ? <Loader2 className="animate-spin" /> : <Save />}
                   Lagre
                 </Button>
               </DialogFooter>
-            </editNameFetcher.Form>
+            </Form>
           </DialogContent>
         </Dialog>
         <Dialog>
@@ -114,7 +124,8 @@ export const ControllerMenu = ({ controller }: Props) => {
               )}
               Generer ny nøkkel
             </Button>
-            {editSecretFetcher.data?.ok && editSecretFetcher.data.secret ? (
+            {editSecretFetcher.data?.status === 200 &&
+            editSecretFetcher.data.secret ? (
               <ControllerSecretSuccessMessage
                 controller={{
                   ...controller,

@@ -3,10 +3,14 @@ import { z } from "zod";
 
 import {
   getBatchesFromControllerId,
+  putBatch,
   setBatchControllerStatus,
 } from "~/.server/data-layer/batches";
 
-import { BatchControllerStatusSchema } from "./batchController.schema";
+import {
+  BatchControllerStatusSchema,
+  type PutBatchControllerSchema,
+} from "./batchController.schema";
 
 export async function batchControllerStatusAction({
   batchId,
@@ -40,8 +44,22 @@ export async function batchControllerStatusAction({
   });
 
   if (submission.status !== "success") {
-    return submission.reply();
+    return { status: 400, result: submission.reply() };
   }
   await setBatchControllerStatus(batchId, submission.value.status);
-  return { status: "success" };
+  return { status: 200, result: undefined };
+}
+
+export async function putBatchControllerAction({
+  formData: { controllerId, controllerMode },
+  batchId,
+}: {
+  formData: z.infer<typeof PutBatchControllerSchema>;
+  batchId: number;
+}) {
+  await putBatch(batchId, {
+    controllerId: controllerId || null,
+    mode: controllerMode || null,
+  });
+  return { status: 200, result: undefined };
 }

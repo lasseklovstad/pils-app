@@ -1,14 +1,23 @@
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
 import { Loader2, Plus, X } from "lucide-react";
-import { useEffect, useId, useRef } from "react";
-import { useFetcher } from "react-router";
+import { Form, useActionData, useNavigation } from "react-router";
 
 import type { action } from "../BatchDetailsPage";
 
 import { Ingredient } from "db/schema";
+import { Field } from "~/components/Form";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
+import { useIsPending } from "~/lib/useIsPending";
 import { cn } from "~/lib/utils";
+
+import {
+  deleteIngredientIntent,
+  postIngredientIntent,
+  PostIngredientSchema,
+  putIngredientIntent,
+  PutIngredientSchema,
+} from "../actions/batch.schema";
 
 type Props = {
   ingredient?: Ingredient;
@@ -27,101 +36,94 @@ export const IngredientForm = ({
   readOnly,
   namePlaceholder,
 }: Props) => {
-  const nameId = useId();
-  const amountId = useId();
-  const fetcher = useFetcher<typeof action>({
-    key: ingredient ? `put-ingredient-${ingredient.id}` : "create-ingredient",
-  });
-  const deleteFetcher = useFetcher({
-    key: ingredient
-      ? `delete-ingredient-${ingredient.id}`
-      : "delete-ingredient",
-  });
-  const $form = useRef<HTMLFormElement>(null);
-
-  useEffect(
-    function resetFormOnSuccess() {
-      if (
-        fetcher.state === "idle" &&
-        fetcher.data?.status === "success" &&
-        !ingredient
-      ) {
-        $form.current?.reset();
-      }
+  const lastResult = useActionData<typeof action>();
+  const isPending = useIsPending({ formMethod: ingredient ? "PUT" : "POST" });
+  const isDeletePending = useIsPending({ formMethod: "DELETE" });
+  const navigation = useNavigation();
+  const [form, fields] = useForm({
+    lastResult: navigation.state === "idle" ? lastResult?.result : null,
+    defaultValue: {
+      amount: ingredient?.amount,
+      name: ingredient?.name,
+      type: ingredient?.type,
     },
-    [fetcher.state, fetcher.data],
-  );
+    onValidate({ formData }) {
+      return parseWithZod(formData, {
+        schema: ingredient ? PutIngredientSchema : PostIngredientSchema,
+      });
+    },
+  });
   return (
-    <div className="flex items-end gap-1 p-2">
-      <fetcher.Form
-        ref={$form}
+    <div
+      className={cn(
+        "flex gap-1 p-2",
+        showLabel ? "items-center" : "items-start",
+      )}
+    >
+      <Form
         method={ingredient ? "PUT" : "POST"}
         className="contents"
+        {...getFormProps(form)}
       >
-        <div>
-          <Label htmlFor={nameId} className={cn(!showLabel && "sr-only")}>
-            Navn
-          </Label>
-          <Input
-            id={nameId}
-            name="name"
-            type="text"
-            autoComplete="off"
-            required
-            defaultValue={ingredient?.name ?? ""}
-            readOnly={readOnly}
-            placeholder={namePlaceholder}
-          />
-        </div>
-        <div>
-          <Label htmlFor={amountId} className={cn(!showLabel && "sr-only")}>
-            Mengde ({amountUnit})
-          </Label>
-          <Input
-            id={amountId}
-            name="amount"
-            type="number"
-            step={amountUnit === "kg" ? 0.01 : 1}
-            autoComplete="off"
-            required
-            defaultValue={ingredient?.amount ?? ""}
-            readOnly={readOnly}
-          />
-        </div>
+        <Field
+          labelProps={{
+            children: "Navn",
+            className: cn(!showLabel && "sr-only"),
+          }}
+          inputProps={{
+            readOnly,
+            autoComplete: "off",
+            placeholder: namePlaceholder,
+            ...getInputProps(fields.name, { type: "text" }),
+          }}
+          errors={fields.name.errors}
+        />
+        <Field
+          labelProps={{
+            children: `Mengde (${amountUnit})`,
+            className: cn(!showLabel && "sr-only"),
+          }}
+          inputProps={{
+            readOnly,
+            autoComplete: "off",
+            step: amountUnit === "kg" ? 0.01 : 1,
+            ...getInputProps(fields.amount, { type: "number" }),
+          }}
+          errors={fields.amount.errors}
+        />
         <input hidden readOnly value={ingredient?.id ?? ""} name="id" />
-        <input hidden readOnly value={"ingredient"} name="intent" />
         <input hidden readOnly value={type} name="type" />
 
         <Button
           type="submit"
           variant="ghost"
           size="icon"
+          name="intent"
+          value={ingredient ? putIngredientIntent : postIngredientIntent}
           className={cn(ingredient && "hidden")}
           disabled={readOnly}
         >
-          {fetcher.state !== "idle" ? (
-            <Loader2 className="animate-spin" />
-          ) : (
-            <Plus />
-          )}
+          {isPending ? <Loader2 className="animate-spin" /> : <Plus />}
           <span className="sr-only">
             {ingredient ? "Oppdater ingredient" : "Legg til ingredient"}
           </span>
         </Button>
-      </fetcher.Form>
+      </Form>
       {ingredient ? (
-        <deleteFetcher.Form method="DELETE" className="contents">
+        <Form method="DELETE" className="contents">
           <input hidden readOnly value={ingredient.id} name="id" />
-          <input hidden readOnly value={"ingredient"} name="intent" />
-          <Button type="submit" variant="ghost" size="icon" disabled={readOnly}>
-            {deleteFetcher.state !== "idle" ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              <X />
-            )}
+          <Button
+            type="submit"
+            variant="ghost"
+            size="icon"
+            name="intent"
+            value={deleteIngredientIntent}
+            disabled={readOnly}
+          >
+            {isDeletePending ? <Loader2 className="animate-spin" /> : <X />}
             <span className="sr-only">Slett ingredient</span>
           </Button>
-        </deleteFetcher.Form>
+        </Form>
       ) : null}
     </div>
   );
