@@ -161,7 +161,7 @@ export const batchFiles = sqliteTable("batch_files", {
 
 export const batchTemperatures = sqliteTable("batch_temperatures", {
   id: integer().primaryKey(),
-  dayIndex: integer().notNull(),
+  dayIndex: real().notNull(),
   temperature: real().notNull(),
   batchId: integer()
     .references(() => batches.id, { onDelete: "cascade" })
