@@ -88,6 +88,7 @@ export const loader = async ({
   params: { batchId: batchIdParam },
 }: Route.LoaderArgs) => {
   const url = new URL(request.url);
+  const isFermentationOpen = url.searchParams.get("open") === "fermentation";
   const batchId = parseInt(batchIdParam);
   const [
     batch,
@@ -105,7 +106,7 @@ export const loader = async ({
     getBatchFiles(batchId),
     getControllersFromBatchId(batchId),
     getBatchTemperatures(batchId),
-    getControllerTemperaturesFromBatchId(batchId),
+    isFermentationOpen ? getControllerTemperaturesFromBatchId(batchId) : [],
     QRCode.toDataURL(url.origin + url.pathname),
   ]);
   if (!batch) {

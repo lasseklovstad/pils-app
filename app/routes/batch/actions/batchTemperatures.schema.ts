@@ -5,7 +5,7 @@ export const batchTemperaturesIntent = "batch-temperatures";
 export const BatchTemperaturesSchema = z
   .object({
     batchTemperatures: z.array(
-      z.object({ dayIndex: z.number().int(), temperature: z.number() }),
+      z.object({ dayIndex: z.number(), temperature: z.number() }),
     ),
     intent: z.literal(batchTemperaturesIntent),
   })

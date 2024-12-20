@@ -40,6 +40,8 @@ export const TemperatureChart = ({
 }: Props) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const interval = searchParams.get("interval") ?? "timestamp";
+  const maxTemp = Math.max(...controllerTemperatures.map((t) => t.maxTemp));
+  const minTemp = Math.min(...controllerTemperatures.map((t) => t.minTemp));
   return (
     <div className="w-full">
       <h3 className="text-2xl">Målinger ({totalCount})</h3>
@@ -79,12 +81,7 @@ export const TemperatureChart = ({
                   />
                   <YAxis
                     dataKey="temperature"
-                    domain={[
-                      0,
-                      Math.max(
-                        ...controllerTemperatures.map((t) => t.avgTemp),
-                      ) + 10,
-                    ]}
+                    domain={[minTemp, maxTemp]}
                     width={0}
                   />
                   <Area

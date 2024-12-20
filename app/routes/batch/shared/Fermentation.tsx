@@ -6,6 +6,7 @@ import {
   Label,
   ReferenceLine,
   XAxis,
+  YAxis,
 } from "recharts";
 
 import {
@@ -73,25 +74,68 @@ export const Fermentation = ({
   controllerTemperatures,
 }: Props) => {
   const dayTicks = batchTemperatures.map((bt) => bt.dayIndex);
+
+  const startDate = batch.fermentationStartDate ?? Date.now();
   const controllerDayTicks = controllerTemperatures.map((ct) => {
-    if (batch.fermentationStartDate) {
-      return (
-        (ct.timestamp.valueOf() - batch.fermentationStartDate.valueOf()) /
-        dayInMillis
-      );
-    }
-    return 0;
+    return (ct.timestamp.valueOf() - startDate.valueOf()) / dayInMillis;
   });
   const maxDays = Math.ceil(
     Math.max(Math.max(...dayTicks), ...controllerDayTicks),
   );
-  const [values, setValues] = useState([0, maxDays]);
+  const minDays = Math.floor(
+    Math.min(Math.min(...dayTicks), ...controllerDayTicks),
+  );
+  const [values, setValues] = useState([minDays, maxDays]);
   const yeastIngredients = filterIngredients(ingredients, type);
 
   const referenceLineNowInDays = batch.fermentationStartDate
     ? (Date.now() - batch.fermentationStartDate.valueOf()) / dayInMillis
     : undefined;
-  const startDate = batch.fermentationStartDate ?? Date.now();
+  const filteredControllerTemperatures = controllerTemperatures
+    .map((ct) => {
+      return {
+        controllerTemperature: ct.temperature,
+        dayIndex: (ct.timestamp.valueOf() - startDate.valueOf()) / dayInMillis,
+      };
+    })
+    .filter((ct) => {
+      return ct.dayIndex >= values[0]! && ct.dayIndex <= values[1]!;
+    });
+  const batchTemperaturesInControllerTemperature =
+    filteredControllerTemperatures
+      .map((fct) => {
+        const batchTemperature = batchTemperatures.find((bt, index) => {
+          const next = batchTemperatures[index + 1];
+          if (next) {
+            return bt.dayIndex <= fct.dayIndex && next.dayIndex > fct.dayIndex;
+          }
+          return bt.dayIndex >= fct.dayIndex;
+        });
+        if (!batchTemperature) return undefined;
+        return { ...batchTemperature, dayIndex: fct.dayIndex };
+      })
+      .filter((bt) => bt !== undefined);
+
+  const transformedBatchTemperatures = [
+    ...batchTemperaturesInControllerTemperature,
+    ...batchTemperatures,
+  ].sort((a, b) => {
+    if (a.dayIndex === b.dayIndex) return 0;
+    return a.dayIndex < b.dayIndex ? -1 : 1;
+  });
+
+  const maxTemp = Math.max(
+    ...[
+      ...transformedBatchTemperatures.map((bt) => bt.temperature),
+      ...filteredControllerTemperatures.map((ct) => ct.controllerTemperature),
+    ],
+  );
+  const minTemp = Math.min(
+    ...[
+      ...transformedBatchTemperatures.map((bt) => bt.temperature),
+      ...filteredControllerTemperatures.map((ct) => ct.controllerTemperature),
+    ],
+  );
   return (
     <>
       <AccordionTrigger>
@@ -154,6 +198,11 @@ export const Fermentation = ({
                 >
                   <Label value="Dag" offset={0} position="insideBottom" />
                 </XAxis>
+                <YAxis
+                  dataKey="controllerTemperature"
+                  domain={[minTemp - 0.5, maxTemp + 0.5]}
+                  width={0}
+                />
                 <defs>
                   <linearGradient
                     id="fillControllerTemperature"
@@ -197,24 +246,16 @@ export const Fermentation = ({
                   stroke="var(--color-temperature)"
                   strokeWidth={2}
                   fill="url(#fillTemperature)"
-                  type="stepAfter"
-                  data={batchTemperatures}
+                  data={transformedBatchTemperatures}
                   stackId="a"
+                  type={"stepAfter"}
                 />
                 <Area
                   dataKey="controllerTemperature"
                   stroke="var(--color-controllerTemperature)"
                   fill="url(#fillControllerTemperature)"
                   strokeWidth={2}
-                  dot={false}
-                  data={controllerTemperatures.map((ct) => {
-                    return {
-                      controllerTemperature: ct.temperature,
-                      dayIndex:
-                        (ct.timestamp.valueOf() - startDate.valueOf()) /
-                        dayInMillis,
-                    };
-                  })}
+                  data={filteredControllerTemperatures}
                   stackId="b"
                 />
                 {referenceLineNowInDays &&
@@ -225,7 +266,23 @@ export const Fermentation = ({
                     label="Nå"
                   />
                 ) : null}
-                <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                <ChartTooltip
+                  content={
+                    <ChartTooltipContent
+                      labelFormatter={(_, payloads) => {
+                        const firstPayload = payloads[0]?.payload as
+                          | (typeof filteredControllerTemperatures)[number]
+                          | undefined;
+                        const dayIndex = firstPayload?.dayIndex;
+                        if (dayIndex === undefined) return "";
+                        const date = new Date(
+                          dayInMillis * dayIndex + startDate.valueOf(),
+                        );
+                        return `${date.toLocaleDateString("nb")} ${date.toLocaleTimeString("nb")}`;
+                      }}
+                    />
+                  }
+                />
               </AreaChart>
             </ChartContainer>
             <DualRangeSlider
@@ -233,9 +290,9 @@ export const Fermentation = ({
               labelPosition="bottom"
               value={values}
               onValueChange={setValues}
-              min={0}
+              min={minDays}
               max={maxDays}
-              step={0.1}
+              step={0.01}
               className="mb-4"
             />
           </TabsContent>
