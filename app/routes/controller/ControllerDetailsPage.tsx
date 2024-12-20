@@ -1,9 +1,12 @@
+import { parseWithZod } from "@conform-to/zod";
+import { redirect } from "react-router";
+import { z } from "zod";
 import { sub } from "date-fns";
 import { Check, RefreshCw, X } from "lucide-react";
-import { redirect, useSubmit } from "react-router";
 
 import type { Route } from "./+types/ControllerDetailsPage";
 
+import { getBatchesFromControllerId } from "~/.server/data-layer/batches";
 import {
   deleteController,
   getControllerByUser,
@@ -16,14 +19,12 @@ import {
   getLatestControllerTemperature,
   postControllerTemperature,
 } from "~/.server/data-layer/controllerTemperatures";
+import { insertVerification } from "~/.server/data-layer/verifications";
 import { Main } from "~/components/Main";
-import { Button } from "~/components/ui/button";
-import { Switch } from "~/components/ui/switch";
+import { requireUser } from "~/lib/auth.server";
 import { useRevalidateOnFocus } from "~/lib/useRevalidateOnFocus";
 import { cn, createControllerSecret, encryptSecret } from "~/lib/utils";
-import { insertVerification } from "~/.server/data-layer/verifications";
-import { requireUser } from "~/lib/auth.server";
-import { getBatchesFromControllerId } from "~/.server/data-layer/batches";
+import { Button } from "~/components/ui/button";
 
 import { ControllerMenu } from "./shared/ControllerMenu";
 import { TemperatureChart } from "./shared/TemperatureChart";
@@ -73,39 +74,62 @@ const requireUserOwnerOfController = async (
     throw new Response("Unauthorized", { status: 403 });
   }
 };
+export const editNameIntent = "edit-name";
+export const EditNameSchema = z.object({
+  intent: z.literal(editNameIntent),
+  name: z.string().trim().min(1),
+});
+const testTemperatureIntent = "test-temperature";
+const TestTemperatureSchema = z.object({
+  intent: z.literal(testTemperatureIntent),
+  temperature: z.number(),
+});
+const editSecretIntent = "edit-secret";
+const EditSecretSchema = z.object({
+  intent: z.literal(editSecretIntent),
+});
+const deleteControllerIntent = "delete-controller";
+const DeleteControllerSchema = z.object({
+  intent: z.literal(deleteControllerIntent),
+});
 
 export const action = async ({ request, params }: Route.ActionArgs) => {
   const controllerId = parseInt(params.controllerId);
   await requireUserOwnerOfController(request, controllerId);
   const formData = await request.formData();
-  const intent = formData.get("intent");
-  if (request.method === "PUT" && intent === "edit-name") {
-    const name = String(formData.get("name"));
-    await putController(controllerId, { name });
+  const schema = z.union([
+    EditNameSchema,
+    TestTemperatureSchema,
+    EditSecretSchema,
+    DeleteControllerSchema,
+  ]);
+  const result = parseWithZod(formData, { schema });
+  if (result.status !== "success") {
+    return { result: result.reply(), status: 400 };
   }
-  if (intent === "test-temperature") {
-    const temperature = parseFloat(String(formData.get("temperature")));
-    await postControllerTemperature({ temperature, controllerId });
-    return { ok: true };
+  switch (result.value.intent) {
+    case editNameIntent:
+      await putController(controllerId, { name: result.value.name });
+      return { status: 200, result: result.reply({ resetForm: true }) };
+    case testTemperatureIntent:
+      await postControllerTemperature({
+        temperature: result.value.temperature,
+        controllerId,
+      });
+      return { status: 200, result: result.reply({ resetForm: true }) };
+    case editSecretIntent: {
+      const secret = createControllerSecret();
+      await insertVerification({
+        secret: encryptSecret(secret, process.env.ENCRYPTION_KEY!),
+        target: controllerId.toString(),
+        type: "controller",
+      });
+      return { status: 200, secret };
+    }
+    case deleteControllerIntent:
+      await deleteController(controllerId);
+      throw redirect("/controller");
   }
-  if (request.method === "PUT" && intent === "edit-secret") {
-    const secret = createControllerSecret();
-    await insertVerification({
-      secret: encryptSecret(secret, process.env.ENCRYPTION_KEY!),
-      target: controllerId.toString(),
-      type: "controller",
-    });
-    return { ok: true, secret };
-  }
-  if (request.method === "DELETE") {
-    await deleteController(controllerId);
-    throw redirect("/controller");
-  }
-  if (request.method === "PUT") {
-    const isRelayOn = formData.get("checked") === "true";
-    await putController(controllerId, { isRelayOn });
-  }
-  return { ok: true };
 };
 
 export default function ControllerPage({
@@ -119,7 +143,6 @@ export default function ControllerPage({
   },
 }: Route.ComponentProps) {
   const revalidator = useRevalidateOnFocus();
-  const submit = useSubmit();
 
   const isActive = latestTemperature
     ? latestTemperature.timestamp.valueOf() >=
@@ -164,15 +187,6 @@ export default function ControllerPage({
       ) : null}
 
       <div>Antall feilmålinger: {totalErrorCount}</div>
-      <label className="flex items-center gap-1">
-        <Switch
-          checked={controller.isRelayOn}
-          onCheckedChange={(checked) => {
-            void submit({ checked }, { method: "PUT" });
-          }}
-        />
-        Relay on
-      </label>
       <TemperatureChart
         controllerTemperatures={controllerTemperatures}
         totalCount={totalCount}

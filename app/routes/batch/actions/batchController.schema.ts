@@ -7,3 +7,10 @@ export const BatchControllerStatusSchema = z.object({
   controllerId: z.number().int(),
   intent: z.literal(batchControllerStatusIntent),
 });
+export const putBatchControllerIntent = "put-batch-controller";
+
+export const PutBatchControllerSchema = z.object({
+  controllerMode: z.enum(["warm", "cold"]).optional(),
+  controllerId: z.number().int().optional(),
+  intent: z.literal(putBatchControllerIntent),
+});

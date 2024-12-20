@@ -62,7 +62,7 @@ export function Field({
         {...inputProps}
         key={inputProps.key}
       />
-      <div className="min-h-[32px]">
+      <div className="min-h-[24px]">
         {errorId ? <ErrorList id={errorId} errors={errors} /> : null}
       </div>
     </div>
@@ -126,7 +126,7 @@ export function CheckboxField({
           className="text-body-xs self-center text-muted-foreground"
         />
       </div>
-      <div className="px-4">
+      <div className="min-h-[24px] px-4">
         {errorId ? <ErrorList id={errorId} errors={errors} /> : null}
       </div>
     </div>

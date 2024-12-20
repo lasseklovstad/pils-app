@@ -1,6 +1,8 @@
+import { getFormProps, getSelectProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
 import { DialogClose, DialogTitle } from "@radix-ui/react-dialog";
 import { useState } from "react";
-import { Form, Link, useFetcher } from "react-router";
+import { Form, Link, useActionData, useFetcher } from "react-router";
 
 import type { Batch } from "db/schema";
 import type { action } from "../BatchDetailsPage";
@@ -16,7 +18,11 @@ import {
 } from "~/components/ui/dialog";
 import { ToggleGroup, ToggleGroupItem } from "~/components/ui/toggle-group";
 
-import { batchControllerStatusIntent } from "../actions/batchController.schema";
+import {
+  batchControllerStatusIntent,
+  putBatchControllerIntent,
+  PutBatchControllerSchema,
+} from "../actions/batchController.schema";
 
 type Props = {
   readOnly: boolean;
@@ -33,6 +39,20 @@ export const ControllerForm = ({ batch, controllers, readOnly }: Props) => {
   const statusFetcher = useFetcher<typeof action>();
   const formValid = batch.mode && batch.controllerId;
 
+  const lastResult = useActionData<typeof action>();
+  const [form, fields] = useForm({
+    lastResult: lastResult?.result,
+    defaultValue: {
+      controllerId: batch.controllerId,
+      controllerMode: batch.mode,
+    },
+    onValidate({ formData }) {
+      return parseWithZod(formData, {
+        schema: PutBatchControllerSchema,
+      });
+    },
+  });
+
   const postControllerStatus = (value: string) => {
     void statusFetcher.submit(
       {
@@ -46,12 +66,11 @@ export const ControllerForm = ({ batch, controllers, readOnly }: Props) => {
 
   return (
     <div className="flex flex-col items-start justify-start gap-1">
-      <Form method="PUT" className="flex gap-2">
+      <Form method="PUT" className="flex gap-2" {...getFormProps(form)}>
         <NativeSelectField
           labelProps={{ children: "Velg kontroller" }}
           selectProps={{
-            value: batch.controllerId || "",
-            name: "controllerId",
+            ...getSelectProps(fields.controllerId),
             onChange: (e) => {
               e.target.form?.requestSubmit();
             },
@@ -71,8 +90,7 @@ export const ControllerForm = ({ batch, controllers, readOnly }: Props) => {
         <NativeSelectField
           labelProps={{ children: "Velg type" }}
           selectProps={{
-            value: batch.mode || "",
-            name: "controllerMode",
+            ...getSelectProps(fields.controllerMode),
             onChange: (e) => {
               e.target.form?.requestSubmit();
             },
@@ -87,7 +105,7 @@ export const ControllerForm = ({ batch, controllers, readOnly }: Props) => {
           }}
         />
 
-        <input hidden name="intent" value="put-batch-controller" readOnly />
+        <input hidden name="intent" value={putBatchControllerIntent} readOnly />
         {batch.controllerId ? (
           <Button variant="link" asChild className="mt-5">
             <Link to={`/controller/${batch.controllerId}`}>
@@ -167,11 +185,8 @@ export const ControllerForm = ({ batch, controllers, readOnly }: Props) => {
           </DialogHeader>
         </DialogContent>
       </Dialog>
-      {statusFetcher.data &&
-      statusFetcher.data.status !== "success" &&
-      "error" in statusFetcher.data &&
-      statusFetcher.data.error ? (
-        <ErrorList errors={statusFetcher.data.error["status"]} />
+      {statusFetcher.data && statusFetcher.data.status !== 200 ? (
+        <ErrorList errors={statusFetcher.data.result?.error?.["status"]} />
       ) : null}
       {!formValid ? (
         <div className="mb-1 font-semibold text-red-800">

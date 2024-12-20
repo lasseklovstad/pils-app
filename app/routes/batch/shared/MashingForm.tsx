@@ -1,18 +1,25 @@
+import { getFormProps, getInputProps, useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
 import { Loader2, Save } from "lucide-react";
-import { useFetcher } from "react-router";
+import { Form, useActionData } from "react-router";
 
 import type { action } from "../BatchDetailsPage";
 
 import { Batch, Ingredient } from "db/schema";
+import { ErrorList, Field } from "~/components/Form";
 import { AccordionContent, AccordionTrigger } from "~/components/ui/accordion";
 import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
+import { useIsPending } from "~/lib/useIsPending";
 import {
   calculateTotalAmount,
   calculateWaterTemperature,
   filterIngredients,
 } from "~/lib/utils";
+
+import {
+  putMashingNameIntent,
+  PutMashingSchema,
+} from "../actions/batch.schema";
 
 type Props = {
   ingredients: Ingredient[];
@@ -21,9 +28,25 @@ type Props = {
 };
 
 export const MashingForm = ({ batch, ingredients, readOnly }: Props) => {
-  const fetcher = useFetcher<typeof action>();
   const maltIngredients = filterIngredients(ingredients, "malt");
   const totalAmount = calculateTotalAmount(maltIngredients);
+
+  const lastResult = useActionData<typeof action>();
+  const isPending = useIsPending();
+  const [form, fields] = useForm({
+    lastResult: lastResult?.result,
+    defaultValue: {
+      mashingMaltTemperature: batch.mashingMaltTemperature,
+      mashingStrikeWaterVolume: batch.mashingStrikeWaterVolume,
+      mashingTemperature: batch.mashingTemperature,
+    },
+    onValidate({ formData }) {
+      return parseWithZod(formData, {
+        schema: PutMashingSchema,
+      });
+    },
+  });
+
   return (
     <>
       <AccordionTrigger>Mesking</AccordionTrigger>
@@ -46,65 +69,53 @@ export const MashingForm = ({ batch, ingredients, readOnly }: Props) => {
               "Fyll ut verdiene for å se temperatur før mesking"
             )}
           </div>
-          <fetcher.Form method="PUT" className="space-y-2">
+          <Form method="PUT" className="space-y-2" {...getFormProps(form)}>
             <div className="flex flex-wrap items-end gap-2">
-              <div>
-                <Label htmlFor="mashing-strike-water-volume-input">
-                  Antall liter vann
-                </Label>
-                <Input
-                  id="mashing-strike-water-volume-input"
-                  name="mashing-strike-water-volume"
-                  type="number"
-                  pattern="\d+"
-                  autoComplete="off"
-                  defaultValue={batch.mashingStrikeWaterVolume ?? ""}
-                  readOnly={readOnly}
-                />
-              </div>
-              <div>
-                <Label htmlFor="mashing-temperature-input">
-                  Mesketemperatur °C
-                </Label>
-                <Input
-                  id="mashing-temperature-input"
-                  name="mashing-temperature"
-                  type="number"
-                  pattern="\d+"
-                  autoComplete="off"
-                  defaultValue={batch.mashingTemperature ?? ""}
-                  readOnly={readOnly}
-                />
-              </div>
-              <div>
-                <Label htmlFor="mashing-malt-temperature-input">
-                  Malttemperatur °C
-                </Label>
-                <Input
-                  id="mashing-malt-temperature-input"
-                  name="mashing-malt-temperature"
-                  type="number"
-                  pattern="\d+"
-                  autoComplete="off"
-                  defaultValue={batch.mashingMaltTemperature ?? ""}
-                  readOnly={readOnly}
-                />
-              </div>
+              <Field
+                labelProps={{ children: "Antall liter vann" }}
+                inputProps={{
+                  readOnly,
+                  ...getInputProps(fields.mashingStrikeWaterVolume, {
+                    type: "number",
+                  }),
+                }}
+                errors={fields.mashingStrikeWaterVolume.errors}
+              />
+              <Field
+                labelProps={{ children: "Mesketemperatur °C" }}
+                inputProps={{
+                  readOnly,
+                  ...getInputProps(fields.mashingTemperature, {
+                    type: "number",
+                  }),
+                }}
+                errors={fields.mashingTemperature.errors}
+              />
+              <Field
+                labelProps={{ children: "Malttemperatur °C" }}
+                inputProps={{
+                  readOnly,
+                  ...getInputProps(fields.mashingMaltTemperature, {
+                    type: "number",
+                  }),
+                }}
+                errors={fields.mashingMaltTemperature.errors}
+              />
             </div>
+            {totalAmount === 0 ? (
+              <ErrorList errors={["Du har ikke lagt til malt!"]} />
+            ) : null}
+
             <Button
               name="intent"
-              value="put-mashing"
+              value={putMashingNameIntent}
               size="sm"
               disabled={readOnly}
             >
-              {fetcher.state !== "idle" ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                <Save />
-              )}
+              {isPending ? <Loader2 className="animate-spin" /> : <Save />}
               Lagre
             </Button>
-          </fetcher.Form>
+          </Form>
         </div>
       </AccordionContent>
     </>
