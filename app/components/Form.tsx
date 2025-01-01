@@ -75,7 +75,7 @@ export function CheckboxField({
   errors,
   className,
 }: {
-  labelProps: JSX.IntrinsicElements["label"];
+  labelProps: ComponentProps<"label">;
   buttonProps: Omit<ComponentProps<typeof Checkbox>, "type"> & {
     name: string;
     form: string;
