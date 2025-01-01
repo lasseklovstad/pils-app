@@ -3,7 +3,6 @@ import { getZodConstraint, parseWithZod } from "@conform-to/zod";
 import { Loader2, Send } from "lucide-react";
 import { Form, redirect, useActionData, type MetaFunction } from "react-router";
 import { z } from "zod";
-import * as E from "@react-email/components";
 
 import type { Route } from "./+types/SignUpPage";
 
@@ -17,6 +16,7 @@ import { getUserByEmail } from "~/.server/data-layer/users";
 import { requireAnonymous } from "~/lib/auth.server";
 
 import { prepareVerification } from "./verify.server";
+import { SignupEmail } from "./SignUpEmail.server";
 
 const SignUpFormSchema = z.object({
   email: EmailSchema,
@@ -63,33 +63,6 @@ export async function action({ request }: Route.ActionArgs) {
   } else {
     return submission.reply({ formErrors: [response.message] });
   }
-}
-
-export function SignupEmail({
-  onboardingUrl,
-  otp,
-}: {
-  onboardingUrl: string;
-  otp: string;
-}) {
-  return (
-    <E.Html lang="nb" dir="ltr">
-      <E.Container>
-        <h1>
-          <E.Text>Velkommen til Pils!</E.Text>
-        </h1>
-        <p>
-          <E.Text>
-            Her er koden: <strong>{otp}</strong>
-          </E.Text>
-        </p>
-        <p>
-          <E.Text>Eller trykk på lenken for å komme i gang:</E.Text>
-        </p>
-        <E.Link href={onboardingUrl}>{onboardingUrl}</E.Link>
-      </E.Container>
-    </E.Html>
-  );
 }
 
 export const meta: MetaFunction = () => {
