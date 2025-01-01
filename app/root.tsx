@@ -71,9 +71,16 @@ export default function App({ loaderData: { user } }: Route.ComponentProps) {
           <Button asChild variant="secondary">
             <Link to="/">Brygging</Link>
           </Button>
+
           <Button asChild variant="secondary">
-            <Link to="/controller">Kontrollere</Link>
+            <Link to="/docs">Docs</Link>
           </Button>
+
+          {user ? (
+            <Button asChild variant="secondary">
+              <Link to="/controller">Kontrollere</Link>
+            </Button>
+          ) : null}
 
           {user ? (
             <Form method="POST" action="/logout">
