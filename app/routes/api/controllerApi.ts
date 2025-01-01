@@ -3,7 +3,7 @@ import * as crypto from "node:crypto";
 import type { Route } from "./+types/controllerApi";
 
 import { getController } from "~/.server/data-layer/controllers";
-import { postControllerTemperature } from "~/.server/data-layer/controllerTemperatures";
+import { insertControllerTemperature } from "~/.server/data-layer/controllerTemperatures";
 import { getVerification } from "~/.server/data-layer/verifications";
 import { decryptSecret } from "~/lib/utils";
 import { getActiveBatchFromControllerId } from "~/.server/data-layer/batches";
@@ -78,7 +78,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
   if (request.method === "POST") {
     const text = await request.text();
     const temperature = parseFloat(text);
-    await postControllerTemperature({ temperature, controllerId });
+    await insertControllerTemperature({ temperature, controllerId });
     return new Response(null, { status: 200 });
   }
   return new Response(null, { status: 400 });

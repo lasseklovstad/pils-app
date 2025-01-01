@@ -14,7 +14,7 @@ import {
 import { db } from "db/config.server";
 import { batches, controllerTemperatures } from "db/schema";
 
-export const postControllerTemperature = async (
+export const insertControllerTemperature = async (
   controllerTemperature: Pick<
     typeof controllerTemperatures.$inferInsert,
     "controllerId" | "temperature"

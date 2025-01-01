@@ -26,6 +26,7 @@ import {
 import { useIsPending } from "~/lib/useIsPending";
 
 import {
+  deleteControllerIntent,
   editNameIntent,
   EditNameSchema,
   type action,
@@ -151,7 +152,12 @@ export const ControllerMenu = ({ controller }: Props) => {
               <DialogDescription>Er du sikker?</DialogDescription>
               <DialogFooter>
                 <Form method="DELETE">
-                  <Button variant="ghost" type="submit">
+                  <Button
+                    variant="ghost"
+                    type="submit"
+                    name="intent"
+                    value={deleteControllerIntent}
+                  >
                     Ja, slett
                   </Button>
                 </Form>

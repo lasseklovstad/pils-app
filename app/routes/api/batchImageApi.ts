@@ -1,9 +1,9 @@
-import { LocalFileStorage } from "@mjackson/file-storage/local";
 import sharp from "sharp";
 
 import type { Route } from "./+types/batchImageApi";
 
 import { getBatchFile } from "~/.server/data-layer/batchFiles";
+import { getBatchFileStorage } from "~/lib/batchFileStorage";
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const batchFile = await getBatchFile(params.fileId);
@@ -12,8 +12,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   if (!batchFile) {
     return new Response("Not found", { status: 404 });
   }
-  const directory = `${process.env.MEDIA_DIRECTORY}/media/batch-${batchFile.batchId}`;
-  const fileStorage = new LocalFileStorage(directory);
+  const fileStorage = getBatchFileStorage(batchFile.batchId);
   const file = await fileStorage.get(batchFile.id);
   if (!file) {
     return new Response("Not found", { status: 404 });

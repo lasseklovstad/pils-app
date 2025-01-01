@@ -17,7 +17,7 @@ import {
   getControllerTemperaturesErrorTotalCount,
   getControllerTemperaturesTotalCount,
   getLatestControllerTemperature,
-  postControllerTemperature,
+  insertControllerTemperature,
 } from "~/.server/data-layer/controllerTemperatures";
 import { insertVerification } from "~/.server/data-layer/verifications";
 import { Main } from "~/components/Main";
@@ -88,7 +88,7 @@ const editSecretIntent = "edit-secret";
 const EditSecretSchema = z.object({
   intent: z.literal(editSecretIntent),
 });
-const deleteControllerIntent = "delete-controller";
+export const deleteControllerIntent = "delete-controller";
 const DeleteControllerSchema = z.object({
   intent: z.literal(deleteControllerIntent),
 });
@@ -112,7 +112,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
       await putController(controllerId, { name: result.value.name });
       return { status: 200, result: result.reply({ resetForm: true }) };
     case testTemperatureIntent:
-      await postControllerTemperature({
+      await insertControllerTemperature({
         temperature: result.value.temperature,
         controllerId,
       });
