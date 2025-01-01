@@ -69,11 +69,14 @@ export default function App({ loaderData: { user } }: Route.ComponentProps) {
       <Header>
         <nav className="flex gap-2 p-4">
           <Button asChild variant="secondary">
-            <Link to="/">Brygging</Link>
+            <Link to="/">Hjem</Link>
+          </Button>
+          <Button asChild variant="secondary">
+            <Link to="/batches">Brygging</Link>
           </Button>
 
           <Button asChild variant="secondary">
-            <Link to="/docs">Docs</Link>
+            <Link to="/docs">Lær</Link>
           </Button>
 
           {user ? (

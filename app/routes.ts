@@ -3,7 +3,8 @@ import { index, layout, prefix, route } from "@react-router/dev/routes";
 import type { RouteConfig } from "@react-router/dev/routes";
 
 const routes: RouteConfig = [
-  index("routes/batch/HomePage.tsx"),
+  index("routes/HomePage.tsx"),
+  route("batches", "routes/batch/BatchesPage.tsx"),
   route("batch/:batchId", "routes/batch/BatchDetailsPage.tsx"),
   route("login", "routes/auth/LoginPage.tsx"),
   route("sign-up", "routes/auth/SignUpPage.tsx"),
