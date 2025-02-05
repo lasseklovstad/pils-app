@@ -4,7 +4,7 @@ import { Main } from "~/components/Main";
 
 export default function HomePage() {
   return (
-    <Main>
+    <Main className="flex justify-center">
       <div className="prose py-8">
         <h2 className="mt-0">Velkommen til din digitale bryggjournal! 🍺</h2>
         <p>

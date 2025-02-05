@@ -1,25 +1,22 @@
-import { Link, Outlet } from "react-router";
+import { NavLink, Outlet } from "react-router";
+
+import type { ComponentPropsWithRef } from "react";
 
 import { Main } from "~/components/Main";
-import { Button } from "~/components/ui/button";
+import { buttonVariants } from "~/components/ui/button";
+import { cn } from "~/lib/utils";
 
 export default function DocsLayout() {
   return (
-    <Main className="flex min-h-[400px] gap-4">
+    <Main className="flex min-h-[400px] justify-center gap-4">
       <div className="bg-gray-50 py-2">
         <nav className="flex flex-col items-start">
-          <Button asChild variant="link">
-            <Link to="getting-started">Kom i gang</Link>
-          </Button>
-          <Button asChild variant="link">
-            <Link to="gear">Utstyr</Link>
-          </Button>
-          <Button asChild variant="link">
-            <Link to="about">Om</Link>
-          </Button>
-          <Button asChild variant="link">
-            <Link to="feedback">Tilbakemeldinger</Link>
-          </Button>
+          <CustomNavLink to="/docs" end>
+            Kom i gang
+          </CustomNavLink>
+          <CustomNavLink to="gear">Utstyr</CustomNavLink>
+          <CustomNavLink to="about">Om</CustomNavLink>
+          <CustomNavLink to="feedback">Tilbakemeldinger</CustomNavLink>
         </nav>
       </div>
       <div className="prose py-2">
@@ -28,3 +25,17 @@ export default function DocsLayout() {
     </Main>
   );
 }
+
+const CustomNavLink = (props: ComponentPropsWithRef<typeof NavLink>) => {
+  return (
+    <NavLink
+      className={({ isActive }) =>
+        cn(
+          buttonVariants({ variant: "link" }),
+          isActive ? "font-bold underline" : "",
+        )
+      }
+      {...props}
+    />
+  );
+};
