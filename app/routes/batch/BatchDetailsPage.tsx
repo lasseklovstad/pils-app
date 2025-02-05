@@ -294,6 +294,10 @@ function createTempUploadHandler(prefix: string) {
   async function uploadHandler(fileUpload: FileUpload) {
     if (fileUpload.fieldName === "media") {
       const key = new Date().getTime().toString(36);
+      // Hack for https://github.com/mjackson/remix-the-web/issues/53
+      Object.defineProperty(fileUpload, "size", {
+        get: () => 0,
+      });
       await fileStorage.set(key, fileUpload);
       return fileStorage.get(key);
     }
