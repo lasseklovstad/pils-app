@@ -133,8 +133,8 @@ export const action = async ({
 
   const formData = await parseFormData(
     request,
-    createTempUploadHandler("batch-uploads"),
     { maxFileSize: 20 * 1024 * 1024 },
+    createTempUploadHandler("batch-uploads"),
   );
   const schema = z.union([
     PutMashingSchema,
