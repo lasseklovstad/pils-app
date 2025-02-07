@@ -16,7 +16,7 @@ export const ControllerSecretSuccessMessage = ({ controller }: Props) => {
         Ny kontroller med navn {controller.name} opprettet. Lagre koden under,
         den vises kun en gang.
       </div>
-      <div className="break-all">
+      <div className="flex items-center gap-4 break-all">
         Kode: {controller.secret}
         <Button
           type="button"

@@ -1,12 +1,28 @@
+import { Link } from "react-router";
+import { FermentationDemoChart } from "./fermentation-demo-chart";
 
 ## Kom i gang
 
-This project shows off Remix's new MDX capabilities when using the [Vite plugin][remix-future-vite].
-It also uses [Tailwind][tailwind] and the [typography plugin][tailwind-typography] for styling.
+Ønsker du å dokumentere bryggeprosessen din og dele det med andre er dette nettstedet for deg.
 
-Inspired by [Rajesh Babu's MDX template][remix-mdx-blog] ❤️
+### Avansert bruk
 
-[remix-future-vite]: https://remix.run/docs/en/main/future/vite
-[tailwind]: https://tailwindcss.com/
-[tailwind-typography]: https://tailwindcss.com/docs/typography-plugin
-[remix-mdx-blog]: https://github.com/rajeshdavidbabu/remix-mdx-blog
+For folk som ønsker å ta brygging av øl til neste nivå kan man bygge en temperaturkontroller og koble opp til nettsiden.
+Da kan du stille inn temperaturforløpet i gjæringsprosessen og følge med på temperaturen i sanntid.
+
+### Demo gjæringsprosess
+<FermentationDemoChart />
+Grafen viser temperaturforløp i gjæringsprosessen. Den grønne linjen er faktisk målt temperatur og den røde er hva du som bruker har stilt inn som mål-temperatur.
+
+#### 1. Bygg temperaturkontroller
+
+Kjøp nødvendig utstyr og bygg din egen temperaturkontroller for å regulere gjæringsprosessen.
+
+<Link to="gear">Du kan lese mer om hva slags utstyr du trenger her</Link>
+
+#### 2. Last opp koden
+
+Etter utstyret er på plass kan du laste opp koden til mikrokontrolleren.
+Det er viktig å teste underveis når du bygger den for å verifisere at sensorer og andre ting fungerer riktig.
+
+<Link to="coding">Du kan komme i gang med koden her</Link>

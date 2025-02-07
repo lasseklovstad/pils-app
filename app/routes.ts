@@ -17,6 +17,8 @@ const routes: RouteConfig = [
     route("gear", "routes/docs/gear.mdx"),
     route("feedback", "routes/docs/feedback.mdx"),
     route("about", "routes/docs/about-us.mdx"),
+    route("architecture", "routes/docs/architecture.mdx"),
+    route("coding", "routes/docs/coding.mdx"),
   ]),
   ...prefix("controller", [
     index("routes/controller/IndexPage.tsx"),

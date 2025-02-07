@@ -2,6 +2,18 @@ import typography from "@tailwindcss/typography";
 
 import type { Config } from "tailwindcss";
 
+const typographyShared = {
+  css: {
+    // codeblock are handled with rehype-pretty-code
+    // disable tailwind typography for codeblocks
+    pre: false,
+    code: false,
+    "pre code": false,
+    "code::before": false,
+    "code::after": false,
+  },
+};
+
 export default {
   darkMode: ["class"],
   content: ["./app/**/*.{js,jsx,ts,tsx}"],
@@ -16,6 +28,14 @@ export default {
       },
     },
     extend: {
+      typography: {
+        DEFAULT: typographyShared,
+        sm: typographyShared,
+        md: typographyShared,
+        lg: typographyShared,
+        xl: typographyShared,
+        "2xl": typographyShared,
+      },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

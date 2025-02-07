@@ -15,11 +15,12 @@ export default function DocsLayout() {
             Kom i gang
           </CustomNavLink>
           <CustomNavLink to="gear">Utstyr</CustomNavLink>
+          <CustomNavLink to="architecture">Arkitektur</CustomNavLink>
           <CustomNavLink to="about">Om</CustomNavLink>
           <CustomNavLink to="feedback">Tilbakemeldinger</CustomNavLink>
         </nav>
       </div>
-      <div className="prose py-2">
+      <div className="prose mb-20 py-2 [&>code]:p-1">
         <Outlet />
       </div>
     </Main>

@@ -63,4 +63,13 @@
   body {
     @apply bg-background text-foreground;
   }
+  figure[data-rehype-pretty-code-figure] {
+    @apply !mt-0;
+  }
+  span[data-rehype-pretty-code-figure] > code {
+    @apply !rounded-md !bg-gray-100 px-2;
+  }
+  figure[data-rehype-pretty-code-figure] > pre {
+    @apply !rounded border !bg-gray-50 px-3 py-2;
+  }
 }

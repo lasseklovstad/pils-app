@@ -8,6 +8,8 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import remarkGfm from "remark-gfm";
 import rehypeExternalLinks from "rehype-external-links";
 
+import type { Options as PrettyOptions } from "rehype-pretty-code";
+
 export default defineConfig({
   server: {
     port: 3000,
@@ -16,7 +18,10 @@ export default defineConfig({
     mdx({
       remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter, remarkGfm],
       rehypePlugins: [
-        [rehypePrettyCode],
+        [
+          rehypePrettyCode,
+          { theme: "github-light-default" } satisfies PrettyOptions,
+        ],
         [rehypeExternalLinks, { target: "_blank" }],
       ],
     }),
