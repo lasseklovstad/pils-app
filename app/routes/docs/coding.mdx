@@ -1,12 +1,14 @@
-import {Link} from "react-router"
-import {ControllerSecretSuccessMessage} from "../../components/ControllerSecretSuccessMessage"
+import { Link } from "react-router";
+import { ControllerSecretSuccessMessage } from "../../components/ControllerSecretSuccessMessage";
 
 ## Koding
+
 Dette er en beskrivelse på hvordan du kan laste ned og kjøre koden på din egen mikrokontroller.
 Etter dette kan du koble mikrokontrolleren opp med denne nettsiden og begynne regulere og analysere gjæringsprossen.
 
 ### Last ned kode
-Det er to open source kodebaser. En for [nettsiden/appen][pils-app] som du ser på her og en for [koden til mikrokontrolleren][pils-controller]. 
+
+Det er to open source kodebaser. En for [nettsiden/appen][pils-app] som du ser på her og en for [koden til mikrokontrolleren][pils-controller].
 Denn guiden er for hvordan du kan laste opp koden til mikrokontroller.
 
 ### Installer utviklingsmiljø
@@ -16,31 +18,37 @@ Denn guiden er for hvordan du kan laste opp koden til mikrokontroller.
 3. Hent ned koden: `git clone https://github.com/lasseklovstad/pils-controller{:shell}`
 
 ## Https Sertifikat
+
 last ned sertifikat fra [Lets Encrypt][lets-encrypt] og lag en ny fil `data/isgrootx1.pem`.
 Denne filen må lastes opp til esp32. Bruk kommandoen `Upload Filesystem Image` i PlatformIo.
 
 ### Secrets
+
 Før koden kan lastes opp må `secrets.template.h` kopieres inn i `include` mappen.
 
 ### Opprett kontroller
+
 Opprett en ny kontroller <Link to="/controller">her</Link> (Du må opprette en bruker for å kunne gjøre dette).
 
-<ControllerSecretSuccessMessage controller={{ name: "Test", secret: "xxx", id: 1 }} />
+<ControllerSecretSuccessMessage
+  controller={{ name: "Test", secret: "xxx", id: 1 }}
+/>
 
 Lim inn koden og id'en i env filen `inculde/secrets.h{:string}`:
+
 ```c++
 const int CONTROLLER_ID_1 = 1;
 const char* API_KEY_1 = "xxx";
 ```
-Du kan ha opptil to kontroller. 
+
+Du kan ha opptil to kontroller.
 
 #### Wifi
+
 Legg inn Wifi passord og SSID (navn på nettverk). Du kan legge til så mange du vil. Mikrokontrolleren vil gå gjennom listen og prøve å koble seg på nettverkene en etter en.
 
-
-
-
 ### Logg level
+
 Ønsker du å debugge mikrokontrollerkoden kan du skru øke logg level i filen `include/logging.h`
 
 ```c++
@@ -50,6 +58,7 @@ Legg inn Wifi passord og SSID (navn på nettverk). Du kan legge til så mange du
 Før koden lastes opp til ESP32 er det greit å skru denne av igjen.
 
 ## Last opp koden til ESP32
+
 Koble opp ESP32 med en mikro usb og last opp koden med PlatformIO Upload.
 Når alt funker skal du kunne se den logger temperaturen på siden for kontrolleren i appen <Link to="/controller">her</Link>.
 

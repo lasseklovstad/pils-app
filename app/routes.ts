@@ -1,4 +1,4 @@
-import { index, layout, prefix, route } from "@react-router/dev/routes";
+import { index, prefix, route } from "@react-router/dev/routes";
 
 import type { RouteConfig } from "@react-router/dev/routes";
 
