@@ -3,7 +3,7 @@ import { parseWithZod } from "@conform-to/zod";
 import { Loader2, Plus } from "lucide-react";
 import { Form, Link, useActionData } from "react-router";
 
-import type { Route } from "./+types/HomePage";
+import type { Route } from "./+types/BatchesPage";
 
 import { deleteAndInsertBatchTemperatures } from "~/.server/data-layer/batchTemperatures";
 import { getBatches, postBatch } from "~/.server/data-layer/batches";
@@ -39,7 +39,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   return { status: 200, result: result.reply({ resetForm: true }) };
 };
 
-export default function Home({
+export default function BatchesPage({
   loaderData: { batches, user },
 }: Route.ComponentProps) {
   return (

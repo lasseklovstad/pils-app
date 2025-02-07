@@ -1,0 +1,31 @@
+import { Link } from "react-router";
+import { FermentationDemoChart } from "./fermentation-demo-chart";
+
+## Kom i gang
+
+Ønsker du å dokumentere bryggeprosessen din og dele det med andre er dette nettstedet for deg.
+
+### Avansert bruk
+
+For folk som ønsker å ta brygging av øl til neste nivå kan man bygge en temperaturkontroller og koble opp til nettsiden.
+Da kan du stille inn temperaturforløpet i gjæringsprosessen og følge med på temperaturen i sanntid.
+
+### Demo gjæringsprosess
+
+<FermentationDemoChart />
+Grafen viser temperaturforløp i gjæringsprosessen. Den grønne linjen er faktisk
+målt temperatur og den røde er hva du som bruker har stilt inn som
+mål-temperatur.
+
+#### 1. Bygg temperaturkontroller
+
+Kjøp nødvendig utstyr og bygg din egen temperaturkontroller for å regulere gjæringsprosessen.
+
+<Link to="gear">Du kan lese mer om hva slags utstyr du trenger her</Link>
+
+#### 2. Last opp koden
+
+Etter utstyret er på plass kan du laste opp koden til mikrokontrolleren.
+Det er viktig å teste underveis når du bygger den for å verifisere at sensorer og andre ting fungerer riktig.
+
+<Link to="coding">Du kan komme i gang med koden her</Link>
