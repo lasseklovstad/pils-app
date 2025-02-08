@@ -12,6 +12,7 @@ import { Main } from "~/components/Main";
 import { Button } from "~/components/ui/button";
 import { getUser, requireUser } from "~/lib/auth.server";
 import { useIsPending } from "~/lib/useIsPending";
+import { Separator } from "~/components/ui/separator";
 
 import { createBatchIntent, CreateBatchSchema } from "./actions/batch.schema";
 import { BatchPreviewImage } from "./shared/BatchPreviewImage";
@@ -43,8 +44,13 @@ export default function BatchesPage({
   loaderData: { batches, user },
 }: Route.ComponentProps) {
   return (
-    <Main className="flex flex-col gap-2">
-      {user ? <BatchForm /> : null}
+    <Main className="flex flex-col gap-2 py-4">
+      {user ? (
+        <>
+          <BatchForm /> <Separator />
+        </>
+      ) : null}
+
       <h2 className="text-4xl">Brygg</h2>
       {batches.length > 0 ? (
         <ul className="divide-y">
@@ -87,7 +93,7 @@ const BatchForm = () => {
   });
   return (
     <Form
-      className="flex flex-wrap items-center gap-2 rounded border p-4"
+      className="flex flex-wrap items-center gap-2"
       method="POST"
       {...getFormProps(form)}
     >

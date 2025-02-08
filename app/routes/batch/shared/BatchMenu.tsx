@@ -1,7 +1,7 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { Edit, Loader2, Menu, Save, Trash } from "lucide-react";
+import { Edit, Loader2, MoreHorizontal, Save, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Form, useActionData, useNavigation } from "react-router";
 
@@ -59,9 +59,11 @@ export const BatchMenu = ({ batch }: Props) => {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Menu className="size-6" />
-        <span className="sr-only">Åpne meny</span>
+      <DropdownMenuTrigger asChild>
+        <Button variant="secondary" size="icon">
+          <MoreHorizontal />
+          <span className="sr-only">Åpne meny</span>
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <Dialog open={editNameDialogOpen} onOpenChange={setEditNameDialogOpen}>

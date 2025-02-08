@@ -210,7 +210,7 @@ export default function BatchPage({
   const filesToShow = batchFiles.filter((file) => file.type !== "unknown");
   return (
     <Main>
-      <div className="flex justify-between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BatchPreviewImage
             publicUrl={batch.previewFilePublicUrl}

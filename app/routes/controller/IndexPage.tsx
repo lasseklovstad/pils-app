@@ -18,6 +18,7 @@ import { Button } from "~/components/ui/button";
 import { requireUser } from "~/lib/auth.server";
 import { useIsPending } from "~/lib/useIsPending";
 import { createControllerSecret, encryptSecret } from "~/lib/utils";
+import { Separator } from "~/components/ui/separator";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const user = await requireUser(request);
@@ -55,8 +56,9 @@ export default function ControllersPage({
   loaderData: { controllers },
 }: Route.ComponentProps) {
   return (
-    <Main className="flex flex-col gap-2">
+    <Main className="flex flex-col gap-2 py-2">
       <ControllerForm />
+      <Separator />
       <h2 className="text-4xl">Kontrollere</h2>
       {controllers.length > 0 ? (
         <ul className="divide-y">
@@ -88,7 +90,7 @@ const ControllerForm = () => {
     },
   });
   return (
-    <div className="flex flex-col gap-2 rounded border p-4">
+    <div className="flex flex-col gap-2">
       <Form
         className="flex flex-wrap items-center gap-2"
         method="POST"
