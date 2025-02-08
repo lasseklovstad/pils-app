@@ -15,16 +15,20 @@ Denn guiden er for hvordan du kan laste opp koden til mikrokontroller.
 
 1. Installer [Vscode][vscode] og [Git][git]
 2. Installer plugin [Platform IO][platform-io] for vscode
-3. Hent ned koden: `git clone https://github.com/lasseklovstad/pils-controller{:shell}`
+3. Hent ned koden: 
 
-## Https Sertifikat
+`git clone https://github.com/lasseklovstad/pils-controller{:shell}`
+
+Deretter kan du åpne mappen til prosjektet i vscode.
+
+### Https Sertifikat
 
 last ned sertifikat fra [Lets Encrypt][lets-encrypt] og lag en ny fil `data/isgrootx1.pem`.
 Denne filen må lastes opp til esp32. Bruk kommandoen `Upload Filesystem Image` i PlatformIo.
 
 ### Secrets
 
-Før koden kan lastes opp må `secrets.template.h` kopieres inn i `include` mappen.
+Før koden kan lastes opp må `secrets.template.h` kopieres inn i `include` mappen og endre navn på filen til `secrets.h`.
 
 ### Opprett kontroller
 
@@ -34,14 +38,14 @@ Opprett en ny kontroller <Link to="/controller">her</Link> (Du må opprette en b
   controller={{ name: "Test", secret: "xxx", id: 1 }}
 />
 
-Lim inn koden og id'en i env filen `inculde/secrets.h{:string}`:
+Lim inn koden og id'en i env filen `include/secrets.h{:string}`:
 
 ```c++
 const int CONTROLLER_ID_1 = 1;
 const char* API_KEY_1 = "xxx";
 ```
 
-Du kan ha opptil to kontroller.
+Du kan ha opptil to kontroller håndtert av en ESP32. Det vil si at du kan kontrollere to øl-batcher samtidig.
 
 #### Wifi
 
@@ -49,7 +53,7 @@ Legg inn Wifi passord og SSID (navn på nettverk). Du kan legge til så mange du
 
 ### Logg level
 
-Ønsker du å debugge mikrokontrollerkoden kan du skru øke logg level i filen `include/logging.h`
+Ønsker du å debugge mikrokontrollerkoden kan du øke logg level i filen `include/logging.h`
 
 ```c++
 #define CURRENT_LOG_LEVEL LOG_LEVEL_DEBUG
@@ -59,7 +63,7 @@ Før koden lastes opp til ESP32 er det greit å skru denne av igjen.
 
 ## Last opp koden til ESP32
 
-Koble opp ESP32 med en mikro usb og last opp koden med PlatformIO Upload.
+Koble opp ESP32 med en mikro-usb og last opp koden med PlatformIO Upload.
 Når alt funker skal du kunne se den logger temperaturen på siden for kontrolleren i appen <Link to="/controller">her</Link>.
 
 [pils-app]: https://github.com/lasseklovstad/pils-app

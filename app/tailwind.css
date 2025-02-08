@@ -70,6 +70,6 @@
     @apply !rounded-md !bg-gray-100 px-2;
   }
   figure[data-rehype-pretty-code-figure] > pre {
-    @apply !rounded border !bg-gray-50 px-3 py-2;
+    @apply overflow-x-auto !rounded border !bg-gray-50 px-3 py-2;
   }
 }
