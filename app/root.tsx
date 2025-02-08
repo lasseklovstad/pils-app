@@ -36,7 +36,10 @@ export const links: LinksFunction = () => [
   { rel: "icon", href: "/favicon.ico" },
 ];
 
-export const meta: MetaFunction = () => [{ title: "Pils" }];
+export const meta: MetaFunction = () => [
+  { title: "Pils" },
+  { name: "description", content: "For folk som vil loggføre ølbrygging" },
+];
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -59,7 +62,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 const Header = ({ children }: { children?: ReactNode }) => {
   return (
     <div className="sticky top-0 z-10 border-b bg-background py-2 md:static">
-      <div className="container mx-auto flex max-w-[800px] items-center">
+      <div className="container mx-auto flex items-center">
         <a className="mr-16 flex items-center gap-2" href="/">
           <img className="size-8" src="/favicon-32x32.png" alt="" />
           <h1 className="text-2xl">Pils</h1>
