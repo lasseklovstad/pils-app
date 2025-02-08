@@ -262,9 +262,7 @@ export default function BatchPage({
           </AccordionItem>
         </Accordion>
 
-        <h2 className="text-2xl">
-          Last opp bilder/video ({filesToShow.length})
-        </h2>
+        <h2 className="text-2xl">Last opp bilder ({filesToShow.length})</h2>
         {!readOnly ? (
           <Form encType="multipart/form-data" method="POST">
             <Input
@@ -273,7 +271,7 @@ export default function BatchPage({
               type="file"
               multiple
               name="media"
-              accept="image/*,video/*"
+              accept="image/*"
             />
             <input readOnly name="intent" value="upload-media" hidden />
           </Form>
@@ -292,12 +290,11 @@ function createTempUploadHandler(prefix: string) {
   const fileStorage = new LocalFileStorage(directory);
 
   async function uploadHandler(fileUpload: FileUpload) {
-    if (fileUpload.fieldName === "media") {
+    if (
+      fileUpload.fieldName === "media" &&
+      fileUpload.type.startsWith("image/")
+    ) {
       const key = new Date().getTime().toString(36);
-      // Hack for https://github.com/mjackson/remix-the-web/issues/53
-      Object.defineProperty(fileUpload, "size", {
-        get: () => 0,
-      });
       await fileStorage.set(key, fileUpload);
       return fileStorage.get(key);
     }

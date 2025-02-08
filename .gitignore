@@ -12,3 +12,4 @@ db-backups
 /playwright/.cache/
 /tests/fixtures/email/
 /data
+/data-backups
