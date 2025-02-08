@@ -2,6 +2,8 @@ import { Link } from "react-router";
 
 import { Main } from "~/components/Main";
 
+import { FermentationDemoChart } from "./docs/fermentation-demo-chart";
+
 export default function HomePage() {
   return (
     <Main>
@@ -26,6 +28,7 @@ export default function HomePage() {
         </p>
         <Link to="/sign-up">Opprett bruker for å komme i gang her</Link>
         <h2>Bygg din egen temperaturkontroller 🌡️</h2>
+        <FermentationDemoChart />
         <p>
           Lag din egen temperatur-kontroller basert på{" "}
           <a href="https://www.arduino.cc">Arduino</a> rammeverket. Koble
@@ -48,6 +51,12 @@ export default function HomePage() {
           👉 <Link to="/docs">Kom i gang her</Link> og ta bryggingen din til et
           nytt nivå!
         </p>
+
+        <img
+          src="/finished-demo.jpg"
+          alt="Ferdig mikrokontroller"
+          className="aspect-square size-[400px] rounded object-cover shadow"
+        />
       </div>
     </Main>
   );

@@ -215,7 +215,7 @@ export const FermentationChart = ({
         min={minDays}
         max={maxDays}
         step={0.01}
-        className="mb-4"
+        className="mb-8"
       />
     </>
   );
