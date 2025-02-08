@@ -1,8 +1,6 @@
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig } from "vite";
 import mdx from "@mdx-js/rollup";
-import remarkFrontmatter from "remark-frontmatter";
-import remarkMdxFrontmatter from "remark-mdx-frontmatter";
 import rehypePrettyCode from "rehype-pretty-code";
 import tsconfigPaths from "vite-tsconfig-paths";
 import remarkGfm from "remark-gfm";
@@ -16,7 +14,7 @@ export default defineConfig({
   },
   plugins: [
     mdx({
-      remarkPlugins: [remarkFrontmatter, remarkMdxFrontmatter, remarkGfm],
+      remarkPlugins: [remarkGfm],
       rehypePlugins: [
         [
           rehypePrettyCode,

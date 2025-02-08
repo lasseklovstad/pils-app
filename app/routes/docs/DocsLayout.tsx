@@ -8,20 +8,23 @@ import { cn } from "~/lib/utils";
 
 export default function DocsLayout() {
   return (
-    <Main className="flex min-h-[400px] justify-center gap-4">
-      <div className="bg-gray-50 py-2">
-        <nav className="flex flex-col items-start">
-          <CustomNavLink to="/docs" end>
-            Kom i gang
-          </CustomNavLink>
-          <CustomNavLink to="gear">Utstyr</CustomNavLink>
-          <CustomNavLink to="architecture">Arkitektur</CustomNavLink>
-          <CustomNavLink to="about">Om</CustomNavLink>
-          <CustomNavLink to="feedback">Tilbakemeldinger</CustomNavLink>
-        </nav>
-      </div>
-      <div className="prose mb-20 py-2 [&>code]:p-1">
-        <Outlet />
+    <Main className="min-h-[400px]">
+      <div className="flex gap-2">
+        <div className="hidden bg-gray-50 py-2 md:block">
+          <nav className="flex flex-col items-start">
+            <CustomNavLink to="/docs" end>
+              Kom i gang
+            </CustomNavLink>
+            <CustomNavLink to="gear">Utstyr</CustomNavLink>
+            <CustomNavLink to="architecture">Arkitektur</CustomNavLink>
+            <CustomNavLink to="coding">Koding</CustomNavLink>
+            <CustomNavLink to="about">Om</CustomNavLink>
+            <CustomNavLink to="feedback">Tilbakemeldinger</CustomNavLink>
+          </nav>
+        </div>
+        <div className="prose mb-20 max-w-full py-2 [&>code]:p-1">
+          <Outlet />
+        </div>
       </div>
     </Main>
   );
