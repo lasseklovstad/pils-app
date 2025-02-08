@@ -32,17 +32,18 @@ Les om hvordan du kobler [DS18B20 her][DS18B20-connect]. Man kan koble mange av 
 Ettersom strømforsyningen vår er 3.3V bruker vi en mindre resistor (3.3kΩ) fra signal til 3.3V.
 Hvis du bruker 5V går du for den anbefalte 4.7kΩ.
 
-### Rele modul 
+### Rele modul
+
 Dette er en bryter som skal styre strømmen til kjøleskapet eller ovnen vår.
 Les om hvordan du kobler [Relemodulen her][relay-connect].
 
 ### Strømforsyning
-Vi har valgt en strømforsyning som skal takle store spenningshopp. 
-ESP32 og Arduino kan også få strøm via USB. Man kan i teorien bare bruke en mobillader til dette. 
+
+Vi har valgt en strømforsyning som skal takle store spenningshopp.
+ESP32 og Arduino kan også få strøm via USB. Man kan i teorien bare bruke en mobillader til dette.
 Men vi ønsker noe litt mer pålitelig.
 
 Man kan også kjøre en 5V variant, men jeg gikk for 230V AC -> 3.3V DC (Stabil).
-
 
 [elkim-esp32]: https://elkim.no/produkt/esp32-ch340c-usbc
 [DS18B20-sparkfun]: https://www.sparkfun.com/temperature-sensor-waterproof-ds18b20.html
