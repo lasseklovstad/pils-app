@@ -4,10 +4,10 @@ import path from "path";
 import { parseWithZod } from "@conform-to/zod";
 import { LocalFileStorage } from "@mjackson/file-storage/local";
 import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
+import { Info } from "lucide-react";
 import QRCode from "qrcode";
 import { Form, Link, useSearchParams } from "react-router";
 import { z } from "zod";
-import { AlertTriangle, Info } from "lucide-react";
 
 import type { Route } from "./+types/BatchDetailsPage";
 
@@ -19,10 +19,10 @@ import { getControllerTemperaturesFromBatchId } from "~/.server/data-layer/contr
 import { getBatchIngredients } from "~/.server/data-layer/ingredients";
 import { Main } from "~/components/Main";
 import { Accordion, AccordionItem } from "~/components/ui/accordion";
+import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { getUser, requireUser } from "~/lib/auth.server";
 import { useRevalidateOnFocus } from "~/lib/useRevalidateOnFocus";
-import { Button } from "~/components/ui/button";
 
 import {
   deleteBatchIntent,
