@@ -1,6 +1,8 @@
 import { redirect } from "react-router";
 import bcrypt from "bcryptjs";
 
+import type { User } from "db/schema";
+
 import {
   deleteSession,
   getUserBySessionId,
@@ -38,7 +40,10 @@ export async function getUser(request: Request) {
 
 export async function requireUser(
   request: Request,
-  { redirectTo }: { redirectTo?: string | null } = {},
+  {
+    redirectTo,
+    role,
+  }: { redirectTo?: string | null; role?: User["role"] } = {},
 ) {
   const user = await getUser(request);
   if (!user) {
@@ -52,6 +57,9 @@ export async function requireUser(
       .filter(Boolean)
       .join("?");
     throw redirect(loginRedirect);
+  }
+  if (role && user.role !== role) {
+    throw redirect("/");
   }
   return user;
 }

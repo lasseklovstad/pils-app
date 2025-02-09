@@ -5,7 +5,7 @@ import { Main } from "~/components/Main";
 import { requireUser } from "~/lib/auth.server";
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  await requireUser(request);
+  await requireUser(request, { role: "admin" });
   return { users: await getUsers() };
 };
 
