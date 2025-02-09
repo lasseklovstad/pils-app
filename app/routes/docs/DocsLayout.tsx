@@ -8,8 +8,8 @@ import { cn } from "~/lib/utils";
 
 export default function DocsLayout() {
   return (
-    <Main className="min-h-[400px]">
-      <div className="flex gap-2">
+    <Main>
+      <div className="flex min-h-[400px] gap-2">
         <div className="hidden bg-gray-50 py-2 md:block">
           <nav className="flex flex-col items-start">
             <CustomNavLink to="/docs" end>

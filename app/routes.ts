@@ -1,4 +1,4 @@
-import { index, prefix, route } from "@react-router/dev/routes";
+import { index, layout, prefix, route } from "@react-router/dev/routes";
 
 import type { RouteConfig } from "@react-router/dev/routes";
 
@@ -29,6 +29,7 @@ const routes: RouteConfig = [
     route("files/image/:fileId", "routes/api/batchImageApi.ts"),
     route("files/video/:fileId", "routes/api/batchVideoApi.ts"),
   ]),
+  layout("routes/mdx-layout.tsx", [route("privacy", "routes/privacy.mdx")]),
 ];
 
 export default routes;

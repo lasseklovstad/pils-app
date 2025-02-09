@@ -1,6 +1,6 @@
 import { getFormProps, getInputProps, useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Loader2, Plus } from "lucide-react";
+import { AlertTriangle, Loader2, Plus } from "lucide-react";
 import { Form, Link, useActionData } from "react-router";
 
 import type { Route } from "./+types/BatchesPage";
@@ -44,16 +44,23 @@ export default function BatchesPage({
   loaderData: { batches, user },
 }: Route.ComponentProps) {
   return (
-    <Main className="flex flex-col gap-2 py-4">
+    <Main className="flex min-h-full flex-col items-start gap-2 py-4">
       {user ? (
         <>
           <BatchForm /> <Separator />
         </>
-      ) : null}
+      ) : (
+        <div className="flex items-center gap-2 rounded bg-yellow-100 px-8 py-4">
+          <AlertTriangle />
+          <Button asChild variant="link" className="px-0">
+            <Link to="/login">Du må logge inn for å lage dine egne brygg</Link>
+          </Button>
+        </div>
+      )}
 
       <h2 className="text-4xl">Brygg</h2>
       {batches.length > 0 ? (
-        <ul className="divide-y">
+        <ul className="w-full divide-y">
           {batches.map((batch) => (
             <li key={batch.id}>
               <Link

@@ -5,8 +5,9 @@ import { parseWithZod } from "@conform-to/zod";
 import { LocalFileStorage } from "@mjackson/file-storage/local";
 import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
 import QRCode from "qrcode";
-import { Form, useSearchParams } from "react-router";
+import { Form, Link, useSearchParams } from "react-router";
 import { z } from "zod";
+import { AlertTriangle, Info } from "lucide-react";
 
 import type { Route } from "./+types/BatchDetailsPage";
 
@@ -21,6 +22,7 @@ import { Accordion, AccordionItem } from "~/components/ui/accordion";
 import { Input } from "~/components/ui/input";
 import { getUser, requireUser } from "~/lib/auth.server";
 import { useRevalidateOnFocus } from "~/lib/useRevalidateOnFocus";
+import { Button } from "~/components/ui/button";
 
 import {
   deleteBatchIntent,
@@ -274,6 +276,16 @@ export default function BatchPage({
               accept="image/*"
             />
             <input readOnly name="intent" value="upload-media" hidden />
+            <div className="p-2">
+              <div className="flex items-center gap-2 text-sm">
+                <Info /> Ikke last opp bilder du ikke vil andre skal se.
+              </div>
+              <Button asChild variant="link" size="sm">
+                <Link to="/privacy">
+                  Les mer om hvordan din informasjon behandles her.
+                </Link>
+              </Button>
+            </div>
           </Form>
         ) : null}
         {filesToShow.length > 0 ? (

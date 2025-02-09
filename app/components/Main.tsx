@@ -7,7 +7,7 @@ export const Main = ({
   children: React.ReactNode;
   className?: string;
 }) => (
-  <main className={cn("container mx-auto bg-white", className)}>
+  <main className={cn("container mx-auto flex-1 bg-white", className)}>
     {children}
   </main>
 );

@@ -9,7 +9,8 @@
     "eslint.config.js",
     "postcss.config.js",
     "server.mjs",
-    ".react-router/types/**/*"
+    ".react-router/types/**/*",
+    "app/routes/privacy.mdx"
   ],
   "exclude": ["node_modules"],
   "compilerOptions": {
