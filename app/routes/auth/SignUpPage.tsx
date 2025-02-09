@@ -66,7 +66,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export const meta: MetaFunction = () => {
-  return [{ title: "Registrer deg" }];
+  return [{ title: "Registrer deg - Pils" }];
 };
 
 export default function SignUpPage() {

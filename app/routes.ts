@@ -5,6 +5,7 @@ import type { RouteConfig } from "@react-router/dev/routes";
 const routes: RouteConfig = [
   index("routes/HomePage.tsx"),
   route("batches", "routes/batch/BatchesPage.tsx"),
+  route("users", "routes/users/users.tsx"),
   route("batch/:batchId", "routes/batch/BatchDetailsPage.tsx"),
   route("login", "routes/auth/LoginPage.tsx"),
   route("sign-up", "routes/auth/SignUpPage.tsx"),

@@ -17,6 +17,10 @@ import { Separator } from "~/components/ui/separator";
 import { createBatchIntent, CreateBatchSchema } from "./actions/batch.schema";
 import { BatchPreviewImage } from "./shared/BatchPreviewImage";
 
+export const meta: Route.MetaFunction = () => {
+  return [{ title: "Batcher - Pils" }];
+};
+
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const [user, batches] = await Promise.all([getUser(request), getBatches()]);
   return { batches, user };
@@ -53,7 +57,9 @@ export default function BatchesPage({
         <div className="flex items-center gap-2 rounded bg-yellow-100 px-8 py-4">
           <AlertTriangle />
           <Button asChild variant="link" className="px-0">
-            <Link to="/login">Du må logge inn for å lage dine egne brygg</Link>
+            <Link to="/login">
+              Du må logge inn for å opprette dine egne brygg
+            </Link>
           </Button>
         </div>
       )}
