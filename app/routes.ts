@@ -30,6 +30,7 @@ const routes: RouteConfig = [
     route("files/video/:fileId", "routes/api/batchVideoApi.ts"),
   ]),
   layout("routes/mdx-layout.tsx", [route("privacy", "routes/privacy.mdx")]),
+  route("sitemap.xml", "routes/sitemap.ts"),
 ];
 
 export default routes;
