@@ -14,6 +14,10 @@ import { EmailSchema, PasswordSchema } from "~/routes/auth/user-validation";
 import { login, requireAnonymous } from "~/lib/auth.server";
 import { handleNewSession } from "~/lib/login.server";
 
+export const meta = () => {
+  return [{ title: "Logg inn- Pils" }];
+};
+
 const LoginFormSchema = z.object({
   email: EmailSchema,
   password: PasswordSchema,

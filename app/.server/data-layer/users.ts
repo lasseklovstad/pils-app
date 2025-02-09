@@ -3,6 +3,10 @@ import { eq, getTableColumns } from "drizzle-orm";
 import { db } from "db/config.server";
 import { passwords, sessions, users } from "db/schema";
 
+export const getUsers = async () => {
+  return await db.select().from(users);
+};
+
 export const getUserByEmail = async (email: string) => {
   return (await db.select().from(users).where(eq(users.email, email)))[0];
 };

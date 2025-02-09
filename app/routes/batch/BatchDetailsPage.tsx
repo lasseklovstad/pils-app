@@ -85,6 +85,13 @@ import { MaltForm } from "./shared/MaltForm";
 import { MashingForm } from "./shared/MashingForm";
 import { MediaCarousel } from "./shared/MediaCarousel";
 
+export const meta: Route.MetaFunction = ({ data, error }) => {
+  if (error) {
+    return [{ title: "Error - Pils" }];
+  }
+  return [{ title: `${data.batch.name} - Pils` }];
+};
+
 export const loader = async ({
   request,
   params: { batchId: batchIdParam },

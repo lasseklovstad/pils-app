@@ -1,13 +1,15 @@
 import type { Route } from "./+types/sitemap";
 
+import { getBatches } from "~/.server/data-layer/batches";
 import { getDomainUrl } from "~/lib/utils";
 
-export const loader = ({ request }: Route.LoaderArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const batches = await getBatches();
   const domain = getDomainUrl(request);
   const urls = [
     "",
     "batches",
-    "batch/1",
+    ...batches.map(({ id }) => `batch/${id}`),
     "docs",
     "docs/gear",
     "docs/architecture",

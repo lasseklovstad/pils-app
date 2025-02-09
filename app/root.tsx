@@ -104,8 +104,9 @@ export default function App({ loaderData: { user } }: Route.ComponentProps) {
       ],
     },
     user && { label: "Kontrollere", to: "/controller" },
+    user?.role === "admin" && { label: "Brukere", to: "/users" },
   ]
-    .filter((link) => link !== null)
+    .filter((link) => !!link)
     .map(({ label, to, children }) => (
       <li key={label} className="py-1">
         <Button asChild variant="link">

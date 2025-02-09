@@ -58,6 +58,7 @@ export default function ControllersPage({
   return (
     <Main className="flex flex-col gap-2 py-2">
       <ControllerForm />
+
       <Separator />
       <h2 className="text-4xl">Kontrollere</h2>
       {controllers.length > 0 ? (
@@ -110,6 +111,11 @@ const ControllerForm = () => {
           Opprett
         </Button>
       </Form>
+      <p className="text-sm text-gray-500">
+        Opprett kontroller for å knytte din fysiske enhet til nettsiden.
+        Deretter kan man koble opp mikrokontrolleren til brygg og styre
+        gjæringsprosessen.
+      </p>
       {lastResult?.status === 200 && lastResult.controller ? (
         <ControllerSecretSuccessMessage controller={lastResult.controller} />
       ) : null}
