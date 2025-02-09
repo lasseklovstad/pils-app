@@ -1,0 +1,61 @@
+## Personvernerklæring
+
+Sist oppdatert: 09.02.2025
+
+Denne personvernerklæringen beskriver hvordan vi samler inn, bruker og beskytter personopplysninger på nettsiden "Pils".
+
+### 1. Behandling av personopplysninger
+
+Vi samler inn og lagrer følgende opplysninger om deg:
+
+- E-postadresse
+- Navn
+- Rolle (admin eller bruker)
+- Bilder og brygge-logg du laster opp
+- Sesjonsdata
+
+### 2. Formål med datainnsamling
+
+Formålet med å lagre disse opplysningene er å kunne knytte bilder og informasjon du oppretter til brukeren din.
+Dette sikrer at bare du kan redigere dine egne data. Dataene brukes ikke til andre formål enn det som vises på nettsiden.
+
+### 3. Lagring og sikkerhet
+
+Data lagres i en SQLite-database i en Docker-container hostet hos [Fly.io][fly] i Sverige, Stockholm.
+
+Passord lagres sikkert med bcrypt-hashing.
+
+Brukersesjoner varer i 30 dager.
+
+Opplastede bilder er offentlig tilgjengelige etter opplasting.
+Det kan hende data som bilder ikke lagres for alltid eller blir slettet av en eller annen grunn.
+Så ikke benytt dette som eneste backup for bilder.
+
+Brukerkontoer kan ikke slettes automatisk fra nettsiden, men du kan kontakte utvikleren for sletting av konto og tilhørende data.
+
+### 4. Datadeling og tredjeparts tjenester
+
+Vi deler kun din e-postadresse med [SendGrid][sendgrid] for å sende e-postbekreftelser.
+
+Vi bruker ingen analyseverktøy eller andre tredjeparts tjenester for sporing.
+
+### 5. Brukerrettigheter
+
+Du kan be om innsyn i hvilke data vi har lagret om deg ved å kontakte utvikleren.
+
+Du kan be om sletting av din konto og tilhørende data ved å kontakte utvikleren.
+
+### 6. Informasjonskapsler (Cookies)
+
+Vi bruker en førsteparts cookie ved navn "en_session" for å håndtere brukersesjoner.
+
+Ingen tredjeparts-cookies brukes.
+
+### 7. Endringer i personvernerklæringen
+
+Denne personvernerklæringen kan bli oppdatert. Ved endringer vil den oppdaterte versjonen publiseres på nettsiden sammen med dato for siste oppdatering.
+
+For spørsmål eller forespørsler angående dine personopplysninger, vennligst kontakt utvikleren.
+
+[fly]: https://fly.io
+[sendgrid]: https://sendgrid.com

@@ -43,14 +43,14 @@ export const meta: MetaFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="no">
+    <html lang="no" className="h-full">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="flex min-h-full flex-col">
         {children}
         <ScrollRestoration />
         <Scripts />
@@ -61,7 +61,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 const Header = ({ children }: { children?: ReactNode }) => {
   return (
-    <div className="sticky top-0 z-10 border-b bg-background py-2 md:static">
+    <header className="sticky top-0 z-10 h-fit border-b bg-background py-2 md:static">
       <div className="container mx-auto flex items-center">
         <a className="mr-16 flex items-center gap-2" href="/">
           <img className="size-8" src="/favicon-32x32.png" alt="" />
@@ -69,7 +69,7 @@ const Header = ({ children }: { children?: ReactNode }) => {
         </a>
         {children}
       </div>
-    </div>
+    </header>
   );
 };
 
@@ -81,8 +81,6 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 export default function App({ loaderData: { user } }: Route.ComponentProps) {
   const [open, setOpen] = useState(false);
   const nav = useNavigation();
-
-  console.log(nav);
 
   useEffect(() => {
     if (nav.state === "loading") {
@@ -163,11 +161,25 @@ export default function App({ loaderData: { user } }: Route.ComponentProps) {
         </div>
         <nav className="hidden items-center gap-2 md:flex">
           <ul className="flex">{NavigationListItems}</ul>
-
           {AccountButton}
         </nav>
       </Header>
       <Outlet />
+
+      <footer className="mt-auto bg-gray-200">
+        <div className="container mx-auto flex flex-wrap gap-2 py-4">
+          <Button asChild variant="link">
+            <Link to="/privacy" className="underline">
+              Personvern
+            </Link>
+          </Button>
+          <Button asChild variant="link">
+            <Link to="/docs/feedback" className="underline">
+              Spørsmål og tilbakemeldinger
+            </Link>
+          </Button>
+        </div>
+      </footer>
     </>
   );
 }
