@@ -53,7 +53,7 @@
     "knip": "^5.31.0",
     "msw": "^2.4.11",
     "postcss": "^8.4.47",
-    "prettier": "3.4.2",
+    "prettier": "3.5.1",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "rehype-external-links": "^3.0.0",
     "rehype-pretty-code": "^0.14.0",
