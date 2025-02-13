@@ -86,7 +86,7 @@
     "@react-email/components": "^0.0.32",
     "@react-router/express": "7.1.5",
     "@react-router/node": "7.1.5",
-    "bcryptjs": "^2.4.3",
+    "bcryptjs": "^3.0.0",
     "better-sqlite3": "^11.3.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
