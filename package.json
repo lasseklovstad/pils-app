@@ -5,14 +5,14 @@
   "type": "module",
   "scripts": {
     "build": "react-router build",
-    "dev": "node ./server.mjs",
-    "start": "node ./server.mjs",
+    "dev": "node ./server.js",
+    "start": "node ./server.js",
     "lint:check": "react-router typegen && eslint .",
     "lint:fix": "react-router typegen && eslint . --fix",
     "format:check": "prettier --check .",
     "format:fix": "prettier --write .",
     "typecheck": "react-router typegen && tsc",
-    "knip": "knip",
+    "knip": "react-router typegen && knip",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
@@ -31,7 +31,6 @@
     "@playwright/test": "^1.48.1",
     "@react-router/dev": "7.1.5",
     "@tailwindcss/typography": "^0.5.16",
-    "@types/bcryptjs": "^2.4.6",
     "@types/better-sqlite3": "^7.6.11",
     "@types/fs-extra": "^11.0.4",
     "@types/node": "^22.0.0",
@@ -87,7 +86,7 @@
     "@react-router/express": "7.1.5",
     "@react-router/node": "7.1.5",
     "bcryptjs": "^3.0.0",
-    "better-sqlite3": "^11.3.0",
+    "better-sqlite3": "^11.8.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "compression": "^1.7.4",
@@ -109,5 +108,19 @@
     "tailwind-merge": "^3.0.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.23.8"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "better-sqlite3",
+      "esbuild",
+      "esbuild",
+      "msw",
+      "msw",
+      "sharp",
+      "sharp"
+    ],
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ]
   }
 }

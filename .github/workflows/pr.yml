@@ -18,81 +18,84 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          ref: ${{ github.ref }}
-
-      - name: Setup node
+          version: 10
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Download deps
-        uses: bahmutov/npm-install@v1
-
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+      - name: Install dependencies
+        run: pnpm install
       - name: Run linting checks
         run: |
-          npm run lint:check
+          pnpm run lint:check
   format:
     name: 🎀 Prettier
     runs-on: "ubuntu-latest"
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          ref: ${{ github.ref }}
-
-      - name: Setup node
+          version: 10
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Download deps
-        uses: bahmutov/npm-install@v1
-
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+      - name: Install dependencies
+        run: pnpm install
       - name: Run prettier checks
         run: |
-          npm run format:check
+          pnpm run format:check
   typecheck:
     name: ʦ TypeScript
     runs-on: "ubuntu-latest"
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          ref: ${{ github.ref }}
-
-      - name: Setup node
+          version: 10
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Download deps
-        uses: bahmutov/npm-install@v1
-
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+      - name: Install dependencies
+        run: pnpm install
       - name: Run typescript checks
         run: |
-          npm run typecheck
+          pnpm run typecheck
   knip:
     name: ✂️ Knip
     runs-on: "ubuntu-latest"
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          ref: ${{ github.ref }}
-
-      - name: Setup node
+          version: 10
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Download deps
-        uses: bahmutov/npm-install@v1
-
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+      - name: Install dependencies
+        run: pnpm install
       - name: Run knip
         run: |
-          npm run typecheck
-          npm run knip
+          pnpm run knip
   e2e:
     name: 🎭 E2E
     runs-on: "ubuntu-latest"
@@ -105,27 +108,28 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          ref: ${{ github.ref }}
-
-      - name: Setup node
+          version: 10
+      - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Download deps
-        uses: bahmutov/npm-install@v1
-
+          cache: 'pnpm'
+          cache-dependency-path: 'pnpm-lock.yaml'
+      - name: Install dependencies
+        run: pnpm install
       - name: Run build
         run: |
-          npm run build
+          pnpm run build
 
       - name: Install playwright browsers
         run: |
-          npx playwright install --with-deps chromium
+          pnpm exec playwright install --with-deps chromium
 
       - name: 🎭 Playwright tests
-        run: npx playwright test
+        run: pnpm exec playwright test
 
       - name: 📊 Upload report
         uses: actions/upload-artifact@v4
