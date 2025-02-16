@@ -14,6 +14,7 @@ const viteDevServer =
       );
 
 const remixHandler = createRequestHandler({
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   build: viteDevServer
     ? () => viteDevServer.ssrLoadModule("virtual:react-router/server-build")
     : // eslint-disable-next-line import/no-unresolved

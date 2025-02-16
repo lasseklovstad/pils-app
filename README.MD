@@ -45,3 +45,10 @@ apt install sqlite3
 sqlite3 /data/sqlite.db < dump.sql
 CTRL+D to quit ssh
 ```
+
+## Docker
+
+```bash
+docker build --tag 'pils-app' .
+docker run --env-file ./.env -d -p 127.0.0.1:3000:3000 pils-app
+```

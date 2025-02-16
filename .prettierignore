@@ -1,3 +1,4 @@
 node_modules
 renovate.json
 migrations
+pnpm-lock.yaml
