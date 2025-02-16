@@ -110,15 +110,6 @@
     "zod": "^3.23.8"
   },
   "pnpm": {
-    "ignoredBuiltDependencies": [
-      "better-sqlite3",
-      "esbuild",
-      "esbuild",
-      "msw",
-      "msw",
-      "sharp",
-      "sharp"
-    ],
     "onlyBuiltDependencies": [
       "better-sqlite3"
     ]

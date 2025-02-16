@@ -8,7 +8,6 @@
     "**/.client/**/*.tsx",
     "eslint.config.js",
     "postcss.config.js",
-    "server.js",
     ".react-router/types/**/*",
     "app/routes/privacy.mdx"
   ],
