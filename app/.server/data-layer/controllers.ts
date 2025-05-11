@@ -30,6 +30,9 @@ export const getControllerByUser = async (
         name: controllers.name,
         isRelayOn: controllers.isRelayOn,
         userId: controllers.userId,
+        minDelayInSeconds: controllers.minDelayInSeconds,
+        avgTemperatureBufferSize: controllers.avgTemperatureBufferSize,
+        hysteresis: controllers.hysteresis,
       })
       .from(controllers)
       .innerJoin(users, eq(users.id, currentUser.id))
@@ -48,6 +51,9 @@ export const getController = async (controllerId: number) => {
         name: controllers.name,
         isRelayOn: controllers.isRelayOn,
         userId: controllers.userId,
+        minDelayInSeconds: controllers.minDelayInSeconds,
+        avgTemperatureBufferSize: controllers.avgTemperatureBufferSize,
+        hysteresis: controllers.hysteresis,
       })
       .from(controllers)
       .where(eq(controllers.id, controllerId))
@@ -71,7 +77,14 @@ export const postController = async (
 export const putController = async (
   controllerId: number,
   controller: Partial<
-    Pick<typeof controllers.$inferInsert, "isRelayOn" | "name">
+    Pick<
+      typeof controllers.$inferInsert,
+      | "isRelayOn"
+      | "name"
+      | "avgTemperatureBufferSize"
+      | "hysteresis"
+      | "minDelayInSeconds"
+    >
   >,
 ) => {
   return await db

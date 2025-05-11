@@ -58,6 +58,9 @@ export const controllers = sqliteTable("controllers", {
   id: integer().primaryKey(),
   name: text().notNull(),
   isRelayOn: integer({ mode: "boolean" }).notNull().default(false),
+  hysteresis: real().notNull().default(0.0),
+  minDelayInSeconds: integer().notNull().default(30),
+  avgTemperatureBufferSize: integer().notNull().default(5),
   userId: text()
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),

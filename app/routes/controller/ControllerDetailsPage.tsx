@@ -74,10 +74,13 @@ const requireUserOwnerOfController = async (
     throw new Response("Unauthorized", { status: 403 });
   }
 };
-export const editNameIntent = "edit-name";
+export const editControllerIntent = "edit-controller";
 export const EditNameSchema = z.object({
-  intent: z.literal(editNameIntent),
+  intent: z.literal(editControllerIntent),
   name: z.string().trim().min(1),
+  minDelayInSeconds: z.number().int().min(0),
+  avgTemperatureBufferSize: z.number().int().min(0),
+  hysteresis: z.number().min(0),
 });
 const testTemperatureIntent = "test-temperature";
 const TestTemperatureSchema = z.object({
@@ -108,8 +111,8 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
     return { result: result.reply(), status: 400 };
   }
   switch (result.value.intent) {
-    case editNameIntent:
-      await putController(controllerId, { name: result.value.name });
+    case editControllerIntent:
+      await putController(controllerId, result.value);
       return { status: 200, result: result.reply({ resetForm: true }) };
     case testTemperatureIntent:
       await insertControllerTemperature({
