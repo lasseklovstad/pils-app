@@ -68,6 +68,10 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
     headers: {
       "x-batch-status": activeBatch.controllerStatus,
       "x-batch-mode": activeBatch.mode ?? "",
+      "x-controller-min-delay": controller.minDelayInSeconds.toString(), // In seconds and is integer
+      "x-controller-avg-buffer-size":
+        controller.avgTemperatureBufferSize.toString(), // Integer
+      "x-controller-hysteresis": controller.hysteresis.toString(),
     },
   });
 };

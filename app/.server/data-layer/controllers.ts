@@ -48,6 +48,9 @@ export const getController = async (controllerId: number) => {
         name: controllers.name,
         isRelayOn: controllers.isRelayOn,
         userId: controllers.userId,
+        minDelayInSeconds: controllers.minDelayInSeconds,
+        avgTemperatureBufferSize: controllers.avgTemperatureBufferSize,
+        hysteresis: controllers.hysteresis,
       })
       .from(controllers)
       .where(eq(controllers.id, controllerId))
