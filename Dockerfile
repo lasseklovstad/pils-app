@@ -1,4 +1,4 @@
-FROM node:22.12-alpine3.20 as base
+FROM node:22.16-alpine3.20 as base
 RUN npm install -g pnpm
 
 FROM base AS prod-deps
