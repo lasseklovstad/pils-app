@@ -3,7 +3,9 @@ import {
   desc,
   eq,
   getTableColumns,
+  gte,
   inArray,
+  lt,
   min,
   ne,
   not,
@@ -54,6 +56,34 @@ export const getControllerTemperaturesFromBatchId = async (batchId: number) => {
             .from(controllerTemperatures)
             .groupBy(sql`${controllerTemperatures.timestamp}/(60)`)
             .orderBy(desc(controllerTemperatures.temperature)),
+        ),
+      ),
+    );
+};
+
+export const getControllerTemperaturesFromBatchIdByDay = async (
+  batchId: number,
+  fromDay: number,
+  fromHour: number,
+) => {
+  return await db
+    .select({
+      ...getTableColumns(controllerTemperatures),
+    })
+    .from(controllerTemperatures)
+    .innerJoin(batches, eq(batches.id, controllerTemperatures.batchId))
+    .where(
+      and(
+        eq(controllerTemperatures.batchId, batchId),
+        ne(controllerTemperatures.temperature, 85),
+        ne(controllerTemperatures.temperature, -127),
+        gte(
+          controllerTemperatures.timestamp,
+          sql`unixepoch(datetime(${batches.fermentationStartDate}, 'auto','${sql.raw(`+${fromDay} day`)}', '${sql.raw(`+${fromHour} hour`)}'))`,
+        ),
+        lt(
+          controllerTemperatures.timestamp,
+          sql`unixepoch(datetime(${batches.fermentationStartDate}, 'auto','${sql.raw(`+${fromDay} day`)}', '${sql.raw(`+${fromHour + 6} hour`)}'))`,
         ),
       ),
     );
