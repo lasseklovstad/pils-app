@@ -3,7 +3,7 @@ import { parseWithZod } from "@conform-to/zod";
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Edit, Loader2, MoreHorizontal, Save, Trash } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Form, useActionData, useNavigation } from "react-router";
+import { Form, Link, useActionData, useNavigation } from "react-router";
 
 import type { Batch } from "db/schema";
 import type { action } from "../BatchDetailsPage";
@@ -66,6 +66,9 @@ export const BatchMenu = ({ batch }: Props) => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
+        <DropdownMenuItem>
+          <Link to="fermentation">Gjæring</Link>
+        </DropdownMenuItem>
         <Dialog open={editNameDialogOpen} onOpenChange={setEditNameDialogOpen}>
           <DialogTrigger asChild>
             <DropdownMenuItem

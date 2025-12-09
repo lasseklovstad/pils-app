@@ -7,6 +7,10 @@ const routes: RouteConfig = [
   route("batches", "routes/batch/BatchesPage.tsx"),
   route("users", "routes/users/users.tsx"),
   route("batch/:batchId", "routes/batch/BatchDetailsPage.tsx"),
+  route(
+    "batch/:batchId/fermentation",
+    "routes/batch/batch-fermentation-page.tsx",
+  ),
   route("login", "routes/auth/LoginPage.tsx"),
   route("sign-up", "routes/auth/SignUpPage.tsx"),
   route("logout", "routes/auth/LogoutPage.tsx"),
