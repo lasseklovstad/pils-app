@@ -25,24 +25,21 @@ export const insertNewUser = async (
   const user = createUser(partialUser);
   const hashedPassword = createHashedPassword(user.password);
 
-  const id = await db.transaction(async (tx) => {
-    const [newUser] = await tx
-      .insert(users)
-      .values({
-        name: user.name,
-        role: user.role,
-        email: user.email.toLowerCase(),
-      })
-      .returning(getTableColumns(users));
-    if (!newUser) {
-      throw new Error("Could not create user");
-    }
-    await tx
-      .insert(passwords)
-      .values({ ...hashedPassword, userId: newUser.id });
-    return newUser.id;
-  });
-  return { ...user, id };
+  const [newUser] = await db
+    .insert(users)
+    .values({
+      name: user.name,
+      role: user.role,
+      email: user.email.toLowerCase(),
+    })
+    .returning(getTableColumns(users));
+  if (!newUser) {
+    throw new Error("Could not create user");
+  }
+  await db
+    .insert(passwords)
+    .values({ ...hashedPassword, userId: newUser.id });
+  return { ...user, id: newUser.id };
 };
 
 function createHashedPassword(password: string) {

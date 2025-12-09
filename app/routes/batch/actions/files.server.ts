@@ -10,30 +10,13 @@ import { getBatchFileStorage } from "~/lib/batchFileStorage";
 import { putBatch } from "~/.server/data-layer/batches";
 
 export async function uploadFilesAction({
-  formData: { media },
+  formData: { files },
   batchId,
 }: {
   formData: z.infer<typeof UploadFilesSchema>;
   batchId: number;
 }) {
-  const fileStorage = getBatchFileStorage(batchId);
-  for (const file of media) {
-    const type = file.type.startsWith("video")
-      ? "video"
-      : file.type.startsWith("image")
-        ? "image"
-        : "unknown";
-    if (type === "unknown") {
-      console.warn("Unknown file tried to upload");
-      return;
-    }
-    const fileId = await insertFile({
-      batchId,
-      type,
-    });
-    await fileStorage.set(fileId, file);
-  }
-
+  await insertFile(files.map(file => ({ ...file, batchId })));
   return { status: 200, result: undefined };
 }
 
@@ -50,13 +33,9 @@ export async function setPreviewFileAction({
 
 export async function deleteFileAction({
   formData: { fileId },
-  batchId,
 }: {
   formData: z.infer<typeof DeleteFileSchema>;
-  batchId: number;
 }) {
-  const fileStorage = getBatchFileStorage(batchId);
-  await fileStorage.remove(fileId);
   await deleteFile(fileId);
   return { status: 200, result: undefined };
 }

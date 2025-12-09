@@ -1,0 +1,1 @@
+ALTER TABLE `batch_files` ADD `is_deleted` integer DEFAULT false NOT NULL;

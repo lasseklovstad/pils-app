@@ -29,6 +29,7 @@ const routes: RouteConfig = [
     route("controller/:controllerId", "routes/api/controllerApi.ts"),
     route("files/image/:fileId", "routes/api/batchImageApi.ts"),
     route("files/video/:fileId", "routes/api/batchVideoApi.ts"),
+    route("image-sas-token", "routes/api/image-sas-token-api.ts"),
   ]),
   layout("routes/mdx-layout.tsx", [route("privacy", "routes/privacy.mdx")]),
   route("sitemap.xml", "routes/sitemap.ts"),

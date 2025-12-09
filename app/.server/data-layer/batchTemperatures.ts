@@ -15,12 +15,10 @@ export const deleteAndInsertBatchTemperatures = async (
   batchId: number,
   values: Omit<typeof batchTemperatures.$inferInsert, "batchId" | "id">[],
 ) => {
-  await db.transaction(async (tx) => {
-    await tx
-      .delete(batchTemperatures)
-      .where(eq(batchTemperatures.batchId, batchId));
-    await tx
-      .insert(batchTemperatures)
-      .values(values.map((v) => ({ ...v, batchId })));
-  });
+  await db
+    .delete(batchTemperatures)
+    .where(eq(batchTemperatures.batchId, batchId));
+  await db
+    .insert(batchTemperatures)
+    .values(values.map((v) => ({ ...v, batchId })));
 };
