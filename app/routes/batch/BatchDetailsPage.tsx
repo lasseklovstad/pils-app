@@ -1,12 +1,6 @@
-import os from "os";
-import path from "path";
-
 import { parseWithZod } from "@conform-to/zod";
-import { LocalFileStorage } from "@mjackson/file-storage/local";
-import { type FileUpload, parseFormData } from "@mjackson/form-data-parser";
-import { Info } from "lucide-react";
 import QRCode from "qrcode";
-import { Form, Link, useSearchParams } from "react-router";
+import { useSearchParams } from "react-router";
 import { z } from "zod";
 
 import type { Route } from "./+types/BatchDetailsPage";
@@ -19,8 +13,6 @@ import { getControllerTemperaturesFromBatchId } from "~/.server/data-layer/contr
 import { getBatchIngredients } from "~/.server/data-layer/ingredients";
 import { Main } from "~/components/Main";
 import { Accordion, AccordionItem } from "~/components/ui/accordion";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
 import { getUser, requireUser } from "~/lib/auth.server";
 import { useRevalidateOnFocus } from "~/lib/useRevalidateOnFocus";
 
@@ -44,6 +36,7 @@ import {
   deleteBatchAction,
   deleteIngredientAction,
   editBatchNameAction,
+  migrateBatchFilesAction,
   postIngredientAction,
   putGravityAction,
   putIngredientAction,
@@ -67,6 +60,8 @@ import { batchTemperaturesAction } from "./actions/batchTemperatures.server";
 import {
   deleteFileIntent,
   DeleteFileSchema,
+  migrateBatchFilesIntent,
+  MigrateBatchFilesSchema,
   setPreviewFileIntent,
   SetPreviewFileSchema,
   uploadFilesIntent,
@@ -81,6 +76,7 @@ import { BatchMenu } from "./shared/BatchMenu";
 import { BatchPreviewImage } from "./shared/BatchPreviewImage";
 import { Fermentation } from "./shared/Fermentation";
 import { GravityForm } from "./shared/GravityForm";
+import { ImageUpload } from "./shared/image-upload";
 import { MaltForm } from "./shared/MaltForm";
 import { MashingForm } from "./shared/MashingForm";
 import { MediaCarousel } from "./shared/MediaCarousel";
@@ -139,12 +135,6 @@ export const action = async ({
 }: Route.ActionArgs) => {
   const batchId = parseInt(batchIdParam);
   await requireUserOwnerOfBatch(request, batchId);
-
-  const formData = await parseFormData(
-    request,
-    { maxFileSize: 20 * 1024 * 1024 },
-    createTempUploadHandler("batch-uploads"),
-  );
   const schema = z.union([
     PutMashingSchema,
     DeleteBatchSchema,
@@ -159,7 +149,9 @@ export const action = async ({
     PutIngredientSchema,
     PostIngredientSchema,
     DeleteIngredientSchema,
+    MigrateBatchFilesSchema,
   ]);
+  const formData = await request.formData();
   const result = parseWithZod(formData, {
     schema,
   });
@@ -167,12 +159,14 @@ export const action = async ({
     return { result: result.reply(), status: 400 };
   }
   switch (result.value.intent) {
+    case migrateBatchFilesIntent:
+      return migrateBatchFilesAction(batchId);
     case uploadFilesIntent:
       return uploadFilesAction({ formData: result.value, batchId });
     case setPreviewFileIntent:
       return setPreviewFileAction({ formData: result.value, batchId });
     case deleteFileIntent:
-      return deleteFileAction({ formData: result.value, batchId });
+      return deleteFileAction({ formData: result.value });
     case putGravityIntent:
       return putGravityAction({ formData: result.value, batchId });
     case putBatchControllerIntent:
@@ -272,29 +266,7 @@ export default function BatchPage({
         </Accordion>
 
         <h2 className="text-2xl">Last opp bilder ({filesToShow.length})</h2>
-        {!readOnly ? (
-          <Form encType="multipart/form-data" method="POST">
-            <Input
-              onChange={(e) => e.target.form?.requestSubmit()}
-              className="w-fit"
-              type="file"
-              multiple
-              name="media"
-              accept="image/*"
-            />
-            <input readOnly name="intent" value="upload-media" hidden />
-            <div className="p-2">
-              <div className="flex items-center gap-2 text-sm">
-                <Info /> Ikke last opp bilder du ikke vil andre skal se.
-              </div>
-              <Button asChild variant="link" size="sm">
-                <Link to="/privacy">
-                  Les mer om hvordan din informasjon behandles her.
-                </Link>
-              </Button>
-            </div>
-          </Form>
-        ) : null}
+        {!readOnly ? <ImageUpload batchId={batch.id} /> : null}
         {filesToShow.length > 0 ? (
           <MediaCarousel files={filesToShow} showMenu={!readOnly} />
         ) : null}
@@ -302,25 +274,6 @@ export default function BatchPage({
       </div>
     </Main>
   );
-}
-
-function createTempUploadHandler(prefix: string) {
-  const directory = path.join(os.tmpdir(), prefix);
-  const fileStorage = new LocalFileStorage(directory);
-
-  async function uploadHandler(fileUpload: FileUpload) {
-    if (
-      fileUpload.fieldName === "media" &&
-      fileUpload.type.startsWith("image/")
-    ) {
-      const key = new Date().getTime().toString(36);
-      await fileStorage.set(key, fileUpload);
-      return fileStorage.get(key);
-    }
-
-    // Ignore any files we don't recognize the name of...
-  }
-  return uploadHandler;
 }
 
 async function requireUserOwnerOfBatch(request: Request, batchId: number) {

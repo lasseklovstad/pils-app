@@ -16,24 +16,22 @@ export const insertUserAndSession = async (
   user: typeof users.$inferInsert,
   password: Omit<typeof passwords.$inferInsert, "userId">,
 ) => {
-  return await db.transaction(async (tx) => {
-    const [newUser] = await tx
-      .insert(users)
-      .values(user)
-      .returning(getTableColumns(users));
-    if (!newUser) {
-      throw new Error("Could not create user");
-    }
-    await tx.insert(passwords).values({ ...password, userId: newUser.id });
-    const [newSession] = await tx
-      .insert(sessions)
-      .values({ ...session, userId: newUser.id })
-      .returning(getTableColumns(sessions));
-    if (!newSession) {
-      throw new Error("Could not create session");
-    }
-    return newSession;
-  });
+  const [newUser] = await db
+    .insert(users)
+    .values(user)
+    .returning(getTableColumns(users));
+  if (!newUser) {
+    throw new Error("Could not create user");
+  }
+  await db.insert(passwords).values({ ...password, userId: newUser.id });
+  const [newSession] = await db
+    .insert(sessions)
+    .values({ ...session, userId: newUser.id })
+    .returning(getTableColumns(sessions));
+  if (!newSession) {
+    throw new Error("Could not create session");
+  }
+  return newSession;
 };
 
 export const getUserPasswordByEmail = async (email: string) => {

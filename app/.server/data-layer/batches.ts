@@ -1,7 +1,7 @@
-import { and, asc, desc, eq, getTableColumns, ne } from "drizzle-orm";
+import { desc, eq, getTableColumns } from "drizzle-orm";
 
 import { db } from "db/config.server";
-import { batches, batchFiles, batchTemperatures } from "db/schema";
+import { batches, batchFiles } from "db/schema";
 
 import { publicFileUrlSql } from "./batchFiles";
 
@@ -99,10 +99,12 @@ export const getBatchesFromControllerId = async (controllerId: number) => {
 
 export const getActiveBatchFromControllerId = async (controllerId: number) => {
   return await db.query.batches.findFirst({
-    where: and(
-      eq(batches.controllerId, controllerId),
-      ne(batches.controllerStatus, "inactive"),
-    ),
-    with: { batchTemperatures: { orderBy: asc(batchTemperatures.dayIndex) } },
+    where: {
+      controllerId,
+      NOT: {
+        controllerStatus: "inactive",
+      },
+    },
+    with: { batchTemperatures: { orderBy: { dayIndex: "asc" } } },
   });
 };

@@ -1,4 +1,4 @@
-import { relations, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import {
   integer,
   real,
@@ -160,6 +160,7 @@ export const batchFiles = sqliteTable("batch_files", {
   batchId: integer()
     .notNull()
     .references(() => batches.id),
+  isDeleted: integer({ mode: "boolean" }).default(false).notNull(),
 });
 
 export const batchTemperatures = sqliteTable("batch_temperatures", {
@@ -172,17 +173,3 @@ export const batchTemperatures = sqliteTable("batch_temperatures", {
 });
 
 export type BatchTemperature = typeof batchTemperatures.$inferSelect;
-
-export const batchesRelations = relations(batches, ({ many }) => ({
-  batchTemperatures: many(batchTemperatures),
-}));
-
-export const batchTemperaturesRelations = relations(
-  batchTemperatures,
-  ({ one }) => ({
-    batch: one(batches, {
-      references: [batches.id],
-      fields: [batchTemperatures.batchId],
-    }),
-  }),
-);
