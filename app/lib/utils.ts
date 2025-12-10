@@ -92,3 +92,7 @@ export function getDomainUrl(request: Request) {
   const protocol = request.headers.get("X-Forwarded-Proto") ?? "http";
   return `${protocol}://${host}`;
 }
+
+export const transformCloudflare = (url: string) => {
+  return `https://gataersamla.no/cdn-cgi/image/width=800,format=auto/${url}`
+}

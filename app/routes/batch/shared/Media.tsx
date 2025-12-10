@@ -1,3 +1,5 @@
+import { transformCloudflare } from "~/lib/utils";
+
 type Props = {
   file: {
     publicUrl: string;
@@ -15,17 +17,7 @@ export const Media = ({ file, className }: Props) => {
       <img
         className={className}
         key={file.id}
-        src={`${file.publicUrl}?w=400`}
-        srcSet={[200, 350, 400, 500, 600, 700, 800, 1000, 1200]
-          .map(
-            (width) => `
-          ${file.publicUrl}?w=${width} ${width}w`,
-          )
-          .join(",")}
-        sizes="
-          (max-width: 768px) 90vw,  
-          500px
-          "
+        src={transformCloudflare(file.publicUrl)}
       />
     );
   }

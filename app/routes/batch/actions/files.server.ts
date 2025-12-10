@@ -6,7 +6,6 @@ import type {
 } from "./file.schema";
 
 import { deleteFile, insertFile } from "~/.server/data-layer/batchFiles";
-import { getBatchFileStorage } from "~/lib/batchFileStorage";
 import { putBatch } from "~/.server/data-layer/batches";
 
 export async function uploadFilesAction({
