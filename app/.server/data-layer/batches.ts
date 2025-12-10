@@ -9,7 +9,7 @@ export const getBatches = async () => {
   return await db
     .select({
       ...getTableColumns(batches),
-      previewFilePublicUrl: publicFileUrlSql,
+      previewFilePublicUrl: publicFileUrlSql(),
     })
     .from(batches)
     .leftJoin(batchFiles, eq(batchFiles.id, batches.previewFileId))
@@ -21,7 +21,7 @@ export const getBatch = async (batchId: number) => {
     await db
       .select({
         ...getTableColumns(batches),
-        previewFilePublicUrl: publicFileUrlSql,
+        previewFilePublicUrl: publicFileUrlSql(),
       })
       .from(batches)
       .leftJoin(batchFiles, eq(batchFiles.id, batches.previewFileId))
