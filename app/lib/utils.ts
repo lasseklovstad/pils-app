@@ -94,5 +94,5 @@ export function getDomainUrl(request: Request) {
 }
 
 export const transformCloudflare = (url: string) => {
-  return `https://gataersamla.no/cdn-cgi/image/width=800,format=auto/${url}`
-}
+  return `https://gataersamla.no/cdn-cgi/image/width=800,format=auto/${url}`;
+};

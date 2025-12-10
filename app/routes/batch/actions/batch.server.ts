@@ -30,8 +30,6 @@ export async function deleteBatchAction(batchId: number) {
   throw redirect("/");
 }
 
-
-
 export async function migrateBatchFilesAction(batchId: number) {
   const token = await createBlobSas({
     accountKey: process.env.AZURE_BLOB_KEY!,
@@ -40,7 +38,7 @@ export async function migrateBatchFilesAction(batchId: number) {
     permissions: "c", // create, no overwrite
     expiresOn: new Date(new Date().valueOf() + 1000000),
     protocol: "https",
-  })
+  });
   async function uploadNewBlob(file: File, fileId: string) {
     const [base, qs] = token.split("?");
     // Optional prefix folder
@@ -60,18 +58,18 @@ export async function migrateBatchFilesAction(batchId: number) {
     if (!res.ok) {
       throw new Error(`Upload failed: ${res.status} ${await res.text()}`);
     }
-    console.log(target.split("?")[0] + " uploaded")
+    console.log(target.split("?")[0] + " uploaded");
   }
 
   const files = await getBatchFiles(batchId);
   const batchFilesStorage = getBatchFileStorage(batchId);
-  console.log("Uploading " + files.length + " files to azure")
+  console.log("Uploading " + files.length + " files to azure");
   for (const file of files) {
     const actualFile = await batchFilesStorage.get(file.id);
     if (actualFile) {
-      await uploadNewBlob(actualFile, file.id)
+      await uploadNewBlob(actualFile, file.id);
     } else {
-      console.warn("Could not find file")
+      console.warn("Could not find file");
     }
   }
   return { status: 200, result: undefined };

@@ -20,9 +20,6 @@ importers:
       '@mjackson/file-storage':
         specifier: ^0.6.0
         version: 0.6.1
-      '@mjackson/form-data-parser':
-        specifier: ^0.7.0
-        version: 0.7.0
       '@radix-ui/react-accordion':
         specifier: ^1.2.1
         version: 1.2.3(@types/react-dom@19.1.2(@types/react@19.1.1))(@types/react@19.1.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -1343,17 +1340,8 @@ packages:
   '@mjackson/file-storage@0.6.1':
     resolution: {integrity: sha512-H3GEVpmfmNryNoYloddIOba5OAwckfVGMvutPeI94Shbv/R+NVh89gIYa8SK3Vfa+ky9PitclP+5XQ6/zlSdQQ==}
 
-  '@mjackson/form-data-parser@0.7.0':
-    resolution: {integrity: sha512-Y8O5+nsTv4K9Q8ziyuoru8JqYTLsP1PRi7xiFDAx4vrXEvO16NtOO7RmvXIJ2ZB59gP/wV3X1OvqdpoeRgsruA==}
-
-  '@mjackson/headers@0.10.0':
-    resolution: {integrity: sha512-U1Eu1gF979k7ZoIBsJyD+T5l9MjtPONsZfoXfktsQHPJD0s7SokBGx+tLKDLsOY+gzVYAWS0yRFDNY8cgbQzWQ==}
-
   '@mjackson/lazy-file@3.3.1':
     resolution: {integrity: sha512-BxpNT1KmLx0OLYfgQESx/AKGD2czwfZXh9c0SaDUQY2DRAaVYtAvSQE5EkpATFdQQKqfL+iXVoaQ/SN+w7/CDA==}
-
-  '@mjackson/multipart-parser@0.8.2':
-    resolution: {integrity: sha512-KltttyypazaJ9kD1GpiOTEop9/YA5aZPwKfpbmuMYoYSyJhQc+0pqaQcZSHUJVdJBvIWgx7TTQSDJdnNqP5dxA==}
 
   '@mjackson/node-fetch-server@0.2.0':
     resolution: {integrity: sha512-EMlH1e30yzmTpGLQjlFmaDAjyOeZhng1/XCd7DExR8PNAnG/G1tyruZxEoUe11ClnwGhGrtsdnyyUx1frSzjng==}
@@ -6585,19 +6573,9 @@ snapshots:
     dependencies:
       '@mjackson/lazy-file': 3.3.1
 
-  '@mjackson/form-data-parser@0.7.0':
-    dependencies:
-      '@mjackson/multipart-parser': 0.8.2
-
-  '@mjackson/headers@0.10.0': {}
-
   '@mjackson/lazy-file@3.3.1':
     dependencies:
       mrmime: 2.0.0
-
-  '@mjackson/multipart-parser@0.8.2':
-    dependencies:
-      '@mjackson/headers': 0.10.0
 
   '@mjackson/node-fetch-server@0.2.0': {}
 

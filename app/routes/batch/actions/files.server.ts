@@ -15,7 +15,7 @@ export async function uploadFilesAction({
   formData: z.infer<typeof UploadFilesSchema>;
   batchId: number;
 }) {
-  await insertFile(files.map(file => ({ ...file, batchId })));
+  await insertFile(files.map((file) => ({ ...file, batchId })));
   return { status: 200, result: undefined };
 }
 

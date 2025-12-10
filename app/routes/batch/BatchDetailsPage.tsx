@@ -1,4 +1,3 @@
-
 import { parseWithZod } from "@conform-to/zod";
 import QRCode from "qrcode";
 import { useSearchParams } from "react-router";
@@ -150,9 +149,9 @@ export const action = async ({
     PutIngredientSchema,
     PostIngredientSchema,
     DeleteIngredientSchema,
-    MigrateBatchFilesSchema
+    MigrateBatchFilesSchema,
   ]);
-  const formData = await request.formData()
+  const formData = await request.formData();
   const result = parseWithZod(formData, {
     schema,
   });
@@ -267,9 +266,7 @@ export default function BatchPage({
         </Accordion>
 
         <h2 className="text-2xl">Last opp bilder ({filesToShow.length})</h2>
-        {!readOnly ? (
-          <ImageUpload batchId={batch.id} />
-        ) : null}
+        {!readOnly ? <ImageUpload batchId={batch.id} /> : null}
         {filesToShow.length > 0 ? (
           <MediaCarousel files={filesToShow} showMenu={!readOnly} />
         ) : null}
@@ -278,7 +275,6 @@ export default function BatchPage({
     </Main>
   );
 }
-
 
 async function requireUserOwnerOfBatch(request: Request, batchId: number) {
   const currentUser = await requireUser(request);

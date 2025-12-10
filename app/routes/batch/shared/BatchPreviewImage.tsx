@@ -8,7 +8,11 @@ type Props = {
 export const BatchPreviewImage = ({ publicUrl, className }: Props) => {
   return (
     <img
-      src={publicUrl ? transformCloudflare(publicUrl) : "/android-chrome-192x192.png"}
+      src={
+        publicUrl
+          ? transformCloudflare(publicUrl)
+          : "/android-chrome-192x192.png"
+      }
       className={cn("aspect-square w-24 rounded object-cover", className)}
     />
   );

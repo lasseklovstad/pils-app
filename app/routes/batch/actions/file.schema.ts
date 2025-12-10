@@ -2,15 +2,18 @@ import { z } from "zod";
 export const uploadFilesIntent = "upload-media";
 export const UploadFilesSchema = z.object({
   intent: z.literal(uploadFilesIntent),
-  files: z.array(z.object({
-    id: z.string(), type: z.string().transform((type => {
-      return type.startsWith("video")
-        ? "video"
-        : type.startsWith("image")
-          ? "image"
-          : "unknown"
-    }))
-  })),
+  files: z.array(
+    z.object({
+      id: z.string(),
+      type: z.string().transform((type) => {
+        return type.startsWith("video")
+          ? "video"
+          : type.startsWith("image")
+            ? "image"
+            : "unknown";
+      }),
+    }),
+  ),
 });
 
 export const setPreviewFileIntent = "set-preview-file";
@@ -28,5 +31,5 @@ export const DeleteFileSchema = z.object({
 export const migrateBatchFilesIntent = "migrate-batch-files";
 
 export const MigrateBatchFilesSchema = z.object({
-  intent: z.literal(migrateBatchFilesIntent)
+  intent: z.literal(migrateBatchFilesIntent),
 });

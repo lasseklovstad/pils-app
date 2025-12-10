@@ -36,9 +36,7 @@ export const insertNewUser = async (
   if (!newUser) {
     throw new Error("Could not create user");
   }
-  await db
-    .insert(passwords)
-    .values({ ...hashedPassword, userId: newUser.id });
+  await db.insert(passwords).values({ ...hashedPassword, userId: newUser.id });
   return { ...user, id: newUser.id };
 };
 
