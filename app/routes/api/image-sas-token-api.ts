@@ -18,21 +18,23 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   await requireUserOwnerOfBatch(request, batchId);
 
   return Promise.all(
-    Array({ length: numberOfFiles }).map(async () => {
-      const id = crypto.randomUUID();
-      return {
-        id,
-        token: await createBlobSas({
-          accountKey: process.env.AZURE_BLOB_KEY!,
-          accountName: process.env.AZURE_BLOB_NAME!,
-          containerName: "pils",
-          blobName: `batch/${batchId}/${id}`,
-          permissions: "c", // create, no overwrite
-          expiresOn: new Date(new Date().valueOf() + expireInMs),
-          protocol: "https",
-        }),
-      };
-    }),
+    Array(numberOfFiles)
+      .fill(null)
+      .map(async () => {
+        const id = crypto.randomUUID();
+        return {
+          id,
+          token: await createBlobSas({
+            accountKey: process.env.AZURE_BLOB_KEY!,
+            accountName: process.env.AZURE_BLOB_NAME!,
+            containerName: "pils",
+            blobName: `batch/${batchId}/${id}`,
+            permissions: "c", // create, no overwrite
+            expiresOn: new Date(new Date().valueOf() + expireInMs),
+            protocol: "https",
+          }),
+        };
+      }),
   );
 };
 
