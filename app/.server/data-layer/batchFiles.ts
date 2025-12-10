@@ -7,13 +7,14 @@ export const insertFile = async (value: (typeof batchFiles.$inferInsert)[]) => {
   await db.insert(batchFiles).values(value);
 };
 
-export const publicFileUrlSql = sql<string>`${sql.raw(`'https://${process.env.AZURE_BLOB_NAME}.blob.core.windows.net/pils/batch/'`)}||${batchFiles.batchId}||'/'||${batchFiles.id}`;
+export const publicFileUrlSql = () =>
+  sql<string>`${sql.raw(`'https://${process.env.AZURE_BLOB_NAME}.blob.core.windows.net/pils/batch/'`)}||${batchFiles.batchId}||'/'||${batchFiles.id}`;
 
 export const getBatchFiles = async (batchId: number) => {
   return await db
     .select({
       ...getTableColumns(batchFiles),
-      publicUrl: publicFileUrlSql,
+      publicUrl: publicFileUrlSql(),
     })
     .from(batchFiles)
     .where(
