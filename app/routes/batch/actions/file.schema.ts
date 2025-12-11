@@ -27,9 +27,3 @@ export const DeleteFileSchema = z.object({
   intent: z.literal(deleteFileIntent),
   fileId: z.string(),
 });
-
-export const migrateBatchFilesIntent = "migrate-batch-files";
-
-export const MigrateBatchFilesSchema = z.object({
-  intent: z.literal(migrateBatchFilesIntent),
-});

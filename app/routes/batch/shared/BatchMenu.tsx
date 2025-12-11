@@ -32,7 +32,6 @@ import {
   editBatchNameIntent,
   EditBatchNameSchema,
 } from "../actions/batch.schema";
-import { migrateBatchFilesIntent } from "../actions/file.schema";
 
 type Props = {
   batch: Batch;
@@ -122,34 +121,6 @@ export const BatchMenu = ({ batch }: Props) => {
                     value={deleteBatchIntent}
                   >
                     Ja, slett
-                  </Button>
-                </Form>
-                <DialogClose asChild>
-                  <Button>Avbryt</Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
-        <Dialog>
-          <DialogTrigger asChild>
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-              Migrer bilder
-            </DropdownMenuItem>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Migrer bilder</DialogTitle>
-              <DialogDescription>Er du sikker?</DialogDescription>
-              <DialogFooter>
-                <Form method="POST">
-                  <Button
-                    variant="ghost"
-                    type="submit"
-                    name="intent"
-                    value={migrateBatchFilesIntent}
-                  >
-                    Ja, migrer
                   </Button>
                 </Form>
                 <DialogClose asChild>

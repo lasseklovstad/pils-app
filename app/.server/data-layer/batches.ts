@@ -1,4 +1,4 @@
-import { desc, eq, getTableColumns } from "drizzle-orm";
+import { and, desc, eq, getTableColumns } from "drizzle-orm";
 
 import { db } from "db/config.server";
 import { batches, batchFiles } from "db/schema";
@@ -13,6 +13,7 @@ export const getBatches = async () => {
     })
     .from(batches)
     .leftJoin(batchFiles, eq(batchFiles.id, batches.previewFileId))
+    .where(eq(batches.isDeleted, false))
     .orderBy(desc(batches.createdTimestamp));
 };
 
@@ -25,7 +26,7 @@ export const getBatch = async (batchId: number) => {
       })
       .from(batches)
       .leftJoin(batchFiles, eq(batchFiles.id, batches.previewFileId))
-      .where(eq(batches.id, batchId))
+      .where(and(eq(batches.id, batchId), eq(batches.isDeleted, false)))
       .limit(1)
   )[0];
 };
@@ -70,7 +71,10 @@ export const putBatch = async (
 };
 
 export const deleteBatch = async (batchId: number) => {
-  await db.delete(batches).where(eq(batches.id, batchId));
+  await db
+    .update(batches)
+    .set({ isDeleted: true })
+    .where(eq(batches.id, batchId));
 };
 
 export const setBatchControllerStatus = async (
@@ -94,13 +98,16 @@ export const getBatchesFromControllerId = async (controllerId: number) => {
   return await db
     .select()
     .from(batches)
-    .where(eq(batches.controllerId, controllerId));
+    .where(
+      and(eq(batches.controllerId, controllerId), eq(batches.isDeleted, false)),
+    );
 };
 
 export const getActiveBatchFromControllerId = async (controllerId: number) => {
   return await db.query.batches.findFirst({
     where: {
       controllerId,
+      isDeleted: false,
       NOT: {
         controllerStatus: "inactive",
       },

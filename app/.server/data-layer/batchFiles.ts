@@ -22,15 +22,6 @@ export const getBatchFiles = async (batchId: number) => {
     );
 };
 
-export const getBatchFile = async (fileId: string) => {
-  return (
-    await db
-      .select()
-      .from(batchFiles)
-      .where(and(eq(batchFiles.id, fileId), eq(batchFiles.isDeleted, false)))
-  )[0];
-};
-
 export const deleteFile = async (fileId: string) => {
   await db
     .update(batches)

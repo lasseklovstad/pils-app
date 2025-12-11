@@ -36,7 +36,6 @@ import {
   deleteBatchAction,
   deleteIngredientAction,
   editBatchNameAction,
-  migrateBatchFilesAction,
   postIngredientAction,
   putGravityAction,
   putIngredientAction,
@@ -60,8 +59,6 @@ import { batchTemperaturesAction } from "./actions/batchTemperatures.server";
 import {
   deleteFileIntent,
   DeleteFileSchema,
-  migrateBatchFilesIntent,
-  MigrateBatchFilesSchema,
   setPreviewFileIntent,
   SetPreviewFileSchema,
   uploadFilesIntent,
@@ -149,7 +146,6 @@ export const action = async ({
     PutIngredientSchema,
     PostIngredientSchema,
     DeleteIngredientSchema,
-    MigrateBatchFilesSchema,
   ]);
   const formData = await request.formData();
   const result = parseWithZod(formData, {
@@ -159,8 +155,6 @@ export const action = async ({
     return { result: result.reply(), status: 400 };
   }
   switch (result.value.intent) {
-    case migrateBatchFilesIntent:
-      return migrateBatchFilesAction(batchId);
     case uploadFilesIntent:
       return uploadFilesAction({ formData: result.value, batchId });
     case setPreviewFileIntent:

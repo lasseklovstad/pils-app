@@ -37,6 +37,7 @@ export const batches = sqliteTable("batches", {
     .default("inactive")
     .notNull(),
   fermentationStartDate: integer({ mode: "timestamp" }),
+  isDeleted: integer({ mode: "boolean" }).default(false).notNull(),
 });
 
 export type Batch = typeof batches.$inferSelect;
