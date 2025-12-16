@@ -13,5 +13,6 @@ export const db = drizzle({
   relations,
   casing: "snake_case",
 });
-
+queryClient.pragma("foreign_keys=OFF;");
 migrate(db, { migrationsFolder: "migrations" });
+queryClient.pragma("foreign_keys=ON;");

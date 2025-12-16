@@ -1,4 +1,3 @@
-PRAGMA defer_foreign_keys=ON;--> statement-breakpoint
 PRAGMA foreign_keys=OFF;--> statement-breakpoint
 CREATE TABLE `__new_verifications` (
 	`id` integer PRIMARY KEY,
@@ -152,5 +151,4 @@ ALTER TABLE `__new_sessions` RENAME TO `sessions`;--> statement-breakpoint
 PRAGMA foreign_keys=ON;--> statement-breakpoint
 DROP INDEX IF EXISTS `passwords_userId_unique`;--> statement-breakpoint
 DROP INDEX IF EXISTS `users_email_unique`;--> statement-breakpoint
-DROP INDEX IF EXISTS `verifications_type_target_unique`;--> statement-breakpoint
-PRAGMA defer_foreign_keys=OFF;
+DROP INDEX IF EXISTS `verifications_type_target_unique`;
