@@ -81,8 +81,8 @@ importers:
         specifier: ^4.1.0
         version: 4.1.0
       drizzle-orm:
-        specifier: 1.0.0-beta.2-58a4521
-        version: 1.0.0-beta.2-58a4521(@types/better-sqlite3@7.6.12)(@types/mssql@9.1.8)(better-sqlite3@12.5.0)(mssql@11.0.1)
+        specifier: 1.0.0-beta.2-3a98f3a
+        version: 1.0.0-beta.2-3a98f3a(@types/better-sqlite3@7.6.12)(@types/mssql@9.1.8)(better-sqlite3@12.5.0)(mssql@11.0.1)
       embla-carousel-react:
         specifier: ^8.3.1
         version: 8.6.0(react@19.1.0)
@@ -187,8 +187,8 @@ importers:
         specifier: ^16.4.5
         version: 16.5.0
       drizzle-kit:
-        specifier: 1.0.0-beta.2-58a4521
-        version: 1.0.0-beta.2-58a4521
+        specifier: 1.0.0-beta.2-3a98f3a
+        version: 1.0.0-beta.2-3a98f3a
       eslint:
         specifier: ^9.12.0
         version: 9.24.0(jiti@2.4.2)
@@ -2844,12 +2844,12 @@ packages:
     resolution: {integrity: sha512-m/C+AwOAr9/W1UOIZUo232ejMNnJAJtYQjUbHoNTBNTJSvqzzDh7vnrei3o3r3m9blf6ZoDkvcw0VmozNRFJxg==}
     engines: {node: '>=12'}
 
-  drizzle-kit@1.0.0-beta.2-58a4521:
-    resolution: {integrity: sha512-5mENi77XK3Q6G6Pry1v04m7PCwhJjm9lMc3+5SuyvejBfcuSOpZkNdcDr+G7gPon6uhExSkfbIz3Rf+teN/qHw==}
+  drizzle-kit@1.0.0-beta.2-3a98f3a:
+    resolution: {integrity: sha512-YMFiY0uBZ3+fx+wSYSGXeC1MaL16/jUX6B+MFFsdYoFSF8/AH4ztBp+uU/94/XIOw6QxjJXavCNITx2TXoiHbA==}
     hasBin: true
 
-  drizzle-orm@1.0.0-beta.2-58a4521:
-    resolution: {integrity: sha512-wCm0HoHFklD0hZlffu1TkQkNUvIikV+SCI4FqFcRSjYHZUNnM/X3jvD+TaPCjfB/5f8fo9Hot21f7P0FLPu3Tw==}
+  drizzle-orm@1.0.0-beta.2-3a98f3a:
+    resolution: {integrity: sha512-q2ax54PTJt3tYwzTaZOev/HUWeW3wS8lGY+kC/sq0IRf976avwlnUh6WAcFM23CTNYbQF1nbZd4TwKLXTF7ORw==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=4'
@@ -8039,7 +8039,7 @@ snapshots:
 
   dotenv@16.5.0: {}
 
-  drizzle-kit@1.0.0-beta.2-58a4521:
+  drizzle-kit@1.0.0-beta.2-3a98f3a:
     dependencies:
       '@drizzle-team/brocli': 0.11.0
       '@js-temporal/polyfill': 0.5.1
@@ -8048,7 +8048,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@1.0.0-beta.2-58a4521(@types/better-sqlite3@7.6.12)(@types/mssql@9.1.8)(better-sqlite3@12.5.0)(mssql@11.0.1):
+  drizzle-orm@1.0.0-beta.2-3a98f3a(@types/better-sqlite3@7.6.12)(@types/mssql@9.1.8)(better-sqlite3@12.5.0)(mssql@11.0.1):
     dependencies:
       '@types/mssql': 9.1.8
       mssql: 11.0.1

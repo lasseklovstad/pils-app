@@ -1,0 +1,893 @@
+{
+  "dialect": "sqlite",
+  "id": "6583aab8-54db-403f-8f44-3bcbc83165d9",
+  "prevIds": [
+    "98f41a7a-62bd-4d44-bb64-388f15d0ce25"
+  ],
+  "version": "7",
+  "ddl": [
+    {
+      "name": "batch_files",
+      "entityType": "tables"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "table": "batch_files",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "batch_files_pk",
+      "table": "batch_files",
+      "entityType": "pks"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch())",
+      "generated": null,
+      "name": "created_at",
+      "table": "batch_files",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "type",
+      "table": "batch_files",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "batch_id",
+      "table": "batch_files",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "batch_id"
+      ],
+      "tableTo": "batches",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "no action",
+      "onDelete": "no action",
+      "nameExplicit": false,
+      "name": "batch_files_batch_id_batches_id_fk",
+      "table": "batch_files",
+      "entityType": "fks"
+    },
+    {
+      "name": "batch_temperatures",
+      "entityType": "tables"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "table": "batch_temperatures",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "batch_temperatures_pk",
+      "table": "batch_temperatures",
+      "entityType": "pks"
+    },
+    {
+      "type": "real",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "day_index",
+      "table": "batch_temperatures",
+      "entityType": "columns"
+    },
+    {
+      "type": "real",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "temperature",
+      "table": "batch_temperatures",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "batch_id",
+      "table": "batch_temperatures",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "batch_id"
+      ],
+      "tableTo": "batches",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "no action",
+      "onDelete": "cascade",
+      "nameExplicit": false,
+      "name": "batch_temperatures_batch_id_batches_id_fk",
+      "table": "batch_temperatures",
+      "entityType": "fks"
+    },
+    {
+      "name": "batches",
+      "entityType": "tables"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "batches_pk",
+      "table": "batches",
+      "entityType": "pks"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "name",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "mashing_temperature",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": "20",
+      "generated": null,
+      "name": "mashing_strike_water_volume",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": "18",
+      "generated": null,
+      "name": "mashing_malt_temperature",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "original_gravity",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "final_gravity",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch())",
+      "generated": null,
+      "name": "created_timestamp",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "user_id",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "preview_file_id",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "controller_id",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "mode",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "'inactive'",
+      "generated": null,
+      "name": "controller_status",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "fermentation_start_date",
+      "table": "batches",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "user_id"
+      ],
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "no action",
+      "onDelete": "cascade",
+      "nameExplicit": false,
+      "name": "batches_user_id_users_id_fk",
+      "table": "batches",
+      "entityType": "fks"
+    },
+    {
+      "columns": [
+        "preview_file_id"
+      ],
+      "tableTo": "batch_files",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "no action",
+      "onDelete": "set null",
+      "nameExplicit": false,
+      "name": "batches_preview_file_id_batch_files_id_fk",
+      "table": "batches",
+      "entityType": "fks"
+    },
+    {
+      "columns": [
+        "controller_id"
+      ],
+      "tableTo": "controllers",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "no action",
+      "onDelete": "set null",
+      "nameExplicit": false,
+      "name": "batches_controller_id_controllers_id_fk",
+      "table": "batches",
+      "entityType": "fks"
+    },
+    {
+      "name": "controller_temperatures",
+      "entityType": "tables"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "table": "controller_temperatures",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "controller_temperatures_pk",
+      "table": "controller_temperatures",
+      "entityType": "pks"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "controller_id",
+      "table": "controller_temperatures",
+      "entityType": "columns"
+    },
+    {
+      "type": "real",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "temperature",
+      "table": "controller_temperatures",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch())",
+      "generated": null,
+      "name": "timestamp",
+      "table": "controller_temperatures",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "batch_id",
+      "table": "controller_temperatures",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "controller_id"
+      ],
+      "tableTo": "controllers",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "no action",
+      "onDelete": "cascade",
+      "nameExplicit": false,
+      "name": "controller_temperatures_controller_id_controllers_id_fk",
+      "table": "controller_temperatures",
+      "entityType": "fks"
+    },
+    {
+      "columns": [
+        "batch_id"
+      ],
+      "tableTo": "batches",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "no action",
+      "onDelete": "cascade",
+      "nameExplicit": false,
+      "name": "controller_temperatures_batch_id_batches_id_fk",
+      "table": "controller_temperatures",
+      "entityType": "fks"
+    },
+    {
+      "name": "controllers",
+      "entityType": "tables"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "table": "controllers",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "controllers_pk",
+      "table": "controllers",
+      "entityType": "pks"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "name",
+      "table": "controllers",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "false",
+      "generated": null,
+      "name": "is_relay_on",
+      "table": "controllers",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "user_id",
+      "table": "controllers",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "user_id"
+      ],
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "no action",
+      "onDelete": "cascade",
+      "nameExplicit": false,
+      "name": "controllers_user_id_users_id_fk",
+      "table": "controllers",
+      "entityType": "fks"
+    },
+    {
+      "name": "ingredients",
+      "entityType": "tables"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "table": "ingredients",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "ingredients_pk",
+      "table": "ingredients",
+      "entityType": "pks"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "name",
+      "table": "ingredients",
+      "entityType": "columns"
+    },
+    {
+      "type": "real",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "amount",
+      "table": "ingredients",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "type",
+      "table": "ingredients",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "time",
+      "table": "ingredients",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "batch_id",
+      "table": "ingredients",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "batch_id"
+      ],
+      "tableTo": "batches",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "no action",
+      "onDelete": "cascade",
+      "nameExplicit": false,
+      "name": "ingredients_batch_id_batches_id_fk",
+      "table": "ingredients",
+      "entityType": "fks"
+    },
+    {
+      "name": "passwords",
+      "entityType": "tables"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "hash",
+      "table": "passwords",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "user_id",
+      "table": "passwords",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        {
+          "value": "user_id",
+          "isExpression": false
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "origin": "manual",
+      "name": "passwords_userId_unique",
+      "table": "passwords",
+      "entityType": "indexes"
+    },
+    {
+      "columns": [
+        "user_id"
+      ],
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "no action",
+      "onDelete": "cascade",
+      "nameExplicit": false,
+      "name": "passwords_user_id_users_id_fk",
+      "table": "passwords",
+      "entityType": "fks"
+    },
+    {
+      "name": "sessions",
+      "entityType": "tables"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "table": "sessions",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "sessions_pk",
+      "table": "sessions",
+      "entityType": "pks"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch())",
+      "generated": null,
+      "name": "created_at",
+      "table": "sessions",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch())",
+      "generated": null,
+      "name": "updated_at",
+      "table": "sessions",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "expiration_date",
+      "table": "sessions",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "user_id",
+      "table": "sessions",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "user_id"
+      ],
+      "tableTo": "users",
+      "columnsTo": [
+        "id"
+      ],
+      "onUpdate": "no action",
+      "onDelete": "cascade",
+      "nameExplicit": false,
+      "name": "sessions_user_id_users_id_fk",
+      "table": "sessions",
+      "entityType": "fks"
+    },
+    {
+      "name": "users",
+      "entityType": "tables"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "table": "users",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "users_pk",
+      "table": "users",
+      "entityType": "pks"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "email",
+      "table": "users",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch())",
+      "generated": null,
+      "name": "created_at",
+      "table": "users",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "name",
+      "table": "users",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "role",
+      "table": "users",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        {
+          "value": "email",
+          "isExpression": false
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "origin": "manual",
+      "name": "users_email_unique",
+      "table": "users",
+      "entityType": "indexes"
+    },
+    {
+      "name": "verifications",
+      "entityType": "tables"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "id",
+      "table": "verifications",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        "id"
+      ],
+      "nameExplicit": false,
+      "name": "verifications_pk",
+      "table": "verifications",
+      "entityType": "pks"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "(unixepoch())",
+      "generated": null,
+      "name": "created_at",
+      "table": "verifications",
+      "entityType": "columns"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "expires_at",
+      "table": "verifications",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "secret",
+      "table": "verifications",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "type",
+      "table": "verifications",
+      "entityType": "columns"
+    },
+    {
+      "type": "text",
+      "notNull": true,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "target",
+      "table": "verifications",
+      "entityType": "columns"
+    },
+    {
+      "columns": [
+        {
+          "value": "type",
+          "isExpression": false
+        },
+        {
+          "value": "target",
+          "isExpression": false
+        }
+      ],
+      "isUnique": true,
+      "where": null,
+      "origin": "manual",
+      "name": "verifications_type_target_unique",
+      "table": "verifications",
+      "entityType": "indexes"
+    }
+  ],
+  "renames": []
+}
