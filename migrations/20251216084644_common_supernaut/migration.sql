@@ -1,4 +1,4 @@
-PRAGMA defer_foreign_keys=ON;
+PRAGMA defer_foreign_keys=ON;--> statement-breakpoint
 PRAGMA foreign_keys=OFF;--> statement-breakpoint
 CREATE TABLE `__new_verifications` (
 	`id` integer PRIMARY KEY,
